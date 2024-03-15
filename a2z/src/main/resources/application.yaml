@@ -1,0 +1,72 @@
+#server:
+#  port: 8080
+#otp:
+#  validation:
+#    time:
+#      mins : 5
+#
+#logging:
+#  level:
+#    org.springframework.security: trace
+##spring:
+##  security:
+##    oauth2:
+##      resourceserver:
+##        jwt:
+##          #jwk-set-uri: http://localhost:8080/oauth2/jwks
+##          issuer-uri: http://auth-server:8080
+##      client:
+##        registration:
+##          messaging-client-oidc:
+##            provider: spring
+##            client-id : messaging-client
+##            client-secret : $2a$11$OjIWWUX1peLVEkDcFqeVG.PidSenQNY35yQGJ40ToTf1gnxDJtJ4.
+##            authorization-grant-type: authorization_code
+##            redirect-uri: http://127.0.0.1:8080/login/oauth2/code/messaging-client-oidc
+##            scope: openid
+##            client-name: messaging-client-oidc
+###          messaging-client-authorization-code:
+###            provider: spring
+###            client-id: messaging-client
+###            client-secret:  aOjIWWUX1peLVEkDcFqeVG.PidSenQNY35yQGJ40ToTf1gnxDJtJ4.
+###            authorization-grant-type: authorization_code
+###            redirect-uri: http://127.0.0.1:8080/authorized
+###            scope: message:read
+###            client-name: messaging-client-authorization-code
+##        provider:
+##          spring:
+###            issuer-uri: http://auth-server:8080
+#            
+#             
+#            
+#            
+##spring:
+##  sql:
+##    init:
+##      schema-locations:
+##      - 'classpath:sql/oauth2-registered-client-schema.sql'
+##      - 'classpath:sql/oauth2-authorization-schema.sql'
+##spring:
+##  security:
+##    oauth2:
+##      client:
+##        registration:
+##          api-client-oidc:
+##            provider: spring
+##            client-id: api-client
+##            client-secret: secret
+##            authorization-grant-type: authorization_code
+##            redirect-uri: "http://127.0.0.1:8080/login/oauth2/code/{registrationId}"
+##            scope: openid
+##            client-name: api-client-oidc
+##          api-client-authorization-code:
+##            provider: spring
+##            client-id: api-client
+##            client-secret: secret
+##            authorization-grant-type: authorization_code
+##            redirect-uri: "http://127.0.0.1:8080/authorized"
+##            scope: api.read
+##            client-name: api-client-authorization-code
+##        provider:
+##          spring:
+##            issuer-uri: http://auth-server:9000
