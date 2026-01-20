@@ -57,12 +57,13 @@ public class DefaultMediaService {
 	public MediaContainerData uploadMedia(String userName, MultipartFile[] files, boolean isMap) {
 		final MediaContainer container = new MediaContainer();
 			container.setUserId(userName);
+		mediaContainerRepository.save(container);
 		List<A2zMedia> uploadedMediaList = new ArrayList<A2zMedia>();
 		Arrays.stream(files).forEach(file->{
 			A2zMedia media = new A2zMedia();
 			StringBuilder fileNames = new StringBuilder();
-			Path fileNameDirectory = Paths.get(UPLOAD_DIRECTORY.concat("/").concat(userName));
-            Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY.concat("/").concat(userName), file.getOriginalFilename());
+			Path fileNameDirectory = Paths.get(UPLOAD_DIRECTORY.concat("/").concat(container.getCode()));
+            Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY.concat("/").concat(container.getCode()), file.getOriginalFilename());
             fileNames.append(file.getOriginalFilename());
             try {
                 media.setFileName(file.getOriginalFilename());

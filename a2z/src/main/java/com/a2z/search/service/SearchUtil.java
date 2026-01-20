@@ -19,6 +19,7 @@ import com.a2z.dao.Customer;
 import com.a2z.dao.MediaContainer;
 import com.a2z.dao.Price;
 import com.a2z.data.AdPostData;
+import com.a2z.data.AddressData;
 import com.a2z.data.CustomerData;
 import com.a2z.data.GPS;
 import com.a2z.data.MediaContainerData;
@@ -86,8 +87,8 @@ public class SearchUtil {
 	}
 	
 	public List<AdPostData> getAllPosts() {
-		Iterable<AdPostSearch> adPostSearch = searchRepo.findAll();
-		List<AdPostData> adPostDataList = new ArrayList<AdPostData>();
+		Iterable<AdPostSearch> adPostSearch = searchRepo.findAllByIsActive(true);
+				List<AdPostData> adPostDataList = new ArrayList<AdPostData>();
 		adPostSearch.forEach(ad->{
 			AdPostData adPostData = new AdPostData();
 			adPostData.setActive(true);
@@ -109,8 +110,10 @@ public class SearchUtil {
 			if(priceOpt.isPresent()) 
 				pricePopulator.populate(priceOpt.get(), priceData);
 			adPostData.setPrice(priceData);
-			adPostData.setLatitude(ad.getLatitude());
-			adPostData.setLongitude(ad.getLongitude());
+			AddressData sourceAddressData = new AddressData();
+			sourceAddressData.setLatitude(ad.getLatitude());
+			sourceAddressData.setLongitude(ad.getLongitude());
+			adPostData.setSourceAddress(sourceAddressData);
 			adPostDataList.add(adPostData);
 		});
 		

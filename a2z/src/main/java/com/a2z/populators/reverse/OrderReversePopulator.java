@@ -32,7 +32,7 @@ public class OrderReversePopulator implements Populator<OrderData,A2zOrder>{
 	public void populate(OrderData source, A2zOrder target) throws ConversionException {
 		String userName = source.getCustomer().getUserName();
 		target.setCustomer(customerRepo.findById(userName).get());
-		target.setDeliveryAddress(extendedOrderService.saveDeliveryAddress(source.getDeliveryAddress()));
+		target.setDeliveryAddress(extendedOrderService.saveDeliveryAddress(source));
 		target.setDeliveryMode(DeliveryMode.valueOf(source.getDeliveryMode()));
 		target.setEntries(extendedOrderService.saveEntries(source));
 		target.setId(source.getId());

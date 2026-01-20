@@ -1,0 +1,115 @@
+
+<div class="container" *ngIf="!isRegistered && !isHome && !showLoginForm">
+    <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+        <div>
+            <label for="userName">User Name</label>
+            <input id="userName" formControlName="userName" />
+            <div *ngIf="f['userName'].touched && f['userName'].invalid">
+              <small *ngIf="f['userName'].errors?.['required']">userName is required.</small>
+              <small *ngIf="f['userName'].errors?.['userName']">Must be at least 2 characters long.</small>
+            </div>
+        </div>
+
+      <div>
+        <label for="firstName">First Name</label>
+        <input id="firstName" formControlName="firstName" />
+        <div *ngIf="f['firstName'].touched && f['firstName'].invalid">
+          <small *ngIf="f['firstName'].errors?.['required']">First Name is required.</small>
+          <small *ngIf="f['firstName'].errors?.['minlength']">Must be at least 2 characters long.</small>
+        </div>
+      </div>
+  
+      <div>
+        <label for="lastName">Last Name</label>
+        <input id="lastName" formControlName="lastName" />
+        <div *ngIf="f['lastName'].touched && f['lastName'].invalid">
+          <small *ngIf="f['lastName'].errors?.['required']">Last Name is required.</small>
+          <small *ngIf="f['lastName'].errors?.['minlength']">Must be at least 2 characters long.</small>
+        </div>
+      </div>
+  
+      <div>
+        <label for="email">Email</label>
+        <input id="email" formControlName="email" />
+        <div *ngIf="f['email'].touched && f['email'].invalid">
+          <small *ngIf="f['email'].errors?.['required']">Email is required.</small>
+          <small *ngIf="f['email'].errors?.['email']">Please enter a valid email.</small>
+        </div>
+      </div>
+  
+      <div>
+        <label for="password">Password</label>
+        <input id="password" type="password" formControlName="password" />
+        <div *ngIf="f['password'].touched && f['password'].invalid">
+          <small *ngIf="f['password'].errors?.['required']">Password is required.</small>
+          <small *ngIf="f['password'].errors?.['minlength']">Password must be at least 6 characters long.</small>
+        </div>
+      </div>
+  
+      <div>
+        <label for="confirmPassword">Confirm Password</label>
+        <input id="confirmPassword" type="password" formControlName="confirmPassword" />
+        <div *ngIf="f['confirmPassword'].touched && f['confirmPassword'].invalid">
+          <small>Confirm Password is required.</small>
+        </div>
+      </div>
+  
+      <div>
+        <label for="phoneNumber">Phone</label>
+        <input id="phoneNumber" formControlName="phoneNumber" />
+        <div *ngIf="f['phoneNumber'].touched && f['phoneNumber'].invalid">
+          <small *ngIf="f['phoneNumber'].errors?.['required']">Phone number is required.</small>
+          <small *ngIf="f['phoneNumber'].errors?.['pattern']">Please enter a valid 10-digit phone number.</small>
+        </div>
+      </div>
+  
+      <!--<div>
+        <label for="address">Address</label>
+        <input id="address" formControlName="address" />
+      </div>
+      
+      <div>
+        <label for="isoCode">Country IsoCode</label>
+        <input id="isoCode" formControlName="isoCode" />
+        <div *ngIf="f['isoCode'].touched && f['isoCode'].invalid">
+          <small *ngIf="f['isoCode'].errors?.['required']">isoCode is required.</small>
+          <small *ngIf="f['isoCode'].errors?.['isoCode']">Must be at least 2 characters long.</small>
+        </div>
+    </div>-->
+
+
+      <div>
+        <label for="acceptTerms">
+          <input id="acceptTerms" type="checkbox" formControlName="acceptTerms" />
+          I accept the terms and conditions
+        </label>
+        <div *ngIf="f['acceptTerms'].touched && f['acceptTerms'].invalid">
+          <small>You must accept the terms and conditions.</small>
+        </div>
+      </div>
+  
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="success-message">
+        {{ successMessage }}
+      </div>
+
+      <button type="submit" 
+              [disabled]="registrationForm.invalid || isSubmitting">
+        {{ isSubmitting ? 'Submitting...' : 'Submit' }}
+      </button>
+    </form>
+  </div>
+  
+<div *ngIf="isHome">
+    <!-- <app-ad-list></app-ad-list> -->
+</div>
+
+<div class="button-container" *ngIf="isHome">
+  <button *ngIf="!isLoggedIn" class="button" (click)="register()" type="submit">
+      Register</button>
+      <button *ngIf="!isLoggedIn" class="button" (click)="login()" type="submit">
+          Login</button>
+</div>

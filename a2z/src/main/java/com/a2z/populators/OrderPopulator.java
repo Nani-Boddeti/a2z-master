@@ -2,6 +2,7 @@ package com.a2z.populators;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionException;
@@ -51,6 +52,7 @@ public class OrderPopulator implements Populator<A2zOrder,OrderData>{
 		target.setId(source.getId());
 		target.setNamedDeliveryDate(source.getNamedDeliveryDate());
 		PaymentInfoData paymentInfoData = new PaymentInfoData();
+		if(Objects.nonNull(source.getPaymentInfo()))
 		paymentInfoPopulator.populate(source.getPaymentInfo(), paymentInfoData);
 		target.setPaymentInfo(paymentInfoData);
 		PriceData priceData = new PriceData();

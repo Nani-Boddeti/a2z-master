@@ -1,0 +1,41 @@
+<!-- FLEXBOX CONTAINER - Single card per row -->
+<div class="details-header">
+    <h2>Approval Requests</h2>
+  </div>
+<div class="approval-container">
+  @for (approvalRequest of approvalRequestsList; track $index) {
+    <div class="approval-card">
+      <!-- LEFT 20%: Image (matches details-image-cell) -->
+      <div class="approval-image-cell">
+        @for (media of approvalRequest?.adPostData?.mediaContainerData?.medias; track $index){
+          <img src="/uploads/{{approvalRequest?.adPostData?.mediaContainerData?.code}}/{{media?.fileName}}"/> 
+        }
+      </div>   
+      
+      <!-- MIDDLE 50%: Info (matches details-info-cell) -->
+      <div class="approval-info-cell">
+        <div class="approval-status">{{approvalRequest?.status}}</div>
+        <h3>{{approvalRequest?.adPostData?.productName}}</h3>
+        <p class="product-description">{{approvalRequest?.adPostData?.description || 'No description available'}}</p>
+        <div class="location-display">
+          <span class="location">{{approvalRequest?.adPostData?.sourceAddress?.latitude}}, {{approvalRequest?.adPostData?.sourceAddress?.longitude}}</span>
+        </div>
+      </div>
+      
+      <!-- RIGHT 30%: Price + Actions (matches details-price-cell) -->
+      <div class="approval-price-cell">
+        <div class="price-display">
+          <span class="price">{{approvalRequest?.adPostData?.price?.currency}} {{approvalRequest?.adPostData?.price?.amount}}</span>
+        </div>
+        <div class="action-buttons">
+          <button *ngIf="approvalRequest?.status === 'IN_REVIEW'" class="approval-btn" (click)="approveRequest(approvalRequest?.id)">
+            Approve
+          </button> 
+          <button class="reject-btn" (click)="rejectRequest(approvalRequest?.id)">
+            Reject
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

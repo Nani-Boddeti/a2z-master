@@ -18,8 +18,8 @@ public class PaymentInfoReversePopulator implements Populator<PaymentInfoData,Pa
 		// TODO Auto-generated method stub
 		target.setPaymentCode(source.getPaymentCode());
 		target.setPaymentType(source.getPaymentType());
-		if(source.getPaymentAddress()!= null)
-		target.setPaymentAddress(extendedOrderService.savePaymentAddress(source.getPaymentAddress()));
+		//if(source.getPaymentAddress()!= null)
+		//target.setPaymentAddress(extendedOrderService.savePaymentAddress(source.getPaymentAddress()));
 	}
 
 }

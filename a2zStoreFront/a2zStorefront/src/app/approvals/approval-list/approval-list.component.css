@@ -1,0 +1,217 @@
+/* APPROVAL CONTAINER - Single card per row */
+.approval-container {
+  padding: 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;        /* ← Single column */
+  gap: 1.5rem;                  /* ← Vertical spacing between cards */
+}
+.details-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.details-header h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--gray-900, #1e293b);
+  margin: 0;
+}
+/* APPROVAL CARD - Full width single card (like ad-details) */
+.approval-card {
+  height: 420px;                    /* Same as details-card */
+  width: 100%;                      /* ← Full width */
+  max-width: 900px;                 /* ← Max width like ad-details */
+  margin: 0 auto;                   /* ← Center single card */
+  display: flex;
+  flex-direction: row;
+  background: var(--bg-card, #f8fafc);
+  padding: 1.25rem;
+  box-shadow: var(--shadow, 0 4px 12px rgba(0,0,0,0.1));
+  border-radius: 12px;
+  border: 1px solid var(--border-light, rgba(0,0,0,0.08));
+  overflow: hidden;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+/* LEFT 20%: IMAGE (Identical to details-image-cell) */
+.approval-image-cell {
+  flex: 0 0 20%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.approval-image-cell img {
+  width: 100%;
+  height: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* MIDDLE 50%: INFO (Identical to details-info-cell) */
+.approval-info-cell {
+  flex: 0 0 50%;
+  /* display: flex; */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0.5rem;
+  text-align: center;
+  align-content: center;
+}
+
+/* Status Badge */
+.approval-status {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--bright-blue, #3b82f6) 15%, transparent);
+  color: var(--bright-blue, #3b82f6);
+  border: 1px solid color-mix(in srgb, var(--bright-blue, #3b82f6) 30%, transparent);
+}
+
+.approval-info-cell h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--gray-900, #1e293b);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-description {
+  font-size: 0.95rem;
+  color: var(--gray-700, #64748b);
+  line-height: 1.4;
+  margin: 0;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.location-display {
+  flex-shrink: 0;
+}
+
+.location {
+  font-size: 0.85rem;
+  color: var(--gray-700, #64748b);
+  background: color-mix(in srgb, var(--bright-blue, #3b82f6) 15%, transparent);
+  padding: 0.4rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+/* RIGHT 30%: PRICE + ACTIONS (Identical to details-price-cell) */
+.approval-price-cell {
+  flex: 0 0 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  padding-right: 0.25rem;
+  text-align: center;
+}
+
+.price-display {
+  flex-shrink: 0;
+}
+
+.price {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--bright-blue, #3b82f6);
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: auto;
+  width: 100%;
+}
+
+.approval-btn, .reject-btn {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.approval-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.approval-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.reject-btn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.reject-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+}
+
+/* Responsive - Matches ad-details */
+@media (max-width: 768px) {
+  .approval-card {
+    flex-direction: column;
+    height: 460px;
+  }
+  
+  .approval-image-cell { 
+    flex: none; 
+    height: 200px; 
+  }
+  
+  .approval-info-cell { 
+    flex: none; 
+    padding: 1rem 0; 
+    text-align: center;
+  }
+  
+  .approval-price-cell { 
+    flex: none; 
+    flex-direction: row; 
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-light, rgba(0,0,0,0.08));
+    gap: 1rem;
+  }
+  
+  .action-buttons {
+    flex-direction: row;
+    gap: 0.5rem;
+    width: auto;
+  }
+  
+  .approval-btn, .reject-btn {
+    flex: 1;
+    padding: 0.75rem;
+  }
+}

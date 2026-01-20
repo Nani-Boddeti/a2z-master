@@ -22,6 +22,8 @@ public class AddressPopulator implements Populator<A2zAddress,AddressData>{
 		target.setLastName(source.getLastName());
 		target.setLine1(source.getLine1());
 		target.setLine2(source.getLine2());
+		target.setLatitude(source.getLatitude());
+		target.setLongitude(source.getLongitude());
 	}
 
 }

@@ -57,6 +57,8 @@ public class AddressData extends RootData {
 	@Size(min = 8, message = "{validation.customerId.size.too_short}")
 	@Size(max = 30, message = "{validation.customerId.size.too_long}")
 	private String customerId;
+	private double latitude;
+	private double longitude;
 	public Long getId() {
 		return id;
 	}
@@ -134,5 +136,17 @@ public class AddressData extends RootData {
 	}
 	public void setCustomer(String customer) {
 		this.customerId = customer;
+	}
+	public double getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+	public double getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
 	}
 }

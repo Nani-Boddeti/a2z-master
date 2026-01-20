@@ -1,0 +1,30 @@
+<section class="ad-list-grid">
+  
+    @for (ad of adList; track $index) {
+      <div class="ad-card" (click)="viewAd(ad?.id)">
+        <!-- 1. TOP: Image (Full Width) -->
+        <div class="ad-image-section">
+          @for (media of ad?.mediaContainerData?.medias; track $index){
+            <img src="/uploads/{{ad?.mediaContainerData?.code}}/{{media?.fileName}}"/> 
+          }
+        </div>
+        
+        <!-- 2. MIDDLE: Product Info + Address -->
+        <div class="ad-info-section">
+          <h2>{{ad?.productName}}</h2>
+          <p>{{ad?.description}}</p>
+          <div class="ad-address">
+            <span>{{ad?.sourceAddress?.latitude}}, {{ad?.sourceAddress?.longitude}}</span>
+          </div>
+        </div>
+        
+        <!-- 3. BOTTOM: Price + Action -->
+        <div class="ad-price-section">
+          <span class="price">{{ad?.price?.currency}} {{ad?.price?.amount}}</span>
+          <a href="#" class="add-to-cart">Add to Cart</a>
+        </div>
+      </div>
+    }
+  
+</section>
+

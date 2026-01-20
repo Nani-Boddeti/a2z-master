@@ -1,5 +1,7 @@
 package com.a2z.populators;
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionException;
 
@@ -18,6 +20,7 @@ public class PaymentInfoPopulator implements Populator<PaymentInfo,PaymentInfoDa
 		target.setPaymentCode(source.getPaymentCode());
 		target.setPaymentType(source.getPaymentType());
 		AddressData paymentAddress = new AddressData();
+		if(Objects.nonNull(source.getPaymentAddress()))
 		addressPopulator.populate(source.getPaymentAddress(), paymentAddress);
 		target.setPaymentAddress(paymentAddress);
 	}

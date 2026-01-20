@@ -1,0 +1,69 @@
+import { Injectable } from '@angular/core';
+import {
+  HttpRequest,
+  HttpHandler,
+  HttpEvent,
+  HttpInterceptor,
+  HttpErrorResponse
+} from '@angular/common/http';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
+import { catchError, filter, take, switchMap, tap } from 'rxjs/operators';
+import { AuthStateService } from './services/auth-state.service';
+import { OauthTokenService } from './services/oauth-token.service';
+import { Router } from '@angular/router';
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+private WHITE_LIST_URLS : string[] = [		
+			"/", "/ad/all", "/ad/view/**", "/c/**", "/customerSubmit",
+			"/suggest/password", "/generate/otp/**", "/validateOTP",
+			"/login**", "/loginV2", "/oauth2/**", "/oauth2/token","/login", "/search/**","/search/all", "/.well-known/**"
+	];
+  constructor(
+    private router: Router,
+    private authStateService: AuthStateService,
+    private oauthTokenService: OauthTokenService,
+  ) {}
+
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    // Do not intercept token refresh requests
+
+    if (this.WHITE_LIST_URLS.includes(request.url)) {
+      return next.handle(request);
+    }
+    // Check if token is expired and refresh if needed
+    if (this.authStateService.isTokenExpired()) {
+  return this.oauthTokenService.refreshAccessToken().pipe(
+    switchMap(() => {
+      return this.addTokenAndForwardRequest(request, next);
+    }),
+    // ✅ Use tap() instead of catchError()
+    tap({
+      error: (error) => {
+        // Side effects ONLY - no return needed
+        this.authStateService.setLoggedIn(false);
+        this.authStateService.removeTokens();
+        this.authStateService.removeUserInfo();
+        this.router.navigate(['/']);
+      }
+    })
+  );
+}
+
+    return this.addTokenAndForwardRequest(request, next);
+  }
+
+  private addTokenAndForwardRequest(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    const token = sessionStorage.getItem('access_token') || localStorage.getItem('access_token');
+
+    if (token) {
+      request = request.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    }
+
+    return next.handle(request);
+  }
+}

@@ -1,0 +1,148 @@
+<!-- header.component.html -->
+<header class="navbar" [class.scrolled]="isScrolled">
+  <div class="header-container">
+    <!-- Logo -->
+    <a href="/" class="logo">
+      <div class="logo-wrapper">
+        <div class="logo-icon">
+          <a href="/ad-list">
+            <img src="/assets/logo_48.ico" class="logo-image"/>
+          </a>
+        </div>
+      </div>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="nav-links-desktop">
+      <a href="/" class="nav-item" [class.active]="currentRoute === '/'">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Home</span>
+      </a>
+      <a href="/ad-list" class="nav-item" [class.active]="currentRoute === '/ad-list'">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <circle cx="12" cy="12" r="5"></circle>
+        </svg>
+        <span>Shop</span>
+      </a>
+      <a href="/about" class="nav-item" [class.active]="currentRoute === '/about'">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+        <span>About</span>
+      </a>
+    </nav>
+
+    <!-- Modern Search Bar -->
+    <div class="search-container">
+      <div class="search-input-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input type="text" class="search-input" placeholder="Search products..." (keyup.enter)="onSearch($event)">
+        <button class="search-btn" (click)="onSearch($event)">
+          <svg class="search-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- User Avatar / Hamburger -->
+   <div class="header-actions">
+  <!-- Avatar when logged in -->
+  <button class="user-avatar" *ngIf="isLoggedIn" (click)="toggleUserMenu()">
+    <span class="avatar-initials">{{ userName?.charAt(0)?.toUpperCase() }}</span>
+  </button>
+  
+  <!-- ALWAYS SHOW HAMBURGER (mobile/guest) -->
+  <button class="hamburger" (click)="toggleUserMenu()" [class.active]="userMenuOpen">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+  </div>
+
+  <!-- Modern User Dropdown (Desktop Logged In) -->
+  <div class="user-dropdown" *ngIf="isLoggedIn && userMenuOpen" [@fadeIn]>
+    <a (click)="goToProfile(); toggleUserMenu()">Profile</a>
+    <a (click)="goToSubmitAd(); toggleUserMenu()">Submit Ad</a>
+    <a (click)="goToApprovalRequests(); toggleUserMenu()">Approval Requests</a>
+    <a (click)="goToOrders(); toggleUserMenu()">Orders</a>
+    <div class="dropdown-divider"></div>
+    <a class="sign-out" (click)="logout(); toggleUserMenu()">Sign Out</a>
+  </div>
+
+  <!-- Mobile/Desktop Dropdown Menu (All Users) -->
+  <nav class="hamburger-menu" [class.open]="userMenuOpen">
+    <div class="menu-header" *ngIf="isLoggedIn">
+      <span class="user-greeting">Welcome, {{ userName }}</span>
+    </div>
+
+    <div class="menu-items">
+      <!-- Profile -->
+      <a class="menu-item" (click)="goToProfile(); closeMenu()" *ngIf="isLoggedIn">
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span>Profile</span>
+      </a>
+
+      <!-- Submit Ad -->
+      <a class="menu-item" (click)="goToSubmitAd(); closeMenu()" *ngIf="isLoggedIn">
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M5 12h14"></path>
+        </svg>
+        <span>Submit Ad</span>
+      </a>
+
+      <!-- Approval Requests -->
+      <a class="menu-item" (click)="goToApprovalRequests(); closeMenu()" *ngIf="isLoggedIn">
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 11l3 3L22 4"></path>
+          <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span>Approval Requests</span>
+      </a>
+
+      <!-- Orders -->
+      <a class="menu-item" (click)="goToOrders(); closeMenu()" *ngIf="isLoggedIn">
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span>Orders</span>
+      </a>
+
+      <!-- Divider -->
+      <div class="menu-divider" *ngIf="isLoggedIn"></div>
+
+      <!-- Sign Out -->
+      <a class="menu-item sign-out" (click)="logout(); closeMenu()" *ngIf="isLoggedIn">
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <span>Sign Out</span>
+      </a>
+
+      <!-- Login Link -->
+      <a class="menu-item login" (click)="goToLogin(); closeMenu()" *ngIf="!isLoggedIn">
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+          <polyline points="10 17 15 12 10 7"></polyline>
+          <line x1="15" y1="12" x2="3" y2="12"></line>
+        </svg>
+        <span>Login / Register</span>
+      </a>
+    </div>
+  </nav>
+</header>

@@ -54,10 +54,15 @@ public class InitRegisteredClients implements ApplicationRunner {
 					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 					.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
 					.redirectUri("http://localhost:4200/")
+					//.redirectUri("http://localhost:8080/loginSuccess")
 					.scope("app.read")
 					.scope("app.write")
 					.clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).requireProofKey(true).build())
-					.tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofSeconds(900)).build())
+					.tokenSettings(TokenSettings.builder()
+							.accessTokenTimeToLive(Duration.ofMinutes(30))      // 30 min AT
+							.refreshTokenTimeToLive(Duration.ofHours(24))       // 24h RT
+							.reuseRefreshTokens(true)                           // Reuse same RT
+							.build())
 					.build();
 			repository.save(oidcClient);
 		}

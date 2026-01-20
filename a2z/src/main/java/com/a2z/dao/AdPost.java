@@ -52,8 +52,9 @@ public class AdPost extends RootEntity{
 	@OneToOne(mappedBy="adPost")
 	private OrderEntry  orderEntry;
 	
-	private double latitude;
-	private double longitude;
+	@OneToOne
+	@JoinColumn(name = "a2zAddress_id")
+	private A2zAddress sourceAddress;
 	
 	public String getDescription() {
 		return Description;
@@ -135,21 +136,15 @@ public class AdPost extends RootEntity{
 		this.orderEntry = orderEntry;
 	}
 
-	public double getLatitude() {
-		return latitude;
+	public A2zAddress getSourceAddress() {
+		return sourceAddress;
 	}
 
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
+	public void setSourceAddress(A2zAddress sourceAddress) {
+		this.sourceAddress = sourceAddress;
 	}
 
-	public double getLongitude() {
-		return longitude;
-	}
 
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
 
 	
 }

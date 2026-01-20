@@ -36,7 +36,7 @@ import jakarta.validation.Valid;
 @RestController
 @ResponseBody
 @RequestMapping("/myAccount")
-@Secured("ROLE_USER")
+@Secured("SCOPE_app.read")
 @Validated
 public class MyAccountController extends RootController {
 	

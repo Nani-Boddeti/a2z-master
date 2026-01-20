@@ -41,6 +41,7 @@ public class CustomerReversePopulator implements Populator<CustomerData,Customer
 			}
 		}
 		PaymentInfo paymentInfo = new PaymentInfo();
+		if(source.getDefaultPaymentInfo() != null)
 		paymentInfoBasicReversePopulator.populate(source.getDefaultPaymentInfo(), paymentInfo);				
 		target.setDefaultPaymentInfo(paymentInfo);
 		target.setEmail(source.getEmail());

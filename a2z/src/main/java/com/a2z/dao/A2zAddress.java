@@ -33,6 +33,9 @@ public class A2zAddress extends RootEntity{
 	
 	@OneToOne(mappedBy="paymentAddress")
 	private PaymentInfo paymentInfo;
+		
+	private double latitude;
+	private double longitude;
 	
 	public String getFirstName() {
 		return firstName;
@@ -129,5 +132,18 @@ public class A2zAddress extends RootEntity{
 	}
 	public void setPaymentInfo(PaymentInfo paymentInfo) {
 		this.paymentInfo = paymentInfo;
+	}
+	
+	public double getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+	public double getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
 	}
 }

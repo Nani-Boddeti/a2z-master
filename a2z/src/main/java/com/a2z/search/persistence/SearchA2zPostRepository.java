@@ -19,6 +19,9 @@ public interface SearchA2zPostRepository extends ElasticsearchRepository<AdPostS
 
 	 Optional<AdPostSearch> findById(Long id) ;
 	 
+	 @Query("{\"bool\": {\"must\": [{\"match\": {\"isActive\": \"?0\"}}]}}")
+	 Iterable<AdPostSearch> findAllByIsActive(boolean isActive);
+	 
 	 @Query("{\"bool\": {\"must\": [{\"match\": {\"productName\": \"?0\"}}]}}")
 	 Page<AdPostSearch> findByProductNameLike(String productName,PageRequest P);
 	 

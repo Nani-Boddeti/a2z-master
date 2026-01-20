@@ -1,0 +1,97 @@
+@for (order of orderList; track $index) {
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+  <!-- Orders Header -->
+  <div class="content mb-12 p-8">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Order History</h1>
+        <p class="text-gray-700">Track and manage all your recent orders</p>
+      </div>
+     
+        <!-- <div class="search-bar">
+          <input type="text" placeholder="Search orders..." class="search-input">
+          <button class="btn">Search</button>
+        </div> -->
+      
+    </div>
+
+    <!-- Filters -->
+    <div class="pill-group justify-center mt-6">
+      <button class="pill active">All Orders</button>
+      <button class="pill">Processing</button>
+      <button class="pill">Shipped</button>
+      <button class="pill">Delivered</button>
+      <button class="pill">Cancelled</button>
+    </div>
+  </div>
+
+  <!-- Orders Grid -->
+  <div class="article-grid">
+  <!-- 3-Column Order Card -->
+  <div class="order-card-three-col article-card">
+    
+    <!-- LEFT COLUMN: Header + Image (35%) -->
+    <div class="order-left-section">
+      <div class="order-header-compact">
+        <div class="flex items-start gap-2">
+          <span class="order-id">{{order?.id}}</span><br>
+          <span class="status-badge delivered">{{order?.status}}</span>
+        </div>
+        <span class="order-date">{{order?.date}}</span>
+      </div>
+      @for (ad of order?.entries;track $index){
+       @for (media of ad.adPost?.mediaContainerData?.medias; track $index){
+         <div class="order-media">
+        <img src="/uploads/{{ad.adPost?.mediaContainerData?.code}}/{{media?.fileName}}" 
+              class="order-image">
+      </div>
+    }
+}
+    </div>
+    
+    <!-- MIDDLE COLUMN: Items + Description (45%) -->
+    <div class="order-middle-section">
+      <div class="order-items-preview">
+        <div class="order-item-mini">
+          @for (ad of order?.entries;track $index){
+          <div>
+            <h4 class="mini-item-title">{{ad?.adPost?.productName}}</h4>
+            <p class="mini-item-qty">Qty: 1</p>
+            <span class="mini-item-desc item-details-mini">
+        Owner : {{ad?.adPost?.customerData?.firstName}}<br>
+        {{ad?.adPost?.sourceAddress?.line1}}, {{ad?.adPost?.sourceAddress?.city}}<br>
+        {{ad?.adPost?.sourceAddress?.latitude}}, {{ad?.adPost?.sourceAddress?.longitude}}
+      </span>
+          </div>}
+        </div>
+      </div>
+      
+    </div>
+    
+    <!-- RIGHT COLUMN: Price + Actions (20%) -->
+    <div class="order-right-section">
+      <div class="total-price-large">{{order?.price?.amount}}</div>
+      <div class="order-actions">
+        <a href="/order/1245" class="view-details">View →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Pagination -->
+  <div class="content mt-12 p-6">
+    <div class="pill-group justify-center">
+      <button class="pill">‹ Previous</button>
+      <button class="pill">1</button>
+      <button class="pill active">2</button>
+      <button class="pill">3</button>
+      <button class="pill">Next ›</button>
+    </div>
+  </div>
+</div>
+
+
+}
+
+
+

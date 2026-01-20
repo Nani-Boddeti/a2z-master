@@ -28,7 +28,8 @@ public class AddressReversePopulator implements Populator<AddressData , A2zAddre
 		target.setLastName(source.getLastName());
 		target.setLine1(source.getLine1());
 		target.setLine2(source.getLine2());
-		
+		target.setLatitude(source.getLatitude());
+		target.setLongitude(source.getLongitude());
 	}
 
 }

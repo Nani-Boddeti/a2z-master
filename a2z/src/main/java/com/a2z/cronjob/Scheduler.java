@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.a2z.dao.A2zMedia;
 import com.a2z.dao.AdPost;
@@ -25,6 +26,7 @@ import com.a2z.persistence.RootRepository;
 import com.a2z.search.dao.A2zMediaSearch;
 import com.a2z.search.dao.AdPostSearch;
 import com.a2z.search.dao.MediaContainerSearch;
+import com.a2z.search.persistence.SearchA2zPostRepository;
 import com.a2z.search.service.SearchUtil;
 
 @Component
@@ -41,6 +43,9 @@ public class Scheduler {
 	
 	@Autowired
 	PODCustomerRepository customerRepo;
+	
+	@Autowired
+	SearchA2zPostRepository searchRepo;
 	
 	static int DAYS_OFFSET = 30;
 	
@@ -59,9 +64,9 @@ public class Scheduler {
 				/* adPostSearch.setCustomer(ad.getCustomer()); */
 			 adPostSearch.setDescription(ad.getDescription());
 			 adPostSearch.setId(ad.getId());
-			 GeoPoint gps = new GeoPoint(ad.getLatitude() , ad.getLongitude());
-				  adPostSearch.setLatitude(ad.getLatitude());
-				  adPostSearch.setLongitude(ad.getLongitude());
+			 GeoPoint gps = new GeoPoint(ad.getSourceAddress().getLatitude() , ad.getSourceAddress().getLongitude());
+				  adPostSearch.setLatitude(ad.getSourceAddress().getLatitude());
+				  adPostSearch.setLongitude(ad.getSourceAddress().getLongitude());
 			 adPostSearch.setGeoPoint(gps);
 			 MediaContainerSearch mediaContainerSearch = new MediaContainerSearch();
 			 mediaContainerSearch.setCode(ad.getMediaContainer().getCode());
@@ -92,7 +97,7 @@ public class Scheduler {
 		 searchUtil.startIndexAll(adPostSearchList);
 	   }
 	
-	@Scheduled(cron="0 0 5 ? * *")
+	@Scheduled(cron="0 15 1/1 ? * *")
 	public void adPostUpdateStatus() {
 		 List<AdPost>  adsList = adPostRepository.findByActive(true);
 		 adsList.stream().forEach(ad->{
@@ -119,5 +124,24 @@ public class Scheduler {
 			customer.setUserGroups(userGroups);
 			customerRepo.save(customer);
 		 });
+	}
+	
+	@Scheduled(cron="0 */3 * ? * *")
+	//@Scheduled(cron="0 5 1/1 ? * *")
+	public void makeAdsInactivate() {
+		Iterable<AdPostSearch> adPostSearchItr = searchRepo.findAllByIsActive(true);
+		adPostSearchItr.forEach(ad ->{
+			Optional<AdPost> adPost = adPostRepository.findById(ad.getId());
+			if(adPost.isPresent()) {
+				if(!adPost.get().isActive()) {
+					ad.setActive(false);
+					searchRepo.save(ad);					
+				} 
+			} else {
+				ad.setActive(false);
+				searchRepo.save(ad);
+			}
+		});
+	
 	}
 }

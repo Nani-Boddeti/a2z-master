@@ -8,20 +8,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.a2z.dao.*;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.a2z.dao.A2zOrder;
-import com.a2z.dao.A2zWishlist;
-import com.a2z.dao.AdPost;
-import com.a2z.dao.ApprovalRequest;
-import com.a2z.dao.ApprovalStatus;
-import com.a2z.dao.Customer;
-import com.a2z.dao.OTP;
-import com.a2z.dao.UserGroup;
 import com.a2z.data.AdPostData;
 import com.a2z.data.ApprovalRequestData;
 import com.a2z.data.ApprovalRequestPostData;
@@ -83,7 +76,28 @@ public class DefaultCustomerService {
 		this.customerRepo = customerRepo;
 	}
 	
-	public void saveCustomer(CustomerData customerData) {
+	/**
+	 * Authenticate a customer by validating username and password
+	 *
+	 * @param username The username to authenticate
+	 * @param password The password to validate
+	 * @return Customer object if authentication is successful, null otherwise
+	 */
+	public Customer authenticateCustomer(String username, String password) {
+		Optional<Customer> customerOpt = customerRepo.findById(username);
+
+		if (customerOpt.isPresent()) {
+			Customer customer = customerOpt.get();
+			// Validate password using the password encoder
+			if (passwordEncoder.matches(password, customer.getPassword())) {
+				return customer;
+			}
+		}
+
+		return null;
+	}
+
+	public CustomerData saveCustomer(CustomerData customerData) {
 		String encodedPassword = passwordEncoder.encode(customerData.getPassword());
 		Customer customer = new Customer(customerData.getUserName(),encodedPassword,customerData.getEmail());
 		customerReversePopulator.populate(customerData, customer);
@@ -91,12 +105,16 @@ public class DefaultCustomerService {
 		List<UserGroup> userGroups = new ArrayList<UserGroup>();
 		if(CollectionUtils.isNotEmpty(customer.getUserGroups()))
 			userGroups.addAll(customer.getUserGroups());
-		Optional<UserGroup> userGroupOpt = rootRepository.getUserGroupByName("Basic");
+		Optional<UserGroup> userGroupOpt = rootRepository.getUserGroupByName("Prime");
 		if(userGroupOpt.isPresent() && !userGroups.contains(userGroupOpt.get())) {
 			userGroups.add(userGroupOpt.get());
 		}
 		customer.setUserGroups(userGroups);
 		customerRepo.save(customer);
+		Optional<Customer> savedCustomer = customerRepo.findById(customerData.getUserName());
+		CustomerData savedCustomerData = new CustomerData();
+		if(savedCustomer.isPresent()) customerPopulator.populate(savedCustomer.get(), savedCustomerData);
+		return savedCustomerData;
 	}
 	
 	public void deleteCustomer(Long id) {
@@ -228,6 +246,8 @@ public class DefaultCustomerService {
 			if(approvalRequestOpt.isPresent()) {
 				ApprovalRequest approvalRequest = approvalRequestOpt.get();
 				approvalRequest.setApprovalStatus(ApprovalStatus.valueOf(requestData.getStatus()));
+				approvalRequest.getOrder().setStatus(OrderStatus.valueOf(requestData.getStatus()));
+				rootRepository.save(approvalRequest.getOrder());
 				rootRepository.save(approvalRequest);
 					approvalReqData.setId(approvalRequest.getId());
 					approvalReqData.setStatus(approvalRequest.getApprovalStatus().toString());

@@ -31,7 +31,7 @@ public class PersistanceUtil {
 	
 	/* @PreAuthorize("isAuthenticated() and #oauth2.hasScope('app.write')") */
 	@GetMapping("/users")
-	@Secured("SCOPE_app.write") 
+	@Secured("ROLE_ADMIN")
 	public List<CustomerData> getUsersList(Authentication authentication){
 		Iterable<Customer> customerItr = customerRepo.findAll();
 		List<CustomerData> customerList = new ArrayList<CustomerData>();

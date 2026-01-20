@@ -1,0 +1,32 @@
+/* Profile-specific enhancements */
+.content {
+  background: var(--bg-card);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+}
+
+.pill-group.flex-row {
+  flex-direction: row;
+  gap: 0.75rem;
+}
+
+.profile-order {
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.profile-order:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 768px) {
+  .content {
+    margin: 0 1rem;
+  }
+  
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

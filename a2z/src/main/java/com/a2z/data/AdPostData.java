@@ -24,7 +24,9 @@ public class AdPostData extends RootData {
 	
 	@Valid
 	private CustomerData customer;
-
+	
+	@Valid
+	private AddressData sourceAddress;
 	
 	private boolean isActive;
 	
@@ -33,8 +35,6 @@ public class AdPostData extends RootData {
 	@Size(max = 30, message = "{validation.productName.size.too_long}")
 	private String productName;
 	
-	private double latitude;
-	private double longitude;
 	@Override
 	public void setErrorMessage(String errorMessage) {
 		// TODO Auto-generated method stub
@@ -110,20 +110,12 @@ public class AdPostData extends RootData {
 		this.productName = productName;
 	}
 
-	public double getLatitude() {
-		return latitude;
+	public AddressData getSourceAddress() {
+		return sourceAddress;
 	}
 
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
-
-	public double getLongitude() {
-		return longitude;
-	}
-
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
+	public void setSourceAddress(AddressData sourceAddress) {
+		this.sourceAddress = sourceAddress;
 	}
 
 

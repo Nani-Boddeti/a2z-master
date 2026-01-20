@@ -1,5 +1,6 @@
 package com.a2z.configuration;
 
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -7,6 +8,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import com.a2z.filters.BearerTokenFilter;
 import com.a2z.populators.AdPostPopulator;
 import com.a2z.populators.AddressPopulator;
 import com.a2z.populators.CountryPopulator;
@@ -32,6 +34,9 @@ import com.a2z.populators.reverse.PaymentInfoReversePopulator;
 @EnableMethodSecurity(securedEnabled = true)
 @CrossOrigin("http://localhost:4200")
 public class AppConfig {
+
+	private static final String[] AUTHENTICATED_URL = { "/order/**", "/ad/post", "/ad/activate/**", "/media/**",
+			"/upload/**", "/myAccount/**","/users/**" };
 
 	@Bean
 	public AddressPopulator addressPopulator() {
@@ -129,4 +134,11 @@ public class AppConfig {
 		return new PaymentInfoBasicPopulator();
 	}
 	
+	/*
+	 * @Bean public FilterRegistrationBean<BearerTokenFilter> bearerTokenFilter() {
+	 * FilterRegistrationBean<BearerTokenFilter> registrationBean = new
+	 * FilterRegistrationBean<>(); registrationBean.setFilter(new
+	 * BearerTokenFilter()); registrationBean.addUrlPatterns(AUTHENTICATED_URL); //
+	 * Adjust the URL patterns as needed return registrationBean; }
+	 */
 }

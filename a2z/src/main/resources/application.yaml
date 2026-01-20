@@ -70,3 +70,8 @@
 ##        provider:
 ##          spring:
 ##            issuer-uri: http://auth-server:9000
+
+spring:
+  web:
+    resources:
+      static-locations: classpath:/static/, file:/data/

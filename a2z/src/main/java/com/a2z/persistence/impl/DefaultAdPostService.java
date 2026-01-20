@@ -14,8 +14,10 @@ import com.a2z.dao.A2zOrder;
 import com.a2z.dao.AdPost;
 import com.a2z.dao.Customer;
 import com.a2z.dao.OrderStatus;
+import com.a2z.dao.Price;
 import com.a2z.data.AdPostData;
 import com.a2z.persistence.A2zAdPostRepository;
+import com.a2z.persistence.A2zPriceRepository;
 import com.a2z.persistence.RootRepository;
 import com.a2z.populators.AdPostPopulator;
 import com.a2z.populators.reverse.AdPostReversePopulator;
@@ -43,6 +45,9 @@ public class DefaultAdPostService {
 	
 	@Autowired
 	DefaultCustomerService customerService;
+	
+	@Autowired
+	A2zPriceRepository a2zPriceRepository;
 	
 	@Transactional
 	public AdPostData submitAdPost(AdPostData adPostData, String userName) {
@@ -80,7 +85,7 @@ public class DefaultAdPostService {
 	public AdPostData getAdById(Long id) {		
 			Optional<AdPost> ad = adPostRepository.findById(id);
 			AdPostData adPostData = new AdPostData();
-			adPostPopulator.populate(ad.get(), adPostData);
+			if(ad.isPresent()) {adPostPopulator.populate(ad.get(), adPostData);} 
 		return adPostData;
 	} 
 	
@@ -94,6 +99,11 @@ public class DefaultAdPostService {
 				adPost.setActive(true);
 				adPost.setIndexed(false);
 				adPost.setModifiedTime(new Date());
+				Price price = new Price();
+				price.setAmount(adPost.getPrice().getAmount());
+				price.setCurrency(adPost.getPrice().getCurrency());
+				a2zPriceRepository.save(price);
+				adPost.setPrice(price);
 				adPostRepository.save(adPost);
 				adPostPopulator.populate(adPost, adPostData);	
 			} else adPostData.setErrorMessage("Corresponding Order is not Completed Yet.");

@@ -1,0 +1,101 @@
+<div class="order-confirmation-container" *ngIf="orderConfirmed">
+  <!-- Success Header -->
+  <div class="confirmation-header">
+    <div class="success-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </div>
+    <h1>Order Confirmed!</h1>
+    <p class="thank-you-message">Thank you for your purchase</p>
+  </div>
+
+  <!-- Order Details Card -->
+  <div class="order-details-card">
+    <div class="order-info-section">
+      <div class="info-item">
+        <label>Order Number</label>
+        <p class="order-number">{{ orderNumber }}</p>
+      </div>
+      <div class="info-item">
+        <label>Order Date</label>
+        <p>{{ orderDate }}</p>
+      </div>
+      <div class="info-item">
+        <label>Estimated Delivery</label>
+        <p class="delivery-date">{{ estimatedDelivery }}</p>
+      </div>
+    </div>
+
+    <!-- Delivery Address -->
+    <div class="delivery-section" *ngIf="orderDetails.deliveryAddress">
+      <h3>Delivery Address</h3>
+      <div class="address-box">
+        <p><strong>{{ orderDetails.deliveryAddress.recipientName }}</strong></p>
+        <p>{{ orderDetails.deliveryAddress.street }}</p>
+        <p *ngIf="orderDetails.deliveryAddress.apartment">{{ orderDetails.deliveryAddress.apartment }}</p>
+        <p>{{ orderDetails.deliveryAddress.city }}, {{ orderDetails.deliveryAddress.state }} {{ orderDetails.deliveryAddress.zipCode }}</p>
+        <p>{{ orderDetails.deliveryAddress.country }}</p>
+      </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="items-section" *ngIf="orderDetails.items && orderDetails.items.length > 0">
+      <h3>Order Items</h3>
+      <div class="items-list">
+        <div class="item" *ngFor="let item of orderDetails.items">
+          <div class="item-info">
+            <p class="item-name">{{ item.name }}</p>
+            <p class="item-quantity">Quantity: {{ item.quantity }}</p>
+          </div>
+          <div class="item-price">
+            <p>${{ (item.price * item.quantity).toFixed(2) }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="summary-section" *ngIf="orderDetails.totalAmount">
+      <div class="summary-row">
+        <span>Subtotal:</span>
+        <span>${{ (orderDetails.totalAmount * 0.9).toFixed(2) }}</span>
+      </div>
+      <div class="summary-row">
+        <span>Shipping:</span>
+        <span>Free</span>
+      </div>
+      <div class="summary-row">
+        <span>Tax:</span>
+        <span>${{ (orderDetails.totalAmount * 0.1).toFixed(2) }}</span>
+      </div>
+      <div class="summary-row total">
+        <span>Total:</span>
+        <span>${{ orderDetails.totalAmount.toFixed(2) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <button class="btn btn-primary" (click)="shopMore()">
+      <span>Continue Shopping</span>
+    </button>
+    <button class="btn btn-secondary" (click)="viewOrders()">
+      <span>View My Orders</span>
+    </button>
+  </div>
+
+  <!-- Additional Information -->
+  <div class="additional-info">
+    <div class="info-box">
+      <h4>What's Next?</h4>
+      <ul>
+        <li>You will receive an order confirmation email shortly</li>
+        <li>Track your order using the order number provided above</li>
+        <li>Estimated delivery within 7-10 business days</li>
+        <li>For any questions, contact our support team</li>
+      </ul>
+    </div>
+  </div>
+</div>

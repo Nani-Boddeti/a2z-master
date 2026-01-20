@@ -57,6 +57,8 @@ public class AdPostSearch {
 	
 	private GeoPoint geoPoint;
 	
+	private AddressSearch addressSearch;
+	
 	private double latitude;
 	private double longitude;
 	
@@ -151,6 +153,14 @@ public class AdPostSearch {
 
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
+	}
+
+	public AddressSearch getAddressSearch() {
+		return addressSearch;
+	}
+
+	public void setAddressSearch(AddressSearch addressSearch) {
+		this.addressSearch = addressSearch;
 	}
 
 	

@@ -1,7 +1,5 @@
 package com.a2z.configuration;
 
-import java.util.UUID;
-
 import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
@@ -14,104 +12,154 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.bind.annotation.CrossOrigin;
+
+import java.util.List;
+
 
 @Configuration
 @EnableWebSecurity
 @CrossOrigin("http://localhost:4200")
 public class AuthorizationServerConfig {
-	
-	private static final String[] WHITE_LIST_URLS = { "/","/ad/all/", "/ad/view/**", "/c/**", "/customerSubmit",
-			"/suggest/password", "/generate/otp/**", "/validateOTP", "/login**", "/oauth2/**","/login","/search/**" };
 
-	private static final String[] AUTHENTICATED_URL = { "/order/**", "/ad/post", "/ad/activate/**", "/media/**",
-			"/upload/**", "/myAccount/**","/users/**" };
+	private static final String[] WHITE_LIST_URLS = {
+			"/", "/ad/all", "/ad/view/**", "/c/**", "/customerSubmit",
+			"/suggest/password", "/generate/otp/**", "/validateOTP",
+			"/login**", "/loginV2", "/oauth2/**", "/login", "/search/**", "/.well-known/**","/uploads/**","/error","/error/**"
+	};
 
-		@Bean
-		@Order(1)
-		public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
-				throws Exception {
-			OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-			http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-				.oidc(Customizer.withDefaults());	// Enable OpenID Connect 1.0
-			http
-				// Redirect to the login page when not authenticated from the
-				// authorization endpoint
-				.exceptionHandling((exceptions) -> exceptions
-					.defaultAuthenticationEntryPointFor(
-						new LoginUrlAuthenticationEntryPoint("/login"),
-						new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
-					)
+	private static final String[] AUTHENTICATED_URLS = {
+			"/order/**", "/ad/post", "/ad/activate/**", "/media/**",
+			"/upload/**", "/myAccount/**", "/users/**"
+	};
+
+	// ✅ SHARED SESSION CONFIG (eliminates duplication)
+	private void configureSession(HttpSecurity http) throws Exception {
+		http.sessionManagement(session -> session
+				.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+				.sessionFixation().migrateSession()
+		);
+	}
+
+	// ✅ SHARED STATELESS API CONFIG
+	private void configureStatelessJwt(HttpSecurity http) throws Exception {
+		http.sessionManagement(session -> session
+						.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				)
-				// Accept access tokens for User Info and/or Client Registration
-				.oauth2ResourceServer((resourceServer) -> resourceServer
-					.jwt(Customizer.withDefaults()));
+				.oauth2ResourceServer(resourceServer -> resourceServer.jwt(Customizer.withDefaults()))
+				/*.oauth2ResourceServer(oauth2 -> oauth2
+				.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))*/
 
-			return http.build();
-		}
+				.csrf(AbstractHttpConfigurer::disable);
+	}
 
-		@Bean
-		@Order(2)
-		public SecurityFilterChain jwtFilterChain(HttpSecurity http)
-				throws Exception {
-			// chain would be invoked only for paths that start with /api/
-			http.securityMatcher(AUTHENTICATED_URL)
-					.authorizeHttpRequests((authorize) ->
-							authorize
-									.requestMatchers(WHITE_LIST_URLS).permitAll()
-									.anyRequest().authenticated()
-					)
-					// Ignoring session cookie
-					.sessionManagement(configurer ->
-							configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-					.oauth2ResourceServer((resourceServer) -> resourceServer
-							.jwt(Customizer.withDefaults()))
-					// disabling csrf tokens for the sake of the example
-					.csrf(AbstractHttpConfigurer::disable);
+	@Bean @Order(1)
+	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+		OAuth2AuthorizationServerConfigurer configurer = OAuth2AuthorizationServerConfigurer.authorizationServer();
 
-			return http.build();
-		}
+		http
+				.securityMatcher(configurer.getEndpointsMatcher())
+				.authorizeHttpRequests(authz -> authz  // ✅ Fixed syntax
+						.requestMatchers("/oauth2/authorize").authenticated()
+						.anyRequest().permitAll()
+				)
+				.with(configurer, c -> c.oidc(Customizer.withDefaults()))
+				.exceptionHandling(exceptions -> exceptions
+						.defaultAuthenticationEntryPointFor(
+								new LoginUrlAuthenticationEntryPoint("/login"),
+								new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
+						)
+				)
+				.oauth2ResourceServer(resourceServer -> resourceServer.jwt(Customizer.withDefaults()))
+				.formLogin(form -> form
+						.loginPage("/login")
+						.successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
+				)
+				.requestCache(Customizer.withDefaults());  // ✅ Keep default
 
-		@Bean 
-		@Order(3)
-		public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
-				throws Exception {
-			http
-				.authorizeHttpRequests((authorize) -> authorize
+		return http.build();
+	}
+
+	@Bean @Order(2)
+	public SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
+		http
+				.securityMatcher(AUTHENTICATED_URLS)
+				.authorizeHttpRequests(authz -> authz
+						.requestMatchers(WHITE_LIST_URLS).permitAll()
+						.anyRequest().authenticated()
+				);
+		/*http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
+				jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));*/
+		configureStatelessJwt(http);  // ✅ Reuse
+		return http.build();
+	}
+
+	@Bean @Order(3)
+	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+		http
+				.authorizeHttpRequests(authz -> authz
 						.requestMatchers(WHITE_LIST_URLS).permitAll()
 						.anyRequest().authenticated()
 				)
-				// Form login handles the redirect to the login page from the
-				// authorization server filter chain
-				.formLogin(Customizer.withDefaults())
-				// disabling csrf tokens for the sake of the example
-				.csrf(AbstractHttpConfigurer::disable);
+				.formLogin(Customizer.withDefaults());
+		configureSession(http);  // ✅ Reuse
+		http.csrf(AbstractHttpConfigurer::disable);
+		http.requestCache(Customizer.withDefaults());
+		return http.build();
+	}
+// Below methods are used to have Roles as authorities in JWT Token instead of Scopes.
+	/*@Bean
+	JwtAuthenticationConverter jwtAuthenticationConverter() {
+		JwtGrantedAuthoritiesConverter gac = new JwtGrantedAuthoritiesConverter();
+		gac.setAuthoritiesClaimName("roles");   // claim you will add in the token
+		gac.setAuthorityPrefix("");             // because values are already "ROLE_USER"
 
-			return http.build();
-		}
+		JwtAuthenticationConverter jac = new JwtAuthenticationConverter();
+		jac.setJwtGrantedAuthoritiesConverter(gac);
+		return jac;
+	}*/
+	/*@Bean
+	OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
+		return context -> {
+			if (context.getTokenType().getValue().equals("access_token")) {
+				Authentication principal = context.getPrincipal();
+				List<String> roles = principal.getAuthorities().stream()
+						.map(GrantedAuthority::getAuthority)
+						.toList();
+				context.getClaims().claim("roles", roles);
+			}
+		};
+	}*/
+//	@Bean
+//	SecurityFilterChain api(HttpSecurity http) throws Exception {
+//		http.oauth2ResourceServer(oauth2 -> oauth2
+//				.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+//		);
+//		return http.build();
+//	}
 
-		
+	@Bean
+	JdbcOAuth2AuthorizationService authorizationService(DataSource dataSource, RegisteredClientRepository clientRepository) {
+		return new JdbcOAuth2AuthorizationService(new JdbcTemplate(dataSource), clientRepository);
+	}
 
-		@Bean
-		JdbcOAuth2AuthorizationService authorizationService(DataSource dataSource, RegisteredClientRepository clientRepository) {
-			return new JdbcOAuth2AuthorizationService(new JdbcTemplate(dataSource), clientRepository);
-		}
-		
-		@Bean
-		JdbcRegisteredClientRepository registeredClientRepository(DataSource dataSource) {
-			return new JdbcRegisteredClientRepository(new JdbcTemplate(dataSource));
-		}
+	@Bean
+	JdbcRegisteredClientRepository registeredClientRepository(DataSource dataSource) {
+		return new JdbcRegisteredClientRepository(new JdbcTemplate(dataSource));
+	}
 }

@@ -6,6 +6,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.session.web.context.AbstractHttpSessionApplicationInitializer;
 
+
 @Configuration
 @EnableRedisHttpSession
 public class SessionConfig extends AbstractHttpSessionApplicationInitializer {
@@ -13,4 +14,5 @@ public class SessionConfig extends AbstractHttpSessionApplicationInitializer {
     public LettuceConnectionFactory connectionFactory() {
         return new LettuceConnectionFactory();
     }
+
 }
