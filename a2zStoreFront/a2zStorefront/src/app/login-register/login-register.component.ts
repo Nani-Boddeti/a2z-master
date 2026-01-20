@@ -20,7 +20,7 @@ export class LoginRegisterComponent implements OnInit {
   isSubmitting = false;
   errorMessage = '';
   successMessage = '';
-  
+   isLoadingLocation = false;
 
   
   constructor(
@@ -33,6 +33,12 @@ export class LoginRegisterComponent implements OnInit {
       userName: ['', [Validators.required, Validators.minLength(2)]],
       firstName: ['', [Validators.required, Validators.minLength(2)]],
       lastName: ['', [Validators.required, Validators.minLength(2)]],
+      line1: ['', [Validators.required, Validators.minLength(5)]],
+      line2: ['', [Validators.required, Validators.minLength(5)]],
+      apartment: ['', [Validators.required, Validators.minLength(5)]],
+      district: ['', [Validators.required, Validators.minLength(3)]],
+      latitude: ['',[Validators.required]],
+      longitude: ['',[Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
@@ -78,7 +84,7 @@ export class LoginRegisterComponent implements OnInit {
     if (this.isLoggedIn) {
       this.isHome = true;
     }
-    
+    this.getLocationFromBrowser();
     
   }
 
@@ -99,7 +105,20 @@ export class LoginRegisterComponent implements OnInit {
       defaultCountry: {
         isoCode: '',
         region: '',
-      },
+      },defaultAddress: {
+        apartment: '',
+        country: this.country,
+        customer: '',
+        district: '',
+        email: '',
+        firstName: '',
+        lastName: '',
+        line1: '',
+        line2: '',
+        latitude: 0,
+        longitude: 0,
+        defaultAddress:true
+      } 
     };
   }
   logout() {
@@ -151,6 +170,57 @@ export class LoginRegisterComponent implements OnInit {
     return this.loginForm.controls;
   }
 
+  getLocationFromBrowser(): void {
+    if (!navigator.geolocation) {
+      this.errorMessage = 'Geolocation is not supported by your browser';
+      return;
+    }
+
+    this.isLoadingLocation = true;
+    console.log('Requesting geolocation permission...');
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        
+        console.log('Location obtained:', { latitude: lat, longitude: lon });
+        
+        // Set latitude and longitude in form
+        this.registrationForm.patchValue({
+          latitude: lat.toFixed(6),
+          longitude: lon.toFixed(6)
+        });
+        
+        this.isLoadingLocation = false;
+        this.successMessage = 'Location detected successfully!';
+        
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          this.successMessage = '';
+        }, 3000);
+      },
+      (error) => {
+        this.isLoadingLocation = false;
+        
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            this.errorMessage = 'Location permission denied. Please enable location access in your browser settings.';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            this.errorMessage = 'Location information is unavailable.';
+            break;
+          case error.TIMEOUT:
+            this.errorMessage = 'The request to get location timed out.';
+            break;
+          default:
+            this.errorMessage = 'Failed to get your location. You can enter it manually.';
+        }
+        
+        console.error('Geolocation error:', error);
+      }
+    );
+  }
   onSubmit() {
     if (this.registrationForm.invalid) {
       return;
@@ -173,7 +243,23 @@ export class LoginRegisterComponent implements OnInit {
         defaultCountry: {
           isoCode: 'IN',
           region: '',
-        },
+        },defaultAddress: {
+          apartment: this.registrationForm.value.apartment,
+          country: {
+          isoCode: 'IN',
+          region: '',
+        },  
+          customer: '',
+          district: this.registrationForm.value.district,
+          email: this.registrationForm.value.email,
+          firstName: this.registrationForm.value.firstName,
+          lastName: this.registrationForm.value.lastName,
+          line1: this.registrationForm.value.line1,
+          line2: this.registrationForm.value.line2,
+          latitude: this.registrationForm.value.latitude,
+          longitude: this.registrationForm.value.longitude,
+          defaultAddress: true,
+        }
       };
       this.registrationService.signUp(this.user).subscribe({
         next: (response) => {

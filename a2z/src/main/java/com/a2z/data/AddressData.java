@@ -29,9 +29,9 @@ public class AddressData extends RootData {
 	@Size(max = 30, message = "{validation.line2.size.too_long}")
 	private String line2;
 	@Pattern(regexp="^[a-zA-Z0-9[ ]*]*")
-	@Size(min = 2, message = "{validation.appartment.size.too_short}")
-	@Size(max = 30, message = "{validation.appartment.size.too_long}")
-	private String appartment;
+	@Size(min = 2, message = "{validation.apartment.size.too_short}")
+	@Size(max = 30, message = "{validation.apartment.size.too_long}")
+	private String apartment;
 	@Pattern(regexp="^[a-zA-Z0-9[ ]*]*")
 	@Size(min = 2, message = "{validation.building.size.too_short}")
 	@Size(max = 30, message = "{validation.building.size.too_long}")
@@ -59,6 +59,7 @@ public class AddressData extends RootData {
 	private String customerId;
 	private double latitude;
 	private double longitude;
+	private boolean isDefaultAddress;
 	public Long getId() {
 		return id;
 	}
@@ -89,11 +90,11 @@ public class AddressData extends RootData {
 	public void setLine2(String line2) {
 		this.line2 = line2;
 	}
-	public String getAppartment() {
-		return appartment;
+	public String getApartment() {
+		return apartment;
 	}
-	public void setAppartment(String appartment) {
-		this.appartment = appartment;
+	public void setApartment(String apartment) {
+		this.apartment = apartment;
 	}
 	public String getBuilding() {
 		return building;
@@ -149,4 +150,12 @@ public class AddressData extends RootData {
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}
+	public boolean isDefaultAddress() {
+		return isDefaultAddress;
+	}
+
+	public void setDefaultAddress(boolean isDefaultAddress) {
+		this.isDefaultAddress = isDefaultAddress;
+	}
+
 }

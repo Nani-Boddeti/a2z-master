@@ -11,5 +11,6 @@ export class AddressModel {
     public line1:string,
     public line2:string,
     public latitude : number,
-    public longitude : number){}
+    public longitude : number,
+  public defaultAddress:boolean){}
   }

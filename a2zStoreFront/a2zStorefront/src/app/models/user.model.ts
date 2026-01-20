@@ -1,3 +1,4 @@
+import { AddressModel } from "./address.model";
 import { CountryModel } from "./country.model";
 
 export class UserModel {
@@ -8,6 +9,7 @@ export class UserModel {
     public password: string,
     public confirmPassword:string,
     public phoneNumber:string,
-    public defaultCountry:CountryModel){}
+    public defaultCountry:CountryModel,
+  public defaultAddress:AddressModel){}
   }
   

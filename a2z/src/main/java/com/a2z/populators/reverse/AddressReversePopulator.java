@@ -1,5 +1,6 @@
 package com.a2z.populators.reverse;
 
+import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionException;
 
@@ -16,10 +17,11 @@ public class AddressReversePopulator implements Populator<AddressData , A2zAddre
 	
 	@Override
 	public void populate(AddressData source, A2zAddress target) throws ConversionException {
-		target.setAppartment(source.getAppartment());
+		target.setApartment(source.getApartment());
 		target.setBuilding(source.getBuilding());
 		target.setCellphone(source.getCellphone());
-		target.setCompany(source.getCellphone());	
+		target.setCompany(source.getCellphone());
+		if(StringUtils.isNotBlank(source.getCustomer()))
 		target.setCustomer(customerRepo.findById(source.getCustomer()).get());
 		target.setDistrict(source.getDistrict());
 		target.setEmail(source.getEmail());
@@ -30,6 +32,7 @@ public class AddressReversePopulator implements Populator<AddressData , A2zAddre
 		target.setLine2(source.getLine2());
 		target.setLatitude(source.getLatitude());
 		target.setLongitude(source.getLongitude());
+		target.setDefaultAddress(source.isDefaultAddress());
 	}
 
 }

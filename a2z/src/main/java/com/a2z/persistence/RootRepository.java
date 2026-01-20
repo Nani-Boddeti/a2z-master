@@ -83,4 +83,7 @@ public interface RootRepository extends CrudRepository<RootEntity, Long> {
 	
 	@Query("SELECT pu FROM PrimeUser pu WHERE  pu.customer=:customer")
 	List<PrimeUser> getPrimeUserByCustomer(@Param("customer") Customer customer);
+
+	@Query("SELECT add FROM A2zAddress add WHERE add.customer=:customer and add.isDefaultAddress=:isDefault")
+	Optional<A2zAddress> getMyDefaultAddress(@Param("customer") Customer customer,@Param("isDefault") boolean isDefault);
 }

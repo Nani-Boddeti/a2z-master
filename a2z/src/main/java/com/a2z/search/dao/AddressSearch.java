@@ -7,7 +7,7 @@ public class AddressSearch {
 	private String lastName;
 	private String line1;
 	private String line2;
-	private String appartment;
+	private String apartment;
 	private String building;
 	private String cellphone;
 	private String company;
@@ -40,11 +40,11 @@ public class AddressSearch {
 	public void setLine2(String line2) {
 		this.line2 = line2;
 	}
-	public String getAppartment() {
-		return appartment;
+	public String getApartment() {
+		return apartment;
 	}
-	public void setAppartment(String appartment) {
-		this.appartment = appartment;
+	public void setApartment(String apartment) {
+		this.apartment = apartment;
 	}
 	public String getBuilding() {
 		return building;

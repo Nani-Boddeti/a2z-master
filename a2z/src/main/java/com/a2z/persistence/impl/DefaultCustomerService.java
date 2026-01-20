@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.a2z.dao.*;
+import com.a2z.populators.reverse.AddressReversePopulator;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,6 +69,11 @@ public class DefaultCustomerService {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	@Autowired
+	AddressReversePopulator addressReversePopulator;
+
+	@Autowired
+	RootRepository rootRepo;
 	
 	public DefaultCustomerService() {
 		
@@ -111,6 +117,14 @@ public class DefaultCustomerService {
 		}
 		customer.setUserGroups(userGroups);
 		customerRepo.save(customer);
+		if (customerData.getDefaultAddress() != null)
+		{
+			customerData.getDefaultAddress().setCustomer(customer.getUserName());
+			A2zAddress defaultAddress = new A2zAddress();
+			addressReversePopulator.populate(customerData.getDefaultAddress(), defaultAddress);
+//			defaultAddress.setCustomer(customer);
+			rootRepo.save(defaultAddress);
+		}
 		Optional<Customer> savedCustomer = customerRepo.findById(customerData.getUserName());
 		CustomerData savedCustomerData = new CustomerData();
 		if(savedCustomer.isPresent()) customerPopulator.populate(savedCustomer.get(), savedCustomerData);

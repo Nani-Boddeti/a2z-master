@@ -106,7 +106,7 @@ public class ExtendedOrderService {
 	}
 	
 	private A2zAddress cloneAddressModel(A2zAddress source , A2zAddress target) {
-		target.setAppartment(source.getAppartment());
+		target.setApartment(source.getApartment());
 		target.setBuilding(source.getBuilding());
 		target.setCellphone(source.getCellphone());
 		target.setCompany(source.getCellphone());	

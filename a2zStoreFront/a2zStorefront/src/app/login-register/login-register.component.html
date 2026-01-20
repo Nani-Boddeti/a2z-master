@@ -1,9 +1,9 @@
 
 <div class="container" *ngIf="!isRegistered && !isHome && !showLoginForm">
+  <h2>Register</h2>
     <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
         <div>
-            <label for="userName">User Name</label>
-            <input id="userName" formControlName="userName" />
+            <input id="userName" formControlName="userName" placeholder="Enter your Desired User Name"/>
             <div *ngIf="f['userName'].touched && f['userName'].invalid">
               <small *ngIf="f['userName'].errors?.['required']">userName is required.</small>
               <small *ngIf="f['userName'].errors?.['userName']">Must be at least 2 characters long.</small>
@@ -11,8 +11,8 @@
         </div>
 
       <div>
-        <label for="firstName">First Name</label>
-        <input id="firstName" formControlName="firstName" />
+        <!-- <label for="firstName">First Name</label> -->
+        <input id="firstName" formControlName="firstName" placeholder="Enter your First Name"/>
         <div *ngIf="f['firstName'].touched && f['firstName'].invalid">
           <small *ngIf="f['firstName'].errors?.['required']">First Name is required.</small>
           <small *ngIf="f['firstName'].errors?.['minlength']">Must be at least 2 characters long.</small>
@@ -20,17 +20,89 @@
       </div>
   
       <div>
-        <label for="lastName">Last Name</label>
-        <input id="lastName" formControlName="lastName" />
+        <!-- <label for="lastName">Last Name</label> -->
+        <input id="lastName" formControlName="lastName" placeholder="Enter your Last Name"/>
         <div *ngIf="f['lastName'].touched && f['lastName'].invalid">
           <small *ngIf="f['lastName'].errors?.['required']">Last Name is required.</small>
           <small *ngIf="f['lastName'].errors?.['minlength']">Must be at least 2 characters long.</small>
         </div>
       </div>
-  
       <div>
-        <label for="email">Email</label>
-        <input id="email" formControlName="email" />
+        <!-- <label for="line1">Address Line 1</label> -->
+        <input id="line1" formControlName="line1" placeholder="Enter your Address Line 1"/>
+        <div *ngIf="f['line1'].touched && f['line1'].invalid">
+          <small *ngIf="f['line1'].errors?.['required']">Line 1 is required.</small>
+          <small *ngIf="f['line1'].errors?.['minlength']">Must be at least 5 characters long.</small>
+        </div>
+      </div>
+      <div>
+        <!-- <label for="line2">Line 2</label> -->
+        <input id="line2" formControlName="line2" placeholder="Enter your Address Line 2"/>
+        <div *ngIf="f['line2'].touched && f['line2'].invalid">
+          <small *ngIf="f['line2'].errors?.['required']">Line 2 is required.</small>
+          <small *ngIf="f['line2'].errors?.['minlength']">Must be at least 5 characters long.</small>
+        </div>
+      </div>
+      <div>
+        <!-- <label for="apartment">Apartment</label> -->
+        <input id="apartment" formControlName="apartment" placeholder="Enter your Apartment"/>
+        <div *ngIf="f['apartment'].touched && f['apartment'].invalid">
+          <small *ngIf="f['apartment'].errors?.['required']">Apartment is required.</small>
+          <small *ngIf="f['apartment'].errors?.['minlength']">Must be at least 5 characters long.</small>
+        </div>
+      </div>
+      <div>
+        <!-- <label for="district">District</label> -->
+        <input id="district" formControlName="district" placeholder="Enter your District"/>
+        <div *ngIf="f['district'].touched && f['district'].invalid">
+          <small *ngIf="f['district'].errors?.['required']">District is required.</small>
+          <small *ngIf="f['district'].errors?.['minlength']">Must be at least 3 characters long.</small>
+        </div>
+      </div>
+      <div class="form-row">
+          <div class="form-group">
+            <!-- <label>Latitude * <span class="location-badge" *ngIf="!isLoadingLocation && registrationForm.get('latitude')?.value">(Auto-detected)</span></label> -->
+            <div class="location-input-group">
+              <input
+                type="number"
+                step="0.000001"
+                class="form-input"
+                formControlName="latitude"
+                placeholder="e.g., 17.3850"
+                readonly
+                [class.is-invalid]="registrationForm.get('latitude')?.invalid && registrationForm.get('latitude')?.touched"
+              placeholder="Latitude">
+              <button type="button" class="btn-refresh" (click)="getLocationFromBrowser()" [disabled]="isLoadingLocation" title="Refresh location">
+                <svg *ngIf="!isLoadingLocation" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <path d="M20.49 15a9 9 0 1 1-2-8.83"></path>
+                </svg>
+                <span *ngIf="isLoadingLocation" class="spinner"></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <!-- <label>Longitude * <span class="location-badge" *ngIf="!isLoadingLocation && registrationForm.get('longitude')?.value">(Auto-detected)</span></label> -->
+            <div class="location-input-group">
+              <input
+                type="number"
+                step="0.000001"
+                class="form-input"
+                formControlName="longitude"
+                placeholder="e.g., 78.4867"
+                readonly
+                [class.is-invalid]="registrationForm.get('longitude')?.invalid && registrationForm.get('longitude')?.touched"
+              placeholder="Longitude">
+              <button type="button" class="btn-refresh" disabled style="visibility: hidden;">
+                <span class="spinner"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      <div>
+        <!-- <label for="email">Email</label> -->
+        <input id="email" formControlName="email" placeholder="Enter your Email"/>
         <div *ngIf="f['email'].touched && f['email'].invalid">
           <small *ngIf="f['email'].errors?.['required']">Email is required.</small>
           <small *ngIf="f['email'].errors?.['email']">Please enter a valid email.</small>
@@ -38,8 +110,8 @@
       </div>
   
       <div>
-        <label for="password">Password</label>
-        <input id="password" type="password" formControlName="password" />
+        <!-- <label for="password">Password</label> -->
+        <input id="password" type="password" formControlName="password" placeholder="Enter your Password"/>
         <div *ngIf="f['password'].touched && f['password'].invalid">
           <small *ngIf="f['password'].errors?.['required']">Password is required.</small>
           <small *ngIf="f['password'].errors?.['minlength']">Password must be at least 6 characters long.</small>
@@ -47,16 +119,16 @@
       </div>
   
       <div>
-        <label for="confirmPassword">Confirm Password</label>
-        <input id="confirmPassword" type="password" formControlName="confirmPassword" />
+        <!-- <label for="confirmPassword">Confirm Password</label> -->
+        <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="Confirm your Password"/>
         <div *ngIf="f['confirmPassword'].touched && f['confirmPassword'].invalid">
           <small>Confirm Password is required.</small>
         </div>
       </div>
   
       <div>
-        <label for="phoneNumber">Phone</label>
-        <input id="phoneNumber" formControlName="phoneNumber" />
+        <!-- <label for="phoneNumber">Phone</label> -->
+        <input id="phoneNumber" formControlName="phoneNumber" placeholder="Enter your Phone Number"/>
         <div *ngIf="f['phoneNumber'].touched && f['phoneNumber'].invalid">
           <small *ngIf="f['phoneNumber'].errors?.['required']">Phone number is required.</small>
           <small *ngIf="f['phoneNumber'].errors?.['pattern']">Please enter a valid 10-digit phone number.</small>

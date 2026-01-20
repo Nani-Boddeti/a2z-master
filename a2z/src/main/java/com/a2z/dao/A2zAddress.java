@@ -10,12 +10,13 @@ import jakarta.persistence.OneToOne;
 public class A2zAddress extends RootEntity{
 
 	private boolean isDeliveryAddress;
+	private boolean isDefaultAddress;
 	private boolean isPaymentAddress;
 	private String firstName;
 	private String lastName;
 	private String line1;
 	private String line2;
-	private String appartment;
+	private String apartment;
 	private String building;
 	private String cellphone;
 	private String company;
@@ -61,11 +62,11 @@ public class A2zAddress extends RootEntity{
 	public void setLine2(String line2) {
 		this.line2 = line2;
 	}
-	public String getAppartment() {
-		return appartment;
+	public String getApartment() {
+		return apartment;
 	}
-	public void setAppartment(String appartment) {
-		this.appartment = appartment;
+	public void setApartment(String apartment) {
+		this.apartment = apartment;
 	}
 	public String getBuilding() {
 		return building;
@@ -146,4 +147,12 @@ public class A2zAddress extends RootEntity{
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}
+	public boolean isDefaultAddress() {
+		return isDefaultAddress;
+	}
+
+	public void setDefaultAddress(boolean defaultAddress) {
+		isDefaultAddress = defaultAddress;
+	}
+
 }

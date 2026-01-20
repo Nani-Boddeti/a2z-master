@@ -10,7 +10,7 @@ public class AddressPopulator implements Populator<A2zAddress,AddressData>{
 	@Override
 	public void populate(A2zAddress source, AddressData target) throws ConversionException {
 		// TODO Auto-generated method stub
-		target.setAppartment(source.getAppartment());
+		target.setApartment(source.getApartment());
 		target.setBuilding(source.getBuilding());
 		target.setCellphone(source.getCellphone());
 		target.setCompany(source.getCellphone());
@@ -24,6 +24,7 @@ public class AddressPopulator implements Populator<A2zAddress,AddressData>{
 		target.setLine2(source.getLine2());
 		target.setLatitude(source.getLatitude());
 		target.setLongitude(source.getLongitude());
+		target.setDefaultAddress(source.isDefaultAddress());
 	}
 
 }

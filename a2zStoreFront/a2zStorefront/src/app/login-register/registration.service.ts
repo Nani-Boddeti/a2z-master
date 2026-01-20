@@ -17,7 +17,10 @@ export class RegistrationService {
   constructor(private http: HttpClient) { }
   
   signUp(adPost: any): Observable<any> {
-    return this.http.post(this.apiUrl, adPost);
+     const jsonheaders = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    return this.http.post(this.apiUrl, adPost,{headers: jsonheaders});
   }
 
   login(credentials: any): Observable<any> {
@@ -43,6 +46,8 @@ export class RegistrationService {
       'Content-Type': 'application/x-www-form-urlencoded'
     });
     
+   
+
     return this.http.post(this.tokenExchangeUrl, params.toString(), { headers });
   }
 

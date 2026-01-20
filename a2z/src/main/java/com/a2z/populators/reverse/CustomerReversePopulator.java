@@ -2,6 +2,8 @@ package com.a2z.populators.reverse;
 
 import java.util.Optional;
 
+import com.a2z.dao.A2zAddress;
+import com.a2z.persistence.RootRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionException;
@@ -24,6 +26,8 @@ public class CustomerReversePopulator implements Populator<CustomerData,Customer
 	
 	@Autowired
 	A2zCountryRepository countryRepo;
+
+
 	
 	@Override
 	public void populate(CustomerData source, Customer target) throws ConversionException {
@@ -49,6 +53,7 @@ public class CustomerReversePopulator implements Populator<CustomerData,Customer
 		target.setLastName(source.getLastName());
 		target.setTitle(source.getTitle());
 		target.setPhoneNumber(source.getPhoneNumber());
+
 	}
 
 }

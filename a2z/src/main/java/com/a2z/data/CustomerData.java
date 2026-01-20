@@ -1,6 +1,9 @@
 package com.a2z.data;
 
+import java.util.Date;
 import java.util.List;
+
+import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -27,6 +30,25 @@ public class CustomerData extends RootData {
 	@Size(min = 2, message = "{validation.firstName.size.too_short}")
 	@Size(max = 15, message = "{validation.firstName.size.too_long}")
 	private String firstName;
+
+	public String getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	private String createdDate;
+	public AddressData getDefaultAddress() {
+		return defaultAddress;
+	}
+
+	public void setDefaultAddress(AddressData defaultAddress) {
+		this.defaultAddress = defaultAddress;
+	}
+	@NotNull
+	private AddressData defaultAddress;
 
 	@Pattern(regexp = "^[a-zA-Z0-9[ ]*]*")
 
