@@ -8,7 +8,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class RegistrationService {
   private apiUrl = '/customerSubmit';
-  private loginUrl = '/loginV2';
+  private loginUrl = '/perform_login';
   private logoutUrl = '/logoutV2';
   private pkceUrl = '/pkce/store'; // Endpoint to store PKCE data
   private tokenExchangeUrl = '/oauth2/token'; // Endpoint to exchange code for token

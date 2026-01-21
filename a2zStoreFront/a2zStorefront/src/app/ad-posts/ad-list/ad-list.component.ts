@@ -11,7 +11,8 @@ import { Router } from '@angular/router';
 })
 export class AdListComponent {
   title: string = 'am New';
-  constructor(private router: Router,
+  constructor(
+    private router: Router,
     private adPostUtilService: AdPostUtilService,
     private authStateService: AuthStateService,
   ) {}
@@ -31,9 +32,12 @@ export class AdListComponent {
   viewAd(newValue: number) {
     // this.adPostUtilService.triggerClick(newValue);
     // this.isadClicked = true;
-    this.router.navigate(['/ad-details'], { 
-  queryParams: { adId: newValue },
-  
-});
+    if (!this.authStateService.getLoggedInStatus()) {
+      this.router.navigate(['/loginV3']);
+    } 
+      this.router.navigate(['/ad-details'], {
+        queryParams: { adId: newValue },
+      });
+    
   }
 }

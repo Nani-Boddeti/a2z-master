@@ -14,7 +14,7 @@ const routes: Routes = [
   { path: 'profile', component: ProfileComponent },
   { path: 'my-orders', component: OrdersListComponent },
   { path: 'approvals', loadChildren: () => import('./approvals/approvals.module').then(m => m.ApprovalsModule) },
-  { path: 'login', component: LoginRegisterComponent}
+  { path: 'loginV3', component: LoginRegisterComponent}
   // {path: '', redirectTo: '/ad-list', pathMatch: 'full' }
 ];
 

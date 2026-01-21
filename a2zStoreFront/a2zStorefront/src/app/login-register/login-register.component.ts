@@ -51,7 +51,7 @@ export class LoginRegisterComponent implements OnInit {
       acceptTerms: [false, Validators.requiredTrue],
     });
     this.loginForm = this.formBuilder.group({
-      username: ['', [Validators.required, Validators.minLength(2)]],
+      userName: ['', [Validators.required, Validators.minLength(2)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
@@ -73,7 +73,10 @@ export class LoginRegisterComponent implements OnInit {
     this.oauthTokenService.generatePKCEAsync();
   }
 
-  
+  loginV3(){
+    this.showLoginForm = true;
+    this.isHome = false;
+  }
 
   ngOnInit(): void {
     // Check if user is already logged in
@@ -83,6 +86,8 @@ export class LoginRegisterComponent implements OnInit {
     // If user is logged in, show home page
     if (this.isLoggedIn) {
       this.isHome = true;
+    }else {
+      this.loginV3();
     }
     this.getLocationFromBrowser();
     
@@ -278,6 +283,26 @@ export class LoginRegisterComponent implements OnInit {
         }
       });
     }
+  }
+
+   onLoginV3Submit() {
+    if (this.loginForm.valid){
+ const formData = new FormData();
+     formData.append('username', this.loginForm.value.userName);
+     formData.append('password', this.loginForm.value.password);
+     this.registrationService.login(formData).subscribe({
+       next: (response: any ) => {if(response.success===true){
+        this.login();
+       }},
+      error: (error) => {
+          console.error('Login failed')
+        }
+    });
+    }
+    
+
+    // POST to Spring's processing URL (triggers UsernamePasswordAuthenticationFilter)
+    
   }
 
   

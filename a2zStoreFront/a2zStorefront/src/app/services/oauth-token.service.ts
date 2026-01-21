@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, throwError } from 'rxjs';
+import { Observable, BehaviorSubject, throwError, EMPTY } from 'rxjs';
 import { filter, take, switchMap, tap, catchError } from 'rxjs/operators';
 import { AuthStateService } from './auth-state.service';
 import { RegistrationService } from '../login-register/registration.service';
@@ -18,6 +18,7 @@ export class OauthTokenService {
   private codeVerifier: string = '';
   private codeChallenge: string = '';
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private authStateService: AuthStateService,
     private registrationService: RegistrationService
@@ -44,19 +45,11 @@ export class OauthTokenService {
 
     const refreshToken = this.authStateService.getRefreshToken();
 
-    if (!refreshToken) {
-      // Try to get authcode from URL params
-      const params = new URLSearchParams(window.location.search);
-      const authcode = params.get('code');
-
-      if (!authcode) {
-        this.generatePKCEAsync();
-        return new Observable(observer => observer.complete());
-      }
-
-      // Exchange authcode for access token and refresh token
-      return this.exchangeAuthcodeForTokenObservable(authcode);
-    }
+     if (!refreshToken) {
+    this.isRefreshing = false;  // Reset flag
+    this.router.navigate(['/loginV3']);
+    return EMPTY;  // Return empty observable
+  }
 
     return this.performTokenRefresh(refreshToken);
   }
@@ -83,10 +76,7 @@ export class OauthTokenService {
 
             // Update tokens
             this.authStateService.storeTokens(newAccessToken, newRefreshToken);
-            if (response.refresh_token) {
-              sessionStorage.setItem('refresh_token', newRefreshToken);
-              localStorage.setItem('refresh_token', newRefreshToken);
-            }
+            this.authStateService.checkAndUpdateLoginStatus();
 
             this.isRefreshing = false;
             this.refreshTokenSubject.next(newAccessToken);

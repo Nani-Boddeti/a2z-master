@@ -95,7 +95,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.navigateTo('/my-orders');
   }
   goToLogin(): void {
-    this.navigateTo('/login');
+    this.navigateTo('/loginV3');
   }
 onSearch(event: any) {
     const query = event.target?.value || '';

@@ -24,6 +24,7 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
@@ -40,7 +41,7 @@ public class AuthorizationServerConfig {
 	private static final String[] WHITE_LIST_URLS = {
 			"/", "/ad/all", "/ad/view/**", "/c/**", "/customerSubmit",
 			"/suggest/password", "/generate/otp/**", "/validateOTP",
-			"/login**", "/loginV2", "/oauth2/**", "/login", "/search/**", "/.well-known/**","/uploads/**","/error","/error/**"
+			"/login**", "/loginV2", "/oauth2/**", "/login", "/search/**", "/.well-known/**","/uploads/**","/error","/error/**","/callback"
 	};
 
 	private static final String[] AUTHENTICATED_URLS = {
@@ -81,13 +82,15 @@ public class AuthorizationServerConfig {
 				.with(configurer, c -> c.oidc(Customizer.withDefaults()))
 				.exceptionHandling(exceptions -> exceptions
 						.defaultAuthenticationEntryPointFor(
-								new LoginUrlAuthenticationEntryPoint("/login"),
+								new LoginUrlAuthenticationEntryPoint("/loginV3"),
 								new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
 						)
 				)
 				.oauth2ResourceServer(resourceServer -> resourceServer.jwt(Customizer.withDefaults()))
 				.formLogin(form -> form
-						.loginPage("/login")
+						.loginPage("/loginV3")
+						.loginProcessingUrl("/perform_login")
+						.defaultSuccessUrl("/callback", true)
 						.successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
 				)
 				.requestCache(Customizer.withDefaults());  // ✅ Keep default
@@ -116,11 +119,25 @@ public class AuthorizationServerConfig {
 						.requestMatchers(WHITE_LIST_URLS).permitAll()
 						.anyRequest().authenticated()
 				)
-				.formLogin(Customizer.withDefaults());
+				.formLogin(form -> form
+						// Point to Angular login route instead of default Spring form
+						.loginPage("/loginV3")  // Angular serves this route
+						.loginProcessingUrl("/perform_login")  // Backend endpoint
+						.defaultSuccessUrl("http://localhost:4200/callback", true)
+						.successHandler(successHandler())
+						.permitAll());
 		configureSession(http);  // ✅ Reuse
 		http.csrf(AbstractHttpConfigurer::disable);
 		http.requestCache(Customizer.withDefaults());
 		return http.build();
+	}
+	@Bean
+	public AuthenticationSuccessHandler successHandler() {
+		return (request, response, authentication) -> {
+			response.setContentType("application/json");
+			response.setStatus(200);
+			response.getWriter().write("{\"success\":true,\"redirect\":\"/callback\"}");
+		};
 	}
 // Below methods are used to have Roles as authorities in JWT Token instead of Scopes.
 	/*@Bean

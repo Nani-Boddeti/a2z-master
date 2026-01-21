@@ -11,24 +11,22 @@ import { catchError, filter, take, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from './services/auth-state.service';
 import { OauthTokenService } from './services/oauth-token.service';
 import { Router } from '@angular/router';
+import { RequestMatcherService } from './services/request-matcher.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-private WHITE_LIST_URLS : string[] = [		
-			"/", "/ad/all", "/ad/view/**", "/c/**", "/customerSubmit",
-			"/suggest/password", "/generate/otp/**", "/validateOTP",
-			"/login**", "/loginV2", "/oauth2/**", "/oauth2/token","/login", "/search/**","/search/all", "/.well-known/**"
-	];
+
   constructor(
     private router: Router,
     private authStateService: AuthStateService,
     private oauthTokenService: OauthTokenService,
+    private requestMatcherService: RequestMatcherService
   ) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Do not intercept token refresh requests
 
-    if (this.WHITE_LIST_URLS.includes(request.url)) {
+    if (this.requestMatcherService.matchRequest(request.url)) {
       return next.handle(request);
     }
     // Check if token is expired and refresh if needed

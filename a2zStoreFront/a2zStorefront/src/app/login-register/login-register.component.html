@@ -175,6 +175,35 @@
     </form>
   </div>
   
+  <div class="container" *ngIf="!isRegistered && !isHome && showLoginForm">
+  <h2>LoginV3</h2>
+    <form [formGroup]="loginForm" method="POST" action="/perform_login">
+        <div>
+            <input id="userName" formControlName="userName" placeholder="Enter your User Name"/>
+            <div *ngIf="f['userName'].touched && f['userName'].invalid">
+              <small *ngIf="f['userName'].errors?.['required']">userName is required.</small>
+              <small *ngIf="f['userName'].errors?.['userName']">Must be at least 2 characters long.</small>
+            </div>
+        </div>
+
+
+  
+      <div>
+        <!-- <label for="password">Password</label> -->
+        <input id="password" type="password" formControlName="password" placeholder="Enter your Password"/>
+        <div *ngIf="f['password'].touched && f['password'].invalid">
+          <small *ngIf="f['password'].errors?.['required']">Password is required.</small>
+          <small *ngIf="f['password'].errors?.['minlength']">Password must be at least 6 characters long.</small>
+        </div>
+      </div>
+
+      <div *ngIf="successMessage" class="success-message">
+        {{ successMessage }}
+      </div>
+
+      <button type="submit" (click)="onLoginV3Submit()">Login</button>
+    </form>
+  </div>
 <div *ngIf="isHome">
     <!-- <app-ad-list></app-ad-list> -->
 </div>
