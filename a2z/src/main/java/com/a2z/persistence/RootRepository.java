@@ -46,10 +46,16 @@ public interface RootRepository extends CrudRepository<RootEntity, Long> {
 	
 	@Query("SELECT cat FROM A2zCategory cat WHERE cat.isVisible=:isVisible")
 	List<A2zCategory> getAllCategories(@Param("isVisible") boolean isVisible);
-	
+
+	@Query("SELECT cat.categoryName FROM A2zCategory cat WHERE cat.isVisible=:isVisible")
+	List<String> getAllCategorieNames(@Param("isVisible") boolean isVisible);
+
 	@Query("SELECT cat FROM A2zCategory cat WHERE cat.id=:id")
 	Optional<A2zCategory> getCategory(@Param("id") Long id);
-	
+
+	@Query("SELECT cat FROM A2zCategory cat WHERE cat.categoryCode=:code")
+	Optional<A2zCategory> getCategoryByCode(@Param("code") String code);
+
 	@Query("SELECT u FROM UserGroup u")
 	List<UserGroup> getAllUserGroups();
 	

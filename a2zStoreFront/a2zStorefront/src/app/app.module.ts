@@ -15,7 +15,7 @@ import { FooterComponent } from './footer/footer.component';
 import { AuthInterceptor } from './http-interceptor';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-
+import { PaginationModule } from './pagination/pagination-module';
 @NgModule({
   declarations: [
     AppComponent,
@@ -31,7 +31,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     CustomersModule,
     OrdersModule,
     ReactiveFormsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    PaginationModule
   ],
   providers: [
     CookieService,

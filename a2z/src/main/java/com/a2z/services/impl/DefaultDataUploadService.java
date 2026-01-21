@@ -1,11 +1,15 @@
-package com.a2z.persistence.impl;
+package com.a2z.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.a2z.services.interfaces.CategoryService;
+import com.a2z.services.interfaces.DataUploadService;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.hibernate.NonUniqueResultException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +27,7 @@ import com.nimbusds.oauth2.sdk.util.CollectionUtils;
 
 
 @Service
-public class DefaultDataUploadService {
+public class DefaultDataUploadService implements DataUploadService {
 
 	@Autowired
 	RootRepository rootRepo;
@@ -33,19 +37,45 @@ public class DefaultDataUploadService {
 	
 	@Autowired
 	CustomerPopulator customerPopulator;
-	
-	public List<CategoryData> createCategory(CategoryListData categories) {
-				return categories.getCategories().stream().map(this::saveCategory).collect(Collectors.toUnmodifiableList());
+
+	@Autowired
+	CategoryService categoryService;
+	@Override
+	public List<CategoryData> createCategory(CategoryListData categories) throws Exception {
+		try{
+			return categories.getCategories().stream().map(this::saveOrUpdateCategory).collect(Collectors.toUnmodifiableList());
+		}
+			catch (Exception ex)	{
+			throw new Exception("Duplicate Category Code Found", ex);
+			}
 	}
-	
+
+	@Override
+	public List<CategoryData> updateCategories(CategoryListData categories) {
+		return categories.getCategories().stream().map(this::saveOrUpdateCategory).collect(Collectors.toUnmodifiableList());
+	}
+
+	private CategoryData saveOrUpdateCategory(CategoryData categoryData) {
+		A2zCategory category = categoryService.getCategoryByCode(categoryData.getCategoryCode());
+		if(ObjectUtils.isNotEmpty(category)){
+			category.setCategoryName(categoryData.getCategoryName());
+			category.setIsVisible(BooleanUtils.isTrue(categoryData.getIsVisible()));
+			rootRepo.save(category);
+		} else {
+			this.saveCategory(categoryData);
+		}
+		return categoryData;
+	}
+
 	private CategoryData saveCategory(CategoryData categoryData) {
 		A2zCategory category = new A2zCategory();
 		category.setCategoryCode(categoryData.getCategoryCode());
+		category.setCategoryName(categoryData.getCategoryName());
 		category.setIsVisible(BooleanUtils.isTrue(categoryData.getIsVisible()));
 		rootRepo.save(category);		
 		return categoryData;
 	}
-	
+	@Override
 	public List<UserGroupData> saveUserGroups(UserGroupListData userGroups){
 		return userGroups.getUserGroups().stream().map(this::saveUserGroup).collect(Collectors.toUnmodifiableList());
 	}
@@ -69,7 +99,7 @@ public class DefaultDataUploadService {
 		rootRepo.save(userGroup);		
 		return userGroupData;
 	}
-	
+	@Override
 	public UserGroupData getUserGroup(Long id) {
 		Optional<UserGroup> ugOpt = rootRepo.getUserGroup(id);
 		UserGroupData ugData = new UserGroupData();

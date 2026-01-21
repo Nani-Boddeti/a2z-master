@@ -8,7 +8,7 @@ import { CustomerModel } from '../../models/customer.model';
 import { AdPostModel } from '../../models/adPost.model';
 import { OrderEntryModel } from '../../models/orderEntry.model';
 import { AddressModel } from '../../models/address.model';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-ad-details',
   templateUrl: './ad-details.component.html',
@@ -20,7 +20,8 @@ export class AdDetailsComponent {
   constructor(private adPostUtilService:AdPostUtilService , 
     private orderService:OrderServiceService, 
     private formBuilder: FormBuilder,
-  private route: ActivatedRoute ){}
+  private route: ActivatedRoute,
+private router: Router, ){}
 
   selectedItem:any;
   isItemSelected: boolean = false;
@@ -40,7 +41,7 @@ export class AdDetailsComponent {
   });
 }
   backToList() {
-    this.isBackToAllPosts = true;
+    this.router.navigate(['/ad-list']);
   }
   // Initialize the form with nested structure
   initializeForm(): void {
@@ -117,6 +118,7 @@ export class AdDetailsComponent {
     this.orderService.placeOrder(orderModel).subscribe(response => {
       this.isOrderPlaced = true;
       sessionStorage.setItem('lastOrder', JSON.stringify(response));
+      this.router.navigate(['/order-confirm']);
       console.log('Response from the server:', response);
     }, error => {
       console.error('Error:', error);

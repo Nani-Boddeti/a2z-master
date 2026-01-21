@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.a2z.search.dao.A2zCategorySearch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -60,7 +61,14 @@ public class Scheduler {
 			 AdPostSearch adPostSearch = new AdPostSearch();
 			 adPostSearch.setActive(ad.isActive());
 				/* adPostSearch.setApprovalRequest(ad.getApprovalRequest()); */
-			 adPostSearch.setCategories(ad.getCategories());
+			 List<A2zCategorySearch> categorySearchList = new ArrayList<A2zCategorySearch>();
+			 ad.getCategories().forEach(a2zCategory -> {
+				 A2zCategorySearch a2zCategorySearch = new A2zCategorySearch();
+				 a2zCategorySearch.setCategoryCode(a2zCategory.getCategoryCode());
+				 a2zCategorySearch.setCategoryName(a2zCategory.getCategoryName());
+				 categorySearchList.add(a2zCategorySearch);
+			 });
+			 adPostSearch.setCategories(categorySearchList);
 				/* adPostSearch.setCustomer(ad.getCustomer()); */
 			 adPostSearch.setDescription(ad.getDescription());
 			 adPostSearch.setId(ad.getId());

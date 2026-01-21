@@ -1,5 +1,6 @@
 package com.a2z.configuration;
 
+import com.a2z.populators.*;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,18 +10,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.a2z.filters.BearerTokenFilter;
-import com.a2z.populators.AdPostPopulator;
-import com.a2z.populators.AddressPopulator;
-import com.a2z.populators.CountryPopulator;
-import com.a2z.populators.CustomerPopulator;
-import com.a2z.populators.MediaContainerPopulator;
-import com.a2z.populators.MediaPopulator;
-import com.a2z.populators.OrderEntryPopulator;
-import com.a2z.populators.OrderPopulator;
-import com.a2z.populators.PaymentInfoBasicPopulator;
-import com.a2z.populators.PaymentInfoPopulator;
-import com.a2z.populators.PricePopulator;
-import com.a2z.populators.WishlistPopulator;
 import com.a2z.populators.reverse.AdPostReversePopulator;
 import com.a2z.populators.reverse.AddressReversePopulator;
 import com.a2z.populators.reverse.CountryReversePopulator;
@@ -133,7 +122,15 @@ public class AppConfig {
 	public PaymentInfoBasicPopulator paymentInfoBasicPopulator() {
 		return new PaymentInfoBasicPopulator();
 	}
-	
+
+	@Bean
+	public CategoryPopulator categoryPopulator() {
+		return new CategoryPopulator();
+	}
+	@Bean
+	public AdPostCategoryPopulator adPostCategoryPopulator() {
+		return new AdPostCategoryPopulator();
+	}
 	/*
 	 * @Bean public FilterRegistrationBean<BearerTokenFilter> bearerTokenFilter() {
 	 * FilterRegistrationBean<BearerTokenFilter> registrationBean = new

@@ -1,4 +1,4 @@
-package com.a2z.persistence.impl;
+package com.a2z.services.impl;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -7,20 +7,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.a2z.dao.*;
+import com.a2z.data.OrderData;
+import com.a2z.data.OrderEntryData;
+import com.a2z.data.PaymentInfoData;
+import com.a2z.persistence.A2zAdPostRepository;
+import com.a2z.services.interfaces.AddressService;
+import com.a2z.services.interfaces.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.a2z.dao.Customer;
-import com.a2z.dao.PrimeStatus;
-import com.a2z.dao.PrimeUser;
-import com.a2z.dao.UserGroup;
-import com.a2z.data.CustomerData;
 import com.a2z.persistence.PODCustomerRepository;
 import com.a2z.persistence.RootRepository;
 import com.nimbusds.oauth2.sdk.util.CollectionUtils;
 
 @Service
-public class DefaultPaymentService {
+public class DefaultPaymentService implements PaymentService {
 
 	static int DAYS_OFFSET = 30;
 	
@@ -29,8 +31,15 @@ public class DefaultPaymentService {
 	
 	@Autowired
 	PODCustomerRepository customerRepo;
-	
-	private void setPrimeGroup(Customer customer) {
+
+	@Autowired
+	A2zAdPostRepository adPostRepo;
+
+	@Autowired
+	AddressService addressService;
+
+	@Override
+	public void setPrimeGroup(Customer customer) {
 		List<UserGroup> userGroups = new ArrayList<UserGroup>();
 		if(CollectionUtils.isNotEmpty(customer.getUserGroups()))
 			userGroups.addAll(customer.getUserGroups());
@@ -41,8 +50,9 @@ public class DefaultPaymentService {
 		customer.setUserGroups(userGroups);
 		customerRepo.save(customer);
 	}
-	
-	private void createPrimeUser(Customer customer , UserGroup primeUserGroup) {
+
+	@Override
+	public void createPrimeUser(Customer customer, UserGroup primeUserGroup) {
 		PrimeUser primeUser = new PrimeUser();
 		primeUser.setCustomer(customer);
 		primeUser.setIsActive(true);
@@ -61,5 +71,31 @@ public class DefaultPaymentService {
 		 LocalDate expiredDate = currentDate.plusDays(DAYS_OFFSET);
 		primeUser.setPrimeExpireDate(expiredDate);
 		rootRepository.save(primeUser);
+	}
+
+	@Override
+	public A2zAddress savePaymentAddress(OrderData orderData) {
+		Optional<OrderEntryData> entryDataOpt = orderData.getEntries().stream().findFirst();
+		A2zAddress target = new A2zAddress();
+		if(entryDataOpt.isPresent()) {
+			Optional<AdPost> adPostOpt = adPostRepo.findById(entryDataOpt.get().getAdPost().getId());
+			if(adPostOpt.isPresent()) {
+				addressService.cloneAddressModel(adPostOpt.get().getSourceAddress(),target);
+			}
+		}
+		return addressService.saveAddress(target, false , true);
+	}
+
+	@Override
+	public PaymentInfo savePaymentInfo(OrderData orderData) {
+		PaymentInfo paymentInfo = new PaymentInfo();
+		PaymentInfoData paymentInfoData = orderData.getPaymentInfo();
+		if(paymentInfoData != null) {
+			paymentInfo.setPaymentCode(paymentInfoData.getPaymentCode());
+			paymentInfo.setPaymentType(paymentInfoData.getPaymentType());
+			paymentInfo.setPaymentAddress(this.savePaymentAddress(orderData));
+			rootRepository.save(paymentInfo);
+		}
+		return paymentInfo;
 	}
 }

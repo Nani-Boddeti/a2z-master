@@ -1,0 +1,189 @@
+.combo-control {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 320px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.combo-trigger {
+  padding: 3px 15px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.combo-trigger::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.6s ease;
+}
+
+.combo-trigger:hover::before {
+  left: 100%;
+}
+
+.combo-trigger:hover {
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.15);
+}
+
+.combo-trigger:focus-within,
+.combo-trigger:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+}
+
+.dropdown-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e4e7eb;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  max-height: 340px;
+  overflow: hidden;
+  animation: dropdownSlide 0.2s ease-out;
+}
+
+@keyframes dropdownSlide {
+  from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ✅ NEW: Clean search-input */
+.search-input {
+  padding: 16px 16px 12px;
+  position: relative;
+}
+
+.search-input input {
+  width: 100%;
+  padding: 10px 12px 10px 44px;  /* Compact */
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.search-input input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ✅ NEW: Search icon */
+.search-input::before {
+  content: '';
+  position: absolute;
+  left: 28px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  background: #9ca3af;
+  mask: url('data:image/svg+xml,<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>') no-repeat center;
+  mask-size: 16px;
+  transform: translateY(-50%);
+}
+
+/* ✅ NEW: categories-list container */
+.categories-list {
+  max-height: 260px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding: 0 12px;
+}
+
+.categories-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.categories-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.categories-list::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.4);
+  border-radius: 2px;
+}
+
+/* ✅ NEW: category-item with POP hover */
+.category-item {
+  padding: 5px 16px;
+  margin: 4px 0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+  background: transparent;
+}
+
+.category-item:hover {
+  background: #f8fafc !important;
+  border-color: #3b82f6 !important;
+  color: #1e40af !important;
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: 
+    0 10px 25px rgba(59, 130, 246, 0.25),
+    0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.category-item.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  border-color: #3b82f6;
+}
+
+.dropdown-icon {
+  width: 20px;
+  height: 20px;
+  stroke: #64748b;
+  stroke-width: 2.5;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+
+.dropdown-panel.show .dropdown-icon {
+  stroke: #3b82f6;
+  transform: rotate(180deg);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .combo-control { max-width: 100%; }
+  .combo-trigger { padding: 12px 20px; min-height: 48px; }
+  .dropdown-panel {
+    position: fixed !important;
+    left: 50% !important;
+    top: 100% !important;
+    transform: translateX(-50%) !important;
+    width: 90vw !important;
+    max-width: 400px !important;
+  }
+}

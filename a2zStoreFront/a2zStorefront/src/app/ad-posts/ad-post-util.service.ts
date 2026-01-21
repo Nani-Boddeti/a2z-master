@@ -9,9 +9,7 @@ export class AdPostUtilService {
 
   constructor(private http: HttpClient) { }
   adsList : any;
- getAdList(){
-  return this.http.get<JSON>("/search/all");
- }
+
  getAdById(id:number){
   return this.http.get<JSON>(`/ad/view/${id}`);
  }

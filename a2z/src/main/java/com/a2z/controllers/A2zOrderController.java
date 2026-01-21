@@ -3,6 +3,9 @@ package com.a2z.controllers;
 import java.io.IOException;
 import java.util.List;
 
+import com.a2z.facades.OrderFacade;
+import com.a2z.services.interfaces.MediaService;
+import com.a2z.services.interfaces.OrderService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -20,8 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.a2z.data.MediaContainerData;
 import com.a2z.data.OrderData;
-import com.a2z.persistence.impl.DefaultMediaService;
-import com.a2z.persistence.impl.DefaultOrderService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -34,10 +35,13 @@ import jakarta.validation.Valid;
 public class A2zOrderController extends RootController {
 
 	@Autowired
-	DefaultOrderService orderService;
+	OrderService orderService;
+
+	@Autowired
+	OrderFacade orderFacade;
 	
 	@Autowired
-	DefaultMediaService mediaService;
+	MediaService mediaService;
 	
 	@PostMapping("/submit")
 	public OrderData submitOrder(@RequestBody @Valid OrderData orderData, HttpServletRequest request) {
@@ -46,7 +50,7 @@ public class A2zOrderController extends RootController {
 		if(StringUtils.isEmpty(userName)) {
 			return orderDataNew;
 		}
-		orderDataNew = orderService.submitOrder(orderData,userName,false,null);
+		orderDataNew = orderFacade.submitOrder(orderData,userName,false,null);
 		return orderDataNew;
 	}
 	
@@ -65,7 +69,7 @@ public class A2zOrderController extends RootController {
 	@GetMapping("/return/{orderId}")
 	public OrderData returnOrExtend(@PathVariable @Valid long orderId ,@RequestParam @Valid boolean isReturned , @RequestParam @Valid boolean isExtend ,  HttpServletRequest request) {
 		String userName = (String) request.getSession().getAttribute("currentUser");
-		return orderService.returnOrExtend(userName, orderId ,isReturned , isExtend);
+		return orderFacade.returnOrExtend(userName, orderId ,isReturned , isExtend);
 	}
 	
 	@PostMapping("/proof/upload")

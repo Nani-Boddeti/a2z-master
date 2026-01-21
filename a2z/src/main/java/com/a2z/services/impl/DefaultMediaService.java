@@ -1,4 +1,4 @@
-package com.a2z.persistence.impl;
+package com.a2z.services.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import com.a2z.services.interfaces.MediaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,10 +24,8 @@ import com.a2z.persistence.A2zMediaContainerRepository;
 import com.a2z.persistence.RootRepository;
 import com.a2z.populators.MediaContainerPopulator;
 
-import io.micrometer.common.util.StringUtils;
-
 @Service
-public class DefaultMediaService {
+public class DefaultMediaService implements MediaService {
 
 	public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/data/uploads";
 	
@@ -40,7 +38,7 @@ public class DefaultMediaService {
 	
 	@Autowired
 	A2zMediaContainerRepository mediaContainerRepository;
-	
+	@Override
 	public List<MediaContainerData> getAllMedia(){
 		List<MediaContainerData> mediaContainerList = new ArrayList<MediaContainerData>();
 		Iterable<MediaContainer> mediaEntityList = mediaContainerRepository.findAll();
@@ -53,7 +51,7 @@ public class DefaultMediaService {
 		return mediaContainerList;
 		
 	}
-	
+	@Override
 	public MediaContainerData uploadMedia(String userName, MultipartFile[] files, boolean isMap) {
 		final MediaContainer container = new MediaContainer();
 			container.setUserId(userName);
@@ -93,7 +91,7 @@ public class DefaultMediaService {
 		mediaConatinerPopulator.populate(container, mediaContainerData);
 		return mediaContainerData;
 	}
-	
+	@Override
 	public void deleteMediaContainer(String code){
 		Optional<MediaContainer> mediaContainerOpt = mediaContainerRepository.findById(code);
 		if(mediaContainerOpt.isPresent()) {
@@ -108,7 +106,7 @@ public class DefaultMediaService {
 		}
 		return new MediaContainer();
 	}
-	
+	@Override
 	public MediaContainerData getProofMedia(String userName) {
 		Optional<MediaContainer> mediaContainerOpt = mediaContainerRepository.findById(userName+"-proofs");
 		MediaContainerData mediaContainerData = new MediaContainerData();

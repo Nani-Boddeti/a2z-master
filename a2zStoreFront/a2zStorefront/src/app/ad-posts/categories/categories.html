@@ -1,0 +1,36 @@
+<div class="categories-container">
+  <div class="categories-scroll-wrapper">
+    <!-- LEFT ARROW -->
+    <button 
+      class="scroll-arrow scroll-arrow-left" 
+      type="button"
+      (click)="scrollLeft()"
+      title="Scroll Left">
+      ‹
+    </button>
+    
+    <!-- Scrollable Categories -->
+    <div 
+      class="categories-scroll"
+      #scrollRef
+      (scroll)="onScroll()">
+      <ng-container *ngFor="let category of categories; trackBy: trackByCategory">
+        <button 
+          class="category-btn" 
+          [class.active]="isActiveCategory(category.categoryCode)"
+          (click)="selectCategory(category.categoryCode)">
+          {{ category.categoryName }}
+        </button>
+      </ng-container>
+    </div>
+    
+    <!-- RIGHT ARROW -->
+    <button 
+      class="scroll-arrow scroll-arrow-right" 
+      type="button"
+      (click)="scrollRight()"
+      title="Scroll Right">
+      ›
+    </button>
+  </div>
+</div>

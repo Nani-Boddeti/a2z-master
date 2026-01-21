@@ -1,0 +1,24 @@
+<div class="combo-control" (click)="$event.stopPropagation()">
+  <div class="combo-trigger" (click)="toggleDropdown($event)" tabindex="0">
+    <span>{{ selectedCategoryName }}</span>
+    <svg class="dropdown-icon" viewBox="0 0 24 24">
+      <polyline points="6,9 12,15 18,9"></polyline>
+    </svg>
+  </div>
+
+  <div class="dropdown-panel" *ngIf="showDropdown">
+    <div class="search-input">
+      <input name="categorySearchDropDownItem" 
+             [(ngModel)]="searchTerm" 
+             (input)="filterCategories()"
+             placeholder="Search categories...">
+    </div>
+    <div class="categories-list">
+      <div *ngFor="let cat of filteredCategories" 
+           class="category-item" 
+           (click)="selectCategory(cat); $event.stopPropagation()">
+        {{ cat.categoryName }}
+      </div>
+    </div>
+  </div>
+</div>

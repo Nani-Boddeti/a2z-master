@@ -21,7 +21,10 @@ public interface SearchA2zPostRepository extends ElasticsearchRepository<AdPostS
 	 
 	 @Query("{\"bool\": {\"must\": [{\"match\": {\"isActive\": \"?0\"}}]}}")
 	 Iterable<AdPostSearch> findAllByIsActive(boolean isActive);
-	 
+
+	@Query("{\"bool\": {\"must\": [{\"match\": {\"isActive\": \"?0\"}}]}}")
+	Page<AdPostSearch> findAllByIsActivePaged(boolean isActive,PageRequest pageRequest);
+
 	 @Query("{\"bool\": {\"must\": [{\"match\": {\"productName\": \"?0\"}}]}}")
 	 Page<AdPostSearch> findByProductNameLike(String productName,PageRequest P);
 	 
@@ -40,4 +43,7 @@ public interface SearchA2zPostRepository extends ElasticsearchRepository<AdPostS
 	 @Query("{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match\":{\"categories.categoryCode\":\"?0\"}},{\"match\":{\"productName\":\"?1\"}}]}},{\"bool\":{\"must\":[{\"range\":{\"latitude\":{\"gte\":\"?2\",\"lte\":\"?4\"}}},{\"range\":{\"longitude\":{\"gte\":\"?3\",\"lte\":\"?5\"}}}]}}]}}")
 	 Page<AdPostSearch> findByCategoryCodeOrProductNameAndLatLong(String categoryCode,String productName,double lat1, double long1, double lat2 ,double long2,PageRequest pageRequest);
 
-	 }
+	@Query("{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"match\":{\"categories.categoryCode\":\"?0\"}}]}}]}}")
+	Page<AdPostSearch> findByCategoryCode(String categoryCode,PageRequest pageRequest);
+
+}

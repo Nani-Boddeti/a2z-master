@@ -1,21 +1,13 @@
 package com.a2z.controllers;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import com.a2z.services.interfaces.AdPostService;
+import com.a2z.services.interfaces.MediaService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,11 +20,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.a2z.dao.A2zMedia;
-import com.a2z.dao.MediaContainer;
 import com.a2z.data.MediaContainerData;
-import com.a2z.persistence.impl.DefaultAdPostService;
-import com.a2z.persistence.impl.DefaultMediaService;
+import com.a2z.services.impl.DefaultAdPostService;
+import com.a2z.services.impl.DefaultMediaService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -45,10 +35,10 @@ import jakarta.validation.Valid;
 public class MediaController extends RootController {
 
 	@Autowired
-	DefaultAdPostService adPostService;
+	AdPostService adPostService;
 	
 	@Autowired
-	DefaultMediaService mediaService;
+	MediaService mediaService;
 	
 
 	@PostMapping("/upload") public MediaContainerData uploadImage(@RequestPart("files") MultipartFile[] files, HttpServletRequest request,@RequestParam @Valid final boolean isMap) throws IOException {

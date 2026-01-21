@@ -6,6 +6,9 @@ import { ProfileComponent } from './customers/profile/profile.component';
 import { OrdersListComponent } from './orders/orders-list/orders-list.component';
 import { LoginRegisterComponent } from './login-register/login-register.component';
 import { AdDetailsComponent } from './ad-posts/ad-details/ad-details.component';
+import { OrderConfirmComponent } from './orders/order-confirm/order-confirm.component';
+import { SearchResults } from './ad-posts/search-results/search-results';
+
 
 const routes: Routes = [
   { path: 'ad-list', component: AdListComponent },
@@ -14,7 +17,10 @@ const routes: Routes = [
   { path: 'profile', component: ProfileComponent },
   { path: 'my-orders', component: OrdersListComponent },
   { path: 'approvals', loadChildren: () => import('./approvals/approvals.module').then(m => m.ApprovalsModule) },
-  { path: 'loginV3', component: LoginRegisterComponent}
+  { path: 'loginV3', component: LoginRegisterComponent},
+  {path:'order-confirm',component:OrderConfirmComponent},
+  { path: 'search-results', component: SearchResults },
+  
   // {path: '', redirectTo: '/ad-list', pathMatch: 'full' }
 ];
 

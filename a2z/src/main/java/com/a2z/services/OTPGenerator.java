@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import com.a2z.dao.Customer;
 import com.a2z.dao.OTP;
 import com.a2z.persistence.PODOTPRepository;
-import com.a2z.persistence.impl.DefaultCustomerService;
+import com.a2z.services.impl.DefaultCustomerService;
 
 @Service
 public class OTPGenerator {

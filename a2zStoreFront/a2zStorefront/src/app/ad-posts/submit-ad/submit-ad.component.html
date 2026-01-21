@@ -38,7 +38,14 @@
             Product name is required (min 3 characters)
           </span>
         </div>
+       <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+          <!-- Regular inputs -->
+          
+          
+          <!-- ✅ MAGIC: Single field like input -->
+          <app-category-dropdown formControlName="category"></app-category-dropdown>
 
+        </form>
         <div class="form-group">
           <label>Description *</label>
           <textarea

@@ -45,7 +45,7 @@ public class AdPostSearch {
 	private boolean isActive;
 
 	@Field(type = FieldType.Nested, includeInParent = true)
-	private List<A2zCategory> categories;
+	private List<A2zCategorySearch> categories;
 
 
 	/*
@@ -84,11 +84,11 @@ public class AdPostSearch {
 	 * public void setCustomer(Customer customer) { this.customer = customer; }
 	 */
 
-	public List<A2zCategory> getCategories() {
+	public List<A2zCategorySearch> getCategories() {
 		return categories;
 	}
 
-	public void setCategories(List<A2zCategory> categories) {
+	public void setCategories(List<A2zCategorySearch> categories) {
 		this.categories = categories;
 	}
 

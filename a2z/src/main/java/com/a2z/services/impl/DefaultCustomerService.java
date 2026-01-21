@@ -1,4 +1,4 @@
-package com.a2z.persistence.impl;
+package com.a2z.services.impl;
 
 
 import java.util.ArrayList;
@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import com.a2z.dao.*;
 import com.a2z.populators.reverse.AddressReversePopulator;
+import com.a2z.services.interfaces.CustomerService;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +23,6 @@ import com.a2z.data.ApprovalRequestPostData;
 import com.a2z.data.CustomerData;
 import com.a2z.data.OTPFormData;
 import com.a2z.data.OrderData;
-import com.a2z.data.WishlistData;
 import com.a2z.persistence.A2zAdPostRepository;
 import com.a2z.persistence.PODCustomerRepository;
 import com.a2z.persistence.PODOTPRepository;
@@ -36,7 +36,7 @@ import com.nimbusds.oauth2.sdk.util.CollectionUtils;
 
 
 @Service
-public class DefaultCustomerService {
+public class DefaultCustomerService implements CustomerService {
 
 	@Value("${otp.validation.time.mins}")
 	private int OtpValidTime;
@@ -72,8 +72,6 @@ public class DefaultCustomerService {
 	@Autowired
 	AddressReversePopulator addressReversePopulator;
 
-	@Autowired
-	RootRepository rootRepo;
 	
 	public DefaultCustomerService() {
 		
@@ -89,6 +87,7 @@ public class DefaultCustomerService {
 	 * @param password The password to validate
 	 * @return Customer object if authentication is successful, null otherwise
 	 */
+	@Override
 	public Customer authenticateCustomer(String username, String password) {
 		Optional<Customer> customerOpt = customerRepo.findById(username);
 
@@ -103,6 +102,7 @@ public class DefaultCustomerService {
 		return null;
 	}
 
+	@Override
 	public CustomerData saveCustomer(CustomerData customerData) {
 		String encodedPassword = passwordEncoder.encode(customerData.getPassword());
 		Customer customer = new Customer(customerData.getUserName(),encodedPassword,customerData.getEmail());
@@ -123,22 +123,36 @@ public class DefaultCustomerService {
 			A2zAddress defaultAddress = new A2zAddress();
 			addressReversePopulator.populate(customerData.getDefaultAddress(), defaultAddress);
 //			defaultAddress.setCustomer(customer);
-			rootRepo.save(defaultAddress);
+			rootRepository.save(defaultAddress);
 		}
 		Optional<Customer> savedCustomer = customerRepo.findById(customerData.getUserName());
 		CustomerData savedCustomerData = new CustomerData();
 		if(savedCustomer.isPresent()) customerPopulator.populate(savedCustomer.get(), savedCustomerData);
 		return savedCustomerData;
 	}
-	
+
+	@Override
 	public void deleteCustomer(Long id) {
 		customerRepo.deleteById(null);
 	}
-	
-	public Customer getUserByEmailORPhone(String phone , String email) {
+
+	@Override
+	public void disableCustomer(String id) {
+
+		Optional<Customer> customer = customerRepo.findById(id);
+		if (customer.isPresent()) {
+			Customer cust = customer.get();
+			cust.setDisabled(true);
+			customerRepo.save(cust);
+		}
+	}
+
+	@Override
+	public Customer getUserByEmailORPhone(String phone, String email) {
 		return customerRepo.getUserByEmailORPhone(phone, email);
 	}
-	
+
+	@Override
 	public CustomerData validateOTP(OTPFormData otpFormData) {
 		CustomerData customerData = new CustomerData();
 		Customer customer = getUserByEmailORPhone(otpFormData.getPhone(),otpFormData.getPhone());
@@ -157,7 +171,8 @@ public class DefaultCustomerService {
 		}
 		return customerData;
 	}
-	
+
+	@Override
 	public CustomerData getCustomerProfile(String userName) {
 		CustomerData customerData = new CustomerData();
 		Optional<Customer> customerOpt = customerRepo.findById(userName);
@@ -167,7 +182,8 @@ public class DefaultCustomerService {
 		}
 		return customerData;
 	}
-	
+
+	@Override
 	public List<AdPostData> retriveAllMyAds(String userName){
 		List<AdPostData> myAdDataList = new ArrayList<AdPostData>();
 		Optional<Customer> customerOpt = customerRepo.findById(userName);
@@ -182,7 +198,8 @@ public class DefaultCustomerService {
 		}
 		return Collections.unmodifiableList(myAdDataList);
 	}
-	
+
+	@Override
 	public List<OrderData> getAllMyOrders(String userName){
 		List<OrderData> orderDataList = new ArrayList<OrderData>();
 		Optional<Customer> customerOpt = customerRepo.findById(userName);
@@ -197,7 +214,7 @@ public class DefaultCustomerService {
 		}
 		return Collections.unmodifiableList(orderDataList);
 	}
-	
+	@Override
 	public OrderData viewOrder(Long id, String userName){
 			OrderData orderData = new OrderData();
 			Optional<Customer> customerOpt = customerRepo.findById(userName);
@@ -211,7 +228,7 @@ public class DefaultCustomerService {
 			
 		return orderData;
 	}
-	
+	@Override
 	public List<ApprovalRequestData> getAllApprovalRequests(String userName){
 		Optional<Customer> customerOpt = customerRepo.findById(userName);
 		List<ApprovalRequestData> approvalRequestDataList = new ArrayList<ApprovalRequestData>();
@@ -233,7 +250,7 @@ public class DefaultCustomerService {
 		}
 		return approvalRequestDataList;
 	}
-	
+	@Override
 	public ApprovalRequestData getApprovalRequest(Long id, String userName){
 		Optional<Customer> customerOpt = customerRepo.findById(userName);
 		ApprovalRequestData approvalReqData = new ApprovalRequestData();
@@ -251,8 +268,8 @@ public class DefaultCustomerService {
 		
 		return approvalReqData;
 	}
-	
-	public ApprovalRequestData submitApprovalRequest(ApprovalRequestPostData requestData ,String userName){
+	@Override
+	public ApprovalRequestData submitApprovalRequest(ApprovalRequestPostData requestData, String userName){
 		Optional<Customer> customerOpt = customerRepo.findById(userName);
 		ApprovalRequestData approvalReqData = new ApprovalRequestData();
 		if(customerOpt.isPresent()) {
@@ -272,52 +289,8 @@ public class DefaultCustomerService {
 		
 		return approvalReqData;
 	}
-	
-	public void addToWishlist(Long id,String userName) {
-		Optional<AdPost> adOpt = adPostRepository.findById(id);
-		Optional<Customer> customerOpt = customerRepo.findById(userName); 
-		if(adOpt.isPresent() && customerOpt.isPresent()) {
-			AdPost ad = adOpt.get();
-			Customer customer = customerOpt.get();
-			A2zWishlist wishlist = new A2zWishlist();
-			wishlist.setCustomer(customer);
-			List<AdPost> newAdList = new ArrayList<>();
-			newAdList.addAll(wishlist.getAds());
-			newAdList.add(ad);
-			wishlist.setAds(newAdList);
-			rootRepository.save(wishlist);
-		}
-	}
-	
-	public WishlistData getWishlist(Long id,String userName) {
-		Optional<Customer> customerOpt = customerRepo.findById(userName); 
-		WishlistData wishlistData = new WishlistData();
-		if(customerOpt.isPresent()) {
-			Optional<A2zWishlist> wishlistOpt = rootRepository.getWishlistDetails(id,customerOpt.get());
-			if(wishlistOpt.isPresent() && customerOpt.isPresent()) {
-				A2zWishlist wishList = wishlistOpt.get();
-				wishlistPopulator.populate(wishList, wishlistData);
-			}
-		}
-		return wishlistData;
-		
-		
-	}
-	
-	public List<WishlistData> getAllWishlist(String userName) {
-		Optional<Customer> customerOpt = customerRepo.findById(userName);
-		List<WishlistData> listWishlistData = new ArrayList<WishlistData>();
-		if(customerOpt.isPresent()) {
-			List<A2zWishlist> wishlistList = rootRepository.getWishlistForCustomer(customerOpt.get());
-			wishlistList.stream().forEach(wishlist->{
-				WishlistData wishlistData = new WishlistData();
-				wishlistPopulator.populate(wishlist, wishlistData);
-				listWishlistData.add(wishlistData);
-			});
-		}
-		return listWishlistData;
-	}
-	
+
+	@Override
 	public boolean isCustomerEligibleToPost(String userName) {
 		Optional<Customer> customerOpt = customerRepo.findById(userName);
 		if(customerOpt.isPresent()) {

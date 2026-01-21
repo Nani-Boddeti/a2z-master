@@ -8,6 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 import { AdService } from '../services/ad.service';
 import { OrderServiceService } from '../services/order-service.service';
 
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -20,6 +21,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
  isScrolled = false;
   currentRoute = '';
+
   constructor(
     private router: Router,
     private registrationService: RegistrationService,
@@ -97,10 +99,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
   goToLogin(): void {
     this.navigateTo('/loginV3');
   }
-onSearch(event: any) {
-    const query = event.target?.value || '';
+onSearch(query:string) {
+    
     // Navigate to search results
-    this.router.navigate(['/search'], { queryParams: { q: query } });
+    if (query.trim()) {
+      this.router.navigate(['/search-results'], { queryParams: { q: query } });
+    }
+    
   }
 
   logout(): void {

@@ -1,18 +1,17 @@
-package com.a2z.persistence.impl;
+package com.a2z.services.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.a2z.services.interfaces.AdPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.session.data.redis.RedisSessionRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.session.Session;
 
 import com.a2z.dao.A2zOrder;
 import com.a2z.dao.AdPost;
-import com.a2z.dao.Customer;
 import com.a2z.dao.OrderStatus;
 import com.a2z.dao.Price;
 import com.a2z.data.AdPostData;
@@ -26,7 +25,7 @@ import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 
 @Service
-public class DefaultAdPostService {
+public class DefaultAdPostService implements AdPostService {
 
 	@Autowired
 	private A2zAdPostRepository adPostRepository;
@@ -50,6 +49,7 @@ public class DefaultAdPostService {
 	A2zPriceRepository a2zPriceRepository;
 	
 	@Transactional
+	@Override
 	public AdPostData submitAdPost(AdPostData adPostData, String userName) {
 		if(customerService.isCustomerEligibleToPost(userName)) {
 		if(StringUtils.isNotEmpty(userName)) {
@@ -70,8 +70,9 @@ public class DefaultAdPostService {
 		
 		return adPostData;
 	} 
-	
-	public List<AdPostData> retriveAllAds() {		
+
+	@Override
+	public List<AdPostData> retriveAllAds() {
 		Iterable<AdPost> adsList = adPostRepository.findAll();
 		List<AdPostData> targetAdsList = new ArrayList<AdPostData>();
 		adsList.forEach(ad -> {
@@ -81,14 +82,16 @@ public class DefaultAdPostService {
 		});
 		return targetAdsList;
 	} 
-	
-	public AdPostData getAdById(Long id) {		
+
+	@Override
+	public AdPostData getAdById(Long id) {
 			Optional<AdPost> ad = adPostRepository.findById(id);
 			AdPostData adPostData = new AdPostData();
 			if(ad.isPresent()) {adPostPopulator.populate(ad.get(), adPostData);} 
 		return adPostData;
 	} 
-	
+
+	@Override
 	public AdPostData activatePost(Long id) {
 		Optional<AdPost> adOpt = adPostRepository.findById(id);
 		AdPostData adPostData = new AdPostData();
@@ -110,8 +113,9 @@ public class DefaultAdPostService {
 		}
 		return adPostData;
 	}
-	
-	public AdPostData receivedStatusUpdate(Long id , boolean isReceived , boolean isAcivate) {
+
+	@Override
+	public AdPostData receivedStatusUpdate(Long id, boolean isReceived, boolean isAcivate) {
 		Optional<AdPost> adOpt = adPostRepository.findById(id);
 		AdPostData adPostData = new AdPostData();
 		if(adOpt.isPresent()) {

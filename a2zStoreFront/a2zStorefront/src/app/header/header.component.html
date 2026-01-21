@@ -44,9 +44,9 @@
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"></circle>
           <path d="m21 21-4.35-4.35"></path>
-        </svg>
-        <input type="text" class="search-input" placeholder="Search products..." (keyup.enter)="onSearch($event)">
-        <button class="search-btn" (click)="onSearch($event)">
+        </svg>       
+        <input  #searchInput id="query" formControlName="query" type="text" class="search-input" placeholder="Search...">
+        <button class="search-btn" type="submit" (click)="onSearch(searchInput.value)">
           <svg class="search-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="9 18 15 12 9 6"></polyline>
           </svg>

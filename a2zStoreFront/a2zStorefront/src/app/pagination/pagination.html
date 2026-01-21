@@ -1,0 +1,38 @@
+<div class="pagination-container">
+  <!-- Previous Button -->
+  <button 
+    *ngIf="currentPage > 1"
+    class="pagination-btn"
+    (click)="goToPrevious()">
+    Previous
+  </button>
+
+  <!-- ALL PAGES IN ONE LOOP -->
+  <ng-container *ngFor="let page of visiblePages; trackBy: trackByFn">
+    <!-- Number Pages -->
+    <button 
+      *ngIf="isNumberPage(page)"
+      class="pagination-btn"
+      [class.active]="isActivePage(page)"
+      (click)="goToPage(page)">
+      {{ page }}
+    </button>
+    
+    <!-- Ellipsis -->
+    <span 
+      *ngIf="isEllipsis(page)"
+      class="pagination-ellipsis">
+      ...
+    </span>
+  </ng-container>
+
+  <!-- Next Button -->
+  <button 
+    *ngIf="currentPage < totalPages"
+    class="pagination-btn"
+    (click)="goToNext()">
+    Next
+  </button>
+
+  <span class="pagination-info">{{ getPageInfo() }}</span>
+</div>

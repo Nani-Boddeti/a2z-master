@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.a2z.services.interfaces.AdPostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.a2z.data.AdPostData;
-import com.a2z.persistence.impl.DefaultAdPostService;
+import com.a2z.services.impl.DefaultAdPostService;
 
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +22,7 @@ import jakarta.validation.Valid;
 public class AdViewController extends RootController {
 	
 	@Autowired
-	DefaultAdPostService adPostService;
+	AdPostService adPostService;
 
 	@GetMapping("/all")
 	public List<AdPostData> viewAllAds( HttpServletRequest request){

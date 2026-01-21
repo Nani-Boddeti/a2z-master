@@ -65,6 +65,7 @@ export class AdSubmissionService {
    */
   createAdSubmissionPayload(
     productName: string,
+    categoryCode: string,
     description: string,
     price: number,
     currency: string,
@@ -80,7 +81,23 @@ export class AdSubmissionService {
       isActive,
       productName,
       customer: {
-        userName
+        userName,
+        defaultAddress:{
+        latitude: address.latitude || 0,
+        longitude: address.longitude || 0,
+        firstName: address.firstName || '',
+        lastName: address.lastName || '',
+        line1: address.line1 || '',
+        line2: address.line2 || '',
+        apartment: address.apartment || '',
+        country: {
+          isoCode: address.country?.isoCode || 'IND',
+          region: address.country?.region || 'Asia'
+        },
+        district: address.district || '',
+        email: address.email || '',
+        customer: userName
+      }
       },
       price: {
         currency,

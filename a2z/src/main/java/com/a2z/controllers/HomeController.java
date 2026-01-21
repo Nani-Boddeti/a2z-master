@@ -1,7 +1,6 @@
 package com.a2z.controllers;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -11,7 +10,6 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
@@ -19,8 +17,6 @@ import org.springframework.http.*;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +32,7 @@ import com.a2z.data.LoginRequest;
 import com.a2z.data.LoginResponse;
 import com.a2z.data.OTPFormData;
 import com.a2z.dao.Customer;
-import com.a2z.persistence.impl.DefaultCustomerService;
+import com.a2z.services.impl.DefaultCustomerService;
 import com.a2z.services.GeometryUtils;
 import com.a2z.services.OTPGenerator;
 import com.a2z.services.PasswordGenerator;
@@ -47,7 +43,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.web.client.RestTemplate;
 
 
 @RestController

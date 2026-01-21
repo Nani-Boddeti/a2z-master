@@ -34,7 +34,9 @@ public class AdPostData extends RootData {
 	@Size(min = 2, message = "{validation.productName.size.too_short}")
 	@Size(max = 30, message = "{validation.productName.size.too_long}")
 	private String productName;
-	
+	private double latitude;
+	private double longitude;
+	private String categoryCode;
 	@Override
 	public void setErrorMessage(String errorMessage) {
 		// TODO Auto-generated method stub
@@ -118,6 +120,27 @@ public class AdPostData extends RootData {
 		this.sourceAddress = sourceAddress;
 	}
 
+	public double getLatitude() {
+		return latitude;
+	}
 
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
 
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+
+	public String getCategoryCode() {
+		return categoryCode;
+	}
+
+	public void setCategoryCode(String categoryCode) {
+		this.categoryCode = categoryCode;
+	}
 }

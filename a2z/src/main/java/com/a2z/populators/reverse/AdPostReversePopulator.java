@@ -1,6 +1,9 @@
 package com.a2z.populators.reverse;
 
+import com.a2z.dao.A2zCategory;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionException;
 
@@ -15,6 +18,10 @@ import com.a2z.persistence.PODCustomerRepository;
 import com.a2z.persistence.RootRepository;
 import com.a2z.populators.AddressPopulator;
 import com.a2z.populators.Populator;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class AdPostReversePopulator implements Populator<AdPostData , AdPost>{
 
@@ -55,6 +62,20 @@ public class AdPostReversePopulator implements Populator<AdPostData , AdPost>{
 			rootRepo.save(sourceAddress);
 			target.setSourceAddress(sourceAddress);
 			}
+		List<A2zCategory> categoryList = new ArrayList<>();
+		if(target.getCategories() != null)
+			categoryList.addAll(target.getCategories());
+		if(source.getCategoryCode() != null) {
+
+				Optional<A2zCategory> categoryOpt = rootRepo.getCategoryByCode(source.getCategoryCode());
+
+				if(categoryOpt.isPresent()) {
+					categoryList.add(categoryOpt.get());
+				}
+
+		}
+		target.setCategories(categoryList);
+
 	}
 
 }

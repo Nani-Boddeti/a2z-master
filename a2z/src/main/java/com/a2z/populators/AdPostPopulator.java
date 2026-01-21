@@ -43,6 +43,8 @@ public class AdPostPopulator implements Populator<AdPost,AdPostData>{
 			AddressData addressData = new AddressData();
 			addressPopulator.populate(source.getSourceAddress(),addressData);
 			target.setSourceAddress(addressData);
+		target.setLatitude(addressData.getLatitude());
+		target.setLongitude(addressData.getLongitude());
 		}
 		
 	}

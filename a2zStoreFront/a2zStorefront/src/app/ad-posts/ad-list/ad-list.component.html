@@ -1,3 +1,9 @@
+<div class="categories-section">
+  <app-categories 
+    [categories]="categories"
+    (categoryChange)="onCategoryChange($event)">
+  </app-categories>
+</div>
 <section class="ad-list-grid">
   
     @for (ad of adList; track $index) {
@@ -28,3 +34,11 @@
   
 </section>
 
+<!-- parent.component.html -->
+  <app-pagination
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    [totalItems]="totalItems"
+    [itemsPerPage]="itemsPerPage"
+    (pageChange)="loadItems($event)">
+  </app-pagination>

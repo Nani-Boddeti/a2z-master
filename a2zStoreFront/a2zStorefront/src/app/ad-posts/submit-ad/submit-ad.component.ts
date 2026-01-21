@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AdSubmissionService } from '../../services/ad-submission.service';
 import { AuthStateService } from '../../services/auth-state.service';
 import { Router } from '@angular/router';
+import { AdSearch } from '../../services/ad-search';
 
 @Component({
   selector: 'app-submit-ad',
@@ -18,13 +19,23 @@ export class SubmitAdComponent implements OnInit {
   userName: string = '';
   isLoadingLocation = false;
   isDragOver = false;
-
+ selectedCategory: string = 'ALL';
+  searchQuery: string = '';
+categories: any[] = [];
+  // ADD THESE METHODS
+  onCategoryChange() {
+    console.log('Category changed:', this.selectedCategory);
+    // Trigger your existing filter/search logic
+  }
   constructor(
     private formBuilder: FormBuilder,
     private adSubmissionService: AdSubmissionService,
     private authStateService: AuthStateService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private adSearch: AdSearch
+  ) {
+    
+  }
 
   ngOnInit(): void {
     // Get logged-in user's name
@@ -33,9 +44,26 @@ export class SubmitAdComponent implements OnInit {
     });
 
     this.initializeForm();
-    
+    this.loadCategories();
     // Get location from browser
     this.getLocationFromBrowser();
+  }
+
+  myForm = this.formBuilder.group({
+    name: [''],
+    category: ['ALL']  // ✅ Works like any input!
+  });
+
+  onSubmit() {
+    console.log(this.myForm.value);  // { name: '...', category: 'FURNITURE' }
+  }
+
+  loadCategories(){
+this.adSearch.getListedCategories().subscribe((data: any) => {
+
+      this.categories = data;
+
+    });
   }
 
   getLocationFromBrowser(): void {
@@ -93,6 +121,7 @@ export class SubmitAdComponent implements OnInit {
   initializeForm(): void {
     this.submitAdForm = this.formBuilder.group({
       productName: ['', [Validators.required, Validators.minLength(3)]],
+      category: [this.myForm?.value?.category, Validators.required],
       description: ['', [Validators.required, Validators.minLength(10)]],
       price: ['', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]],
       currency: ['INR', Validators.required],
@@ -193,6 +222,7 @@ export class SubmitAdComponent implements OnInit {
     // Create ad submission payload
     const adPayload = this.adSubmissionService.createAdSubmissionPayload(
       this.submitAdForm.get('productName')?.value,
+      this.submitAdForm.get('category')?.value,
       this.submitAdForm.get('description')?.value,
       parseFloat(this.submitAdForm.get('price')?.value),
       this.submitAdForm.get('currency')?.value,
@@ -200,7 +230,7 @@ export class SubmitAdComponent implements OnInit {
       this.userName,
       this.submitAdForm.get('isActive')?.value
     );
-
+    adPayload.categoryCode = this.myForm?.value?.category;
     console.log('Submitting ad with payload:', adPayload);
 
     // Submit ad with media files

@@ -1,6 +1,8 @@
 package com.a2z.controllers;
 
 
+import com.a2z.enums.AdCategory;
+import com.a2z.services.interfaces.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,9 +12,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.a2z.dao.CategoryData;
-import com.a2z.persistence.impl.DefaultCategoryService;
 
 import jakarta.validation.Valid;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @ResponseBody
@@ -21,10 +26,26 @@ import jakarta.validation.Valid;
 public class CategoryController extends RootController {
 	
 	@Autowired
-	DefaultCategoryService categoryService;
+	CategoryService categoryService;
 	
-	@GetMapping("/all/{id}")
-	public CategoryData getCategories(@PathVariable @Valid Long id) {
-		return categoryService.getCategoryByCode(id);
+	@GetMapping("/all/{code}")
+	public CategoryData getCategories(@PathVariable @Valid String code) {
+		return categoryService.getCategoryDataByCode(code);
 	}
+
+	@GetMapping("/listed")
+	public Iterable<String> getAllCategorieNames() {
+		List<String> colorNamesStream = Arrays.stream(AdCategory.values())
+				.map(AdCategory::name) // or .map(Enum::name) or .map(Color::toString)
+				.collect(Collectors.toList());
+		return colorNamesStream;
+
+	}
+
+	@GetMapping("/all")
+	public Iterable<CategoryData> getAllCategories() {
+		return categoryService.getAllCategories();
+	}
+
+
 }

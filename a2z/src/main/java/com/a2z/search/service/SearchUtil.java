@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.a2z.data.*;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,12 +20,6 @@ import com.a2z.dao.AdPost;
 import com.a2z.dao.Customer;
 import com.a2z.dao.MediaContainer;
 import com.a2z.dao.Price;
-import com.a2z.data.AdPostData;
-import com.a2z.data.AddressData;
-import com.a2z.data.CustomerData;
-import com.a2z.data.GPS;
-import com.a2z.data.MediaContainerData;
-import com.a2z.data.PriceData;
 import com.a2z.persistence.A2zMediaContainerRepository;
 import com.a2z.persistence.A2zPriceRepository;
 import com.a2z.persistence.PODCustomerRepository;
@@ -36,6 +32,9 @@ import com.a2z.services.GeometryUtils;
 
 @Service
 public class SearchUtil {
+	private static final int PAGE_SIZE = 10;
+	private static final int DEFAULT_PAGE_NO = 0;
+
 	@Autowired
 	ElasticsearchOperations elasticsearchOperations; 
 	
@@ -63,33 +62,118 @@ public class SearchUtil {
 	@Autowired
 	GeometryUtils geoUtils;
 	
-	
+
 	public void startIndex(AdPostSearch adPost) {
 		/* elasticsearchOperations.indexOps(AdPostSearch.class).create(); */
 		searchRepo.save(adPost);
 	}
 	
 	
-	public void findByName(String prodName) {
-		PageRequest pageRequest = PageRequest.of(0, 10);
+	public PagedAdPostResult findByName(String prodName,Integer pageNo , Integer pageSize) {
+		int pageNumber = DEFAULT_PAGE_NO;
+		int size = PAGE_SIZE;
+		if(ObjectUtils.isNotEmpty(pageNo))
+		{
+			pageNumber = pageNo.intValue()-1;
+		}
+		if(ObjectUtils.isNotEmpty(pageSize))
+		{
+			size = pageSize.intValue();
+		}
+		PageRequest pageRequest = PageRequest.of(pageNumber, size);
 		Page<AdPostSearch> adPostByName
 		  = searchRepo.findByProductNameLike(prodName, pageRequest);
+		return populatePagedAds(adPostByName);
 	}
 	
-	public Page<AdPostSearch> findByCategoryCodeOrProductName(String category) {
-		PageRequest pageRequest = PageRequest.of(0, 10);
+	public PagedAdPostResult findByCategoryCodeOrProductName(String category,Integer pageNo , Integer pageSize) {
+		int pageNumber = DEFAULT_PAGE_NO;
+		int size = PAGE_SIZE;
+		if(ObjectUtils.isNotEmpty(pageNo) && pageNo.intValue()>0)
+		{
+			pageNumber = pageNo.intValue()-1;
+		}
+		if(ObjectUtils.isNotEmpty(pageSize))
+		{
+			size = pageSize.intValue();
+		}
+		PageRequest pageRequest = PageRequest.of(pageNumber, size);
 		Page<AdPostSearch> adPostByPage = searchRepo.findByCategoryCodeOrProductName(category, category, pageRequest);
-		return adPostByPage;
+		return populatePagedAds(adPostByPage);
 	}
 	
 	public void startIndexAll(List<AdPostSearch> adPosts) {
 		searchRepo.saveAll(adPosts);
 	}
 	
-	public List<AdPostData> getAllPosts() {
-		Iterable<AdPostSearch> adPostSearch = searchRepo.findAllByIsActive(true);
-				List<AdPostData> adPostDataList = new ArrayList<AdPostData>();
-		adPostSearch.forEach(ad->{
+	public PagedAdPostResult getAllPosts(Integer pageNo , Integer pageSize) {
+		int pageNumber = DEFAULT_PAGE_NO;
+		int size = PAGE_SIZE;
+		if(ObjectUtils.isNotEmpty(pageNo)&& pageNo.intValue()>0)
+		{
+			pageNumber = pageNo.intValue()-1;
+		}
+		if(ObjectUtils.isNotEmpty(pageSize))
+		{
+			size = pageSize.intValue();
+		}
+		PageRequest pageRequest = PageRequest.of(pageNumber, size);
+		Page<AdPostSearch> adPostSearch = searchRepo.findAllByIsActivePaged(true,pageRequest);
+		return populatePagedAds(adPostSearch);
+ 	}
+	
+	public PagedAdPostResult findByNameAndCatAndLatLong(String prodName , Double lat , Double lon , Double rad,Integer pageNo , Integer pageSize) {
+		//Sort sort = Sort.by(new GeoDistanceOrder("geoPoint", new GeoPoint(lat, lon)));
+		int pageNumber = DEFAULT_PAGE_NO;
+		int size = PAGE_SIZE;
+		if(ObjectUtils.isNotEmpty(pageNo)&& pageNo.intValue()>0)
+		{
+			pageNumber = pageNo.intValue()-1;
+		}
+		if(ObjectUtils.isNotEmpty(pageSize))
+		{
+			size = pageSize.intValue();
+		}
+		PageRequest pageRequest = PageRequest.of(pageNumber, size);
+		if(ObjectUtils.isEmpty(lat) || ObjectUtils.isEmpty(lon) || ObjectUtils.isEmpty(rad)) {
+			return this.findByCategoryCodeOrProductName(prodName,pageNumber, size);
+		}
+		GPS gps = new GPS();
+		gps.setDecimalLatitude(lat);
+		gps.setDecimalLongitude(lon);
+		Map<String, Double> map = geoUtils.getSquareOfTolerance(gps, rad);
+		Page<AdPostSearch> adPostByName
+		  = searchRepo.findByCategoryCodeOrProductNameAndLatLong(prodName, prodName ,map.get("lat1"),map.get("lon1"),map.get("lat2") , map.get("lon2") ,pageRequest);
+		return populatePagedAds(adPostByName);
+	}
+
+	public PagedAdPostResult findByCategoryCode(String prodName ,Integer pageNo , Integer pageSize ) {
+		//Sort sort = Sort.by(new GeoDistanceOrder("geoPoint", new GeoPoint(lat, lon)));
+
+		int pageNumber = DEFAULT_PAGE_NO;
+		int size = PAGE_SIZE;
+		if(ObjectUtils.isNotEmpty(pageNo)&& pageNo.intValue()>0)
+		{
+			pageNumber = pageNo.intValue()-1;
+		}
+		if(ObjectUtils.isNotEmpty(pageSize))
+		{
+			size = pageSize.intValue();
+		}
+		PageRequest pageRequest = PageRequest.of(pageNumber, size);
+
+		Page<AdPostSearch> adPostByName
+				= searchRepo.findByCategoryCode(prodName,pageRequest);
+		return populatePagedAds(adPostByName);
+	}
+
+	private PagedAdPostResult populatePagedAds(Page<AdPostSearch> adPostSearch){
+		PagedAdPostResult pagedAdPostResult = new PagedAdPostResult();
+		pagedAdPostResult.setCurrentPage(adPostSearch.getPageable().getPageNumber());
+		pagedAdPostResult.setTotalPages(adPostSearch.getTotalPages());
+
+		List<AdPostData> adPostDataList = new ArrayList<AdPostData>();
+		adPostSearch.getContent().forEach(ad->{
 			AdPostData adPostData = new AdPostData();
 			adPostData.setActive(true);
 			adPostData.setDescription(ad.getDescription());
@@ -98,7 +182,7 @@ public class SearchUtil {
 			CustomerData customerData = new CustomerData();
 			Optional<Customer> customerOpt = customerRepo.findById(ad.getCustomerUserName());
 			if(customerOpt.isPresent())
-			customerPopulator.populate(customerOpt.get(), customerData);
+				customerPopulator.populate(customerOpt.get(), customerData);
 			adPostData.setCustomer(customerData);
 			MediaContainerData mediaContainerData = new MediaContainerData();
 			Optional<MediaContainer> mediaContainerOpt = mediaContainerRepo.findById(ad.getMediaContainer().getCode());
@@ -107,7 +191,7 @@ public class SearchUtil {
 			adPostData.setMediaContainerData(mediaContainerData);
 			PriceData priceData = new PriceData();
 			Optional<Price> priceOpt = priceRepo.findById(ad.getPriceId());
-			if(priceOpt.isPresent()) 
+			if(priceOpt.isPresent())
 				pricePopulator.populate(priceOpt.get(), priceData);
 			adPostData.setPrice(priceData);
 			AddressData sourceAddressData = new AddressData();
@@ -116,18 +200,9 @@ public class SearchUtil {
 			adPostData.setSourceAddress(sourceAddressData);
 			adPostDataList.add(adPostData);
 		});
-		
-		return adPostDataList;
- 	}
-	
-	public void findByNameAndCatAndLatLong(String prodName , double lat , double lon , double rad) {
-		//Sort sort = Sort.by(new GeoDistanceOrder("geoPoint", new GeoPoint(lat, lon)));
-		PageRequest pageRequest = PageRequest.of(0, 10);
-		GPS gps = new GPS();
-		gps.setDecimalLatitude(lat);
-		gps.setDecimalLongitude(lon);
-		Map<String, Double> map = geoUtils.getSquareOfTolerance(gps, rad);
-		Page<AdPostSearch> adPostByName
-		  = searchRepo.findByCategoryCodeOrProductNameAndLatLong(prodName, prodName ,map.get("lat1"),map.get("lon1"),map.get("lat2") , map.get("lon2") ,pageRequest);
+		pagedAdPostResult.setAdPosts(adPostDataList);
+		return pagedAdPostResult;
 	}
+
+
 }
