@@ -11,6 +11,7 @@ import { PaginationModule } from '../pagination/pagination-module';
 import { SearchResults } from './search-results/search-results';
 import { Categories } from './categories/categories';
 import { CategoryDropdown } from './category-dropdown/category-dropdown';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,7 @@ import { CategoryDropdown } from './category-dropdown/category-dropdown';
     SubmitAdComponent,
     SearchResults,
     Categories,
-    CategoryDropdown
+    CategoryDropdown,
   ],
   imports: [
     CommonModule,
@@ -28,7 +29,8 @@ import { CategoryDropdown } from './category-dropdown/category-dropdown';
     ReactiveFormsModule,
     FormsModule,
     RouterModule,
-    PaginationModule
+    PaginationModule,
+  LeafletModule
   ],
   exports:[AdListComponent]
 })

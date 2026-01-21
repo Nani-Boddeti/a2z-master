@@ -4,6 +4,7 @@ import { Observable, Subject, takeUntil } from 'rxjs';
 import { AdPostUtilService } from '../ad-post-util.service';
 import { AuthStateService } from '../../services/auth-state.service';
 import { AdSearch } from '../../services/ad-search';
+import { LocationService } from '../../services/location-service';
 
 @Component({
   selector: 'app-search-results',
@@ -17,7 +18,8 @@ constructor(
     private adPostUtilService: AdPostUtilService,
     private authStateService: AuthStateService,
     private adSearch: AdSearch,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private locationService: LocationService
   ) {}
 
   searchQuery: string = '';
@@ -31,7 +33,8 @@ constructor(
     totalPages = 10;
     totalItems = 100;
     itemsPerPage = 1;
-
+latitude: number = 0;
+longitude: number = 0;
     onPageChange(event: Event) {
         //this.currentPage = event;
         // Fetch new data based on page
@@ -46,13 +49,17 @@ constructor(
     this.authStateService.userName$.subscribe((userName) => {
       this.userName = userName;
     });
-
-    this.route.queryParams
+     this.locationService.getLocationFromBrowser().subscribe({
+      next: (coords) => {
+        this.latitude = coords.latitude;
+        this.longitude = coords.longitude;
+        console.log(`Lat: ${coords.latitude}, Lng: ${coords.longitude}`);
+          this.route.queryParams
       .pipe(takeUntil(this.destroy$))
       .subscribe(params => {
         this.searchQuery = params['q'] || '';
         if (this.searchQuery) {
-          this.adSearch.searchAdList(this.searchQuery,this.currentPage, this.itemsPerPage).subscribe((data: any) => {
+          this.adSearch.searchAdList(this.searchQuery,this.currentPage, this.itemsPerPage,this.latitude,this.longitude).subscribe((data: any) => {
 
       this.adList = data.adPosts;
       this.currentPage = data.currentPage;
@@ -61,6 +68,12 @@ constructor(
     });
         }
       });
+      },
+      error: (error) => {
+        console.error('Location error:', error);
+      },
+    });
+  
       
     
   }

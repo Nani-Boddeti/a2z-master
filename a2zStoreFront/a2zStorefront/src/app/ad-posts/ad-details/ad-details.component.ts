@@ -9,10 +9,13 @@ import { AdPostModel } from '../../models/adPost.model';
 import { OrderEntryModel } from '../../models/orderEntry.model';
 import { AddressModel } from '../../models/address.model';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet/lib/leaflet.module';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-ad-details',
   templateUrl: './ad-details.component.html',
   styleUrl: './ad-details.component.css'
+ 
 })
 export class AdDetailsComponent {
   placeOrderForm!: FormGroup;
@@ -38,6 +41,7 @@ private router: Router, ){}
   this.adPostUtilService.getAdById(newValue).subscribe((data: any) => {
     this.selectedItem = data;
       this.isItemSelected = true;
+      this.router.navigate(['/map'], { queryParams: { latitude: data.latitude, longitude: data.longitude} });
   });
 }
   backToList() {

@@ -3,6 +3,7 @@ package com.a2z.search.controller;
 import java.util.List;
 
 import com.a2z.data.PagedAdPostResult;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -15,17 +16,20 @@ import com.a2z.search.service.SearchUtil;
 @ResponseBody
 @RequestMapping("/search/")
 public class SearchController {
-	
+	public static final Double DEFAULT_RADIUS_IN_KMS = 0.5;
 	@Autowired
 	SearchUtil searchUtil;
 	
 	@GetMapping
-	public PagedAdPostResult getSearchResults(@RequestParam String query , @RequestParam(required = false) Double lat,
-											  @RequestParam(required = false) Double lon , @RequestParam(required = false) Double rad ,
+	public PagedAdPostResult getSearchResults(@RequestParam String query , @RequestParam(required = false) Double latitude,
+											  @RequestParam(required = false) Double longitude , @RequestParam(required = false) Double radius ,
 											  @RequestParam(required = false) Integer pageNo,@RequestParam(required = false) Integer pageSize){
-		searchUtil.findByName(query, pageNo, pageSize);
-		searchUtil.findByNameAndCatAndLatLong(query, lat, lon, rad,pageNo, pageSize);
-		return searchUtil.findByCategoryCodeOrProductName(query,pageNo, pageSize);
+		//searchUtil.findByName(query, pageNo, pageSize);
+		if(ObjectUtils.isEmpty(radius)){
+			radius = DEFAULT_RADIUS_IN_KMS;
+		}
+		return searchUtil.findByNameAndCatAndLatLong(query, latitude, longitude, radius,pageNo, pageSize);
+		//return searchUtil.findByCategoryCodeOrProductName(query,pageNo, pageSize);
 	}
 	
 	@GetMapping("all")

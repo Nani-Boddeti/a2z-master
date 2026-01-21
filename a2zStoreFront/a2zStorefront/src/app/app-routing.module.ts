@@ -8,6 +8,7 @@ import { LoginRegisterComponent } from './login-register/login-register.componen
 import { AdDetailsComponent } from './ad-posts/ad-details/ad-details.component';
 import { OrderConfirmComponent } from './orders/order-confirm/order-confirm.component';
 import { SearchResults } from './ad-posts/search-results/search-results';
+import { MapComponent } from './ad-posts/map-component/map-component';
 
 
 const routes: Routes = [
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'loginV3', component: LoginRegisterComponent},
   {path:'order-confirm',component:OrderConfirmComponent},
   { path: 'search-results', component: SearchResults },
+  //{path:'map',component:MapComponent}
   
   // {path: '', redirectTo: '/ad-list', pathMatch: 'full' }
 ];

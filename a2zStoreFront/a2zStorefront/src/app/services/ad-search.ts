@@ -12,8 +12,8 @@ export class AdSearch {
   return this.http.get<JSON>("/search/all?pageNo=" + page + "&pageSize=" + size);
  }
 
-   searchAdList(q:string,page:number,size:number){
-  return this.http.get<JSON>("/search/?query=" + q + "&pageNo=" + page + "&pageSize=" + size);
+   searchAdList(q:string,page:number,size:number,latitude:number,longitude:number){
+  return this.http.get<JSON>("/search/?query=" + q + "&pageNo=" + page + "&pageSize=" + size + "&latitude=" + latitude + "&longitude=" + longitude);
  }
   searchAdListWithCategoryCode(q:string,page:number,size:number){
   return this.http.get<JSON>("/search/category/" + q + "&?pageNo=" + page + "&pageSize=" + size);
