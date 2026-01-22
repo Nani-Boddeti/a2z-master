@@ -7,10 +7,76 @@
     <div class="approval-card">
       <!-- LEFT 20%: Image (matches details-image-cell) -->
       <div class="approval-image-cell">
-        @for (media of approvalRequest?.adPostData?.mediaContainerData?.medias; track $index){
-          <img src="/uploads/{{approvalRequest?.adPostData?.mediaContainerData?.code}}/{{media?.fileName}}"/> 
-        }
-      </div>   
+        <div
+          class="image-carousel"
+          *ngIf="approvalRequest?.adPostData.mediaContainerData?.medias"
+          style="position: relative; overflow: hidden"
+        >
+          <!-- Carousel Track -->
+          <div
+            class="carousel-track"
+            [style.transform]="'translateX(-' + currentIndex * 100 + '%)'"
+            style="
+              display: flex;
+              transition: transform 0.3s ease;
+              height: 300px;
+            "
+          >
+            @for (
+              media of approvalRequest?.adPostData.mediaContainerData?.medias;
+              track $index
+            ) {
+              <div
+                class="carousel-slide"
+                style="min-width: 100%; box-sizing: border-box"
+              >
+                <img
+                  [src]="
+                    '/uploads/' +
+                    approvalRequest?.adPostData.mediaContainerData?.code +
+                    '/' +
+                    media.fileName
+                  "
+                  [alt]="'Product image ' + $index"
+                  style="width: 100%; height: 100%; object-fit: cover"
+                  loading="lazy"
+                />
+              </div>
+            }
+          </div>
+
+          <!-- Navigation Dots -->
+          @if (approvalRequest?.adPostData.mediaContainerData?.medias.length > 1) {
+            <div
+              class="carousel-dots"
+              style="text-align: center; margin-top: 15px; gap: 8px"
+            >
+              @for (
+                dot of approvalRequest?.adPostData.mediaContainerData?.medias;
+                track $index
+              ) {
+                <button
+                  class="carousel-dot"
+                  type="button"
+                  [class.active]="currentIndex === $index"
+                  (click)="currentIndex = $index"
+                  [style.background]="
+                    currentIndex === $index ? '#007bff' : '#ddd'
+                  "
+                  style="
+                    border: none;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    transition: background 0.2s;
+                  "
+                ></button>
+              }
+            </div>
+          }
+        </div>
+      </div>  
       
       <!-- MIDDLE 50%: Info (matches details-info-cell) -->
       <div class="approval-info-cell">
@@ -38,4 +104,12 @@
       </div>
     </div>
   }
+   <!-- Pagination -->
+    <app-pagination
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    [totalItems]="totalItems"
+    [itemsPerPage]="itemsPerPage"
+    (pageChange)="approvalRequests($event)">
+  </app-pagination>
 </div>

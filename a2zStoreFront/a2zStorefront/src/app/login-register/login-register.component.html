@@ -1,6 +1,9 @@
 
 <div class="container" *ngIf="!isRegistered && !isHome && !showLoginForm">
-  <h2>Register</h2>
+  <div class="btn-container">
+    <button type="submit" class="a2z-btn" (click)="loginV3()" [disabled]="showLoginForm">Login</button>
+    <button type="submit" class="a2z-btn" (click)="register()" [disabled]="!isRegistered">Register</button>
+  </div>
     <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
         <div>
             <input id="userName" formControlName="userName" placeholder="Enter your Desired User Name"/>
@@ -176,7 +179,9 @@
   </div>
   
   <div class="container" *ngIf="!isRegistered && !isHome && showLoginForm">
-  <h2>LoginV3</h2>
+  <div class="btn-container"><button type="submit" class="a2z-btn" (click)="loginV3()" [disabled]="showLoginForm">Login</button>
+  <button type="submit" class="a2z-btn" (click)="register()" [disabled]="isRegistered">Register</button></div>
+    
     <form [formGroup]="loginForm" method="POST" action="/perform_login">
         <div>
             <input id="userName" formControlName="userName" placeholder="Enter your User Name"/>
@@ -201,7 +206,7 @@
         {{ successMessage }}
       </div>
 
-      <button type="submit" (click)="onLoginV3Submit()">Login</button>
+      <button type="submit" (click)="onLoginV3Submit()">Submit</button>
     </form>
   </div>
 <div *ngIf="isHome">

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.a2z.data.*;
 import com.a2z.services.interfaces.CustomerService;
 import com.a2z.services.interfaces.MediaService;
 import com.a2z.services.interfaces.WishlistService;
@@ -12,21 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.a2z.data.AdPostData;
-import com.a2z.data.ApprovalRequestData;
-import com.a2z.data.ApprovalRequestPostData;
-import com.a2z.data.CustomerData;
-import com.a2z.data.MediaContainerData;
-import com.a2z.data.OrderData;
-import com.a2z.data.WishlistData;
 import com.a2z.services.impl.DefaultCustomerService;
 import com.a2z.services.impl.DefaultMediaService;
 
@@ -59,23 +47,24 @@ public class MyAccountController extends RootController {
 	}
 	
 	@GetMapping("/myAds")
-	public List<AdPostData> viewAllMyAds( HttpServletRequest request){
+	public PagedAdPostResult viewAllMyAds( HttpServletRequest request,@RequestParam(required = false) Integer pageNumber
+			, @RequestParam(required = false) Integer pageSize){
 		String userName = getSessionUserName();
-		List<AdPostData> adsList = new ArrayList<AdPostData>();
 		if(StringUtils.isNotEmpty(userName)) {
-			adsList = customerService.retriveAllMyAds(userName);
+			return customerService.retriveAllMyAds(userName, pageNumber, pageSize);
 		}
-		return Collections.unmodifiableList(adsList);
+		return new PagedAdPostResult();
 	}
 	
 	@GetMapping("/myAdOrders")
-	public List<OrderData> viewAllMyAdOrders( HttpServletRequest request){
+	public PagedA2zOrderResult viewAllMyAdOrders(HttpServletRequest request,
+												 @RequestParam(required = false) Integer pageNumber
+			, @RequestParam(required = false) Integer pageSize){
 		String userName = getSessionUserName();
-		List<OrderData> ordList = new ArrayList<OrderData>();
 		if(StringUtils.isNotEmpty(userName)) {
-			ordList = customerService.getAllMyOrders(userName);
+			return customerService.getAllMyOrders(userName, pageNumber, pageSize);
 		}
-		return Collections.unmodifiableList(ordList);
+		return new PagedA2zOrderResult();
 	}
 	
 	@GetMapping("/order/{orderId}")
@@ -95,9 +84,10 @@ public class MyAccountController extends RootController {
 	}
 	
 	@GetMapping("/approvalRequests")
-	public List<ApprovalRequestData> getApprovalRequests(HttpServletRequest request){
+	public PagedA2zApprovalResult getApprovalRequests(HttpServletRequest request,@RequestParam(required = false) Integer pageNumber
+			, @RequestParam(required = false) Integer pageSize){
 		String userName = getSessionUserName();
-		return customerService.getAllApprovalRequests(userName);
+		return customerService.getAllApprovalRequests(userName, pageNumber, pageSize);
 	}
 	
 	@PostMapping("/approvalRequests/update")

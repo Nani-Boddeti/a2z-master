@@ -10,8 +10,6 @@ public interface OrderService {
 
     void submitOrder(A2zOrder order, boolean isExtended, A2zOrder originalOrder);
 
-    List<OrderData> getAllOrders(String userName);
-
     OrderData getOrderDetail(String userName, Long id);
 
     boolean isCustomerEligibleToOrder(String userName);

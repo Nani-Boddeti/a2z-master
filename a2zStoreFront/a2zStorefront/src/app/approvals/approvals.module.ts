@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { ApprovalsRoutingModule } from './approvals-routing.module';
 import { ApprovalListComponent } from './approval-list/approval-list.component';
+import { PaginationModule } from '../pagination/pagination-module';
 
 
 @NgModule({
@@ -11,7 +12,8 @@ import { ApprovalListComponent } from './approval-list/approval-list.component';
   ],
   imports: [
     CommonModule,
-    ApprovalsRoutingModule
+    ApprovalsRoutingModule,
+    PaginationModule
   ]
 })
 export class ApprovalsModule { }

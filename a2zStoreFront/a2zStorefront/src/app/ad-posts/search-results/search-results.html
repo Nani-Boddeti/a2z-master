@@ -5,8 +5,10 @@
       <div class="ad-card" (click)="viewAd(ad?.id)">
         <!-- 1. TOP: Image (Full Width) -->
         <div class="ad-image-section">
-          @for (media of ad?.mediaContainerData?.medias; track $index){
+          @for (media of ad?.mediaContainerData?.medias; track media;let i = $index){
+            @if (i < 1) { 
             <img src="/uploads/{{ad?.mediaContainerData?.code}}/{{media?.fileName}}"/> 
+            }
           }
         </div>
         

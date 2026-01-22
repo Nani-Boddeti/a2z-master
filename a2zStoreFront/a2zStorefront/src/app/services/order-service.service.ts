@@ -15,7 +15,8 @@ export class OrderServiceService {
     return this.http.post(this.apiUrl, data, { headers });
   }
 
-  getMyAdOrders(): Observable<any> {
-    return this.http.get('/myAccount/myAdOrders');
+  getMyAdOrders(page: number, size: number): Observable<any> {
+    return this.http.get(`/myAccount/myAdOrders?page=${page}&size=${size}`);
   }
+  
 }

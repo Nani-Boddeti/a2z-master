@@ -22,4 +22,5 @@ export class AdSearch {
  getListedCategories(){
   return this.http.get<JSON>("/c/all");
  }
+  
 }

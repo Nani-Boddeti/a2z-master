@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            color: #2563eb;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .detail {
+            margin: 15px 0;
+            padding: 12px;
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            border-radius: 5px;
+        }
+        .label { font-weight: bold; color: #374151; }
+        .price { color: #059669; font-size: 1.2em; font-weight: bold; }
+        .button {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.9em;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        .images-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .image-item {
+            flex: 0 0 48%;
+            max-width: 280px;
+            text-align: center;
+        }
+        .image-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .image-count {
+            background: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>🎉 Your Ad is Live!</h2>
+        </div>
+
+        <p>Hey <strong>${userName}</strong>!</p>
+
+        <p style="font-size: 1.1em; color: #1f2937;">
+            Your ad post <strong>"${adTitle}"</strong> is now <span style="color: #059669;">LIVE</span>!
+        </p>
+
+        <h4 style="color: #374151; margin: 25px 0 15px 0;">📋 Details:</h4>
+
+        <div class="detail">
+            <span class="label">Title:</span> ${adTitle}
+        </div>
+
+        #if($adImageUrls && $adImageUrls.size() > 0)
+        <div style="text-align: center;">
+            <div class="images-gallery">
+            #foreach($imageUrl in ${adImageUrls})
+                <div class="image-item">
+                    <img src="$imageUrl" alt="${adTitle}" onerror="this.style.display='none'">
+                </div>
+            #end
+            </div>
+        </div>
+        #else
+        <div class="detail">
+            <span class="label">Images:</span> No images
+        </div>
+        #end
+
+
+        <div class="detail">
+            <span class="label">Description:</span> ${adDescription}
+        </div>
+
+        <div class="detail">
+            <span class="label">Price:</span> <span class="price">${adPrice}</span>
+        </div>
+
+        <div class="detail">
+            <span class="label">Posted:</span> ${postDate}
+        </div>
+
+        <div style="text-align: center;">
+            <a href="${adLink}" class="button">👀 View Your Ad</a>
+        </div>
+
+        <div class="footer">
+            Thank you for using our platform!<br>
+            <strong>Best regards,<br>The Ad Posting Team</strong>
+        </div>
+    </div>
+</body>
+</html>

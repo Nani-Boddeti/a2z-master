@@ -2,27 +2,27 @@ package com.a2z.services.impl;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import com.a2z.dao.*;
+import com.a2z.data.*;
+import com.a2z.events.CustomerRegistrationEvent;
 import com.a2z.populators.reverse.AddressReversePopulator;
 import com.a2z.services.interfaces.CustomerService;
+import jakarta.transaction.Transactional;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.a2z.data.AdPostData;
-import com.a2z.data.ApprovalRequestData;
-import com.a2z.data.ApprovalRequestPostData;
-import com.a2z.data.CustomerData;
-import com.a2z.data.OTPFormData;
-import com.a2z.data.OrderData;
 import com.a2z.persistence.A2zAdPostRepository;
 import com.a2z.persistence.PODCustomerRepository;
 import com.a2z.persistence.PODOTPRepository;
@@ -72,7 +72,13 @@ public class DefaultCustomerService implements CustomerService {
 	@Autowired
 	AddressReversePopulator addressReversePopulator;
 
-	
+	@Autowired
+	ApplicationEventPublisher eventPublisher;
+
+	private static final int PAGE_SIZE = 10;
+	private static final int DEFAULT_PAGE_NO = 0;
+
+
 	public DefaultCustomerService() {
 		
 	}
@@ -103,31 +109,39 @@ public class DefaultCustomerService implements CustomerService {
 	}
 
 	@Override
+	@Transactional
 	public CustomerData saveCustomer(CustomerData customerData) {
 		String encodedPassword = passwordEncoder.encode(customerData.getPassword());
-		Customer customer = new Customer(customerData.getUserName(),encodedPassword,customerData.getEmail());
+		Customer savedCustomer = null;
+		Optional<Customer> existingCustomer = customerRepo.findById(customerData.getUserName());
+		if (existingCustomer.isEmpty()) {
+			Customer customer = new Customer(customerData.getUserName(), encodedPassword, customerData.getEmail());
 		customerReversePopulator.populate(customerData, customer);
 		customer.setRole("ROLE_USER");
 		List<UserGroup> userGroups = new ArrayList<UserGroup>();
-		if(CollectionUtils.isNotEmpty(customer.getUserGroups()))
+		if (CollectionUtils.isNotEmpty(customer.getUserGroups()))
 			userGroups.addAll(customer.getUserGroups());
 		Optional<UserGroup> userGroupOpt = rootRepository.getUserGroupByName("Prime");
-		if(userGroupOpt.isPresent() && !userGroups.contains(userGroupOpt.get())) {
+		if (userGroupOpt.isPresent() && !userGroups.contains(userGroupOpt.get())) {
 			userGroups.add(userGroupOpt.get());
 		}
 		customer.setUserGroups(userGroups);
 		customerRepo.save(customer);
-		if (customerData.getDefaultAddress() != null)
-		{
+
+		if (customerData.getDefaultAddress() != null) {
 			customerData.getDefaultAddress().setCustomer(customer.getUserName());
 			A2zAddress defaultAddress = new A2zAddress();
 			addressReversePopulator.populate(customerData.getDefaultAddress(), defaultAddress);
 //			defaultAddress.setCustomer(customer);
 			rootRepository.save(defaultAddress);
+			savedCustomer = customer;
 		}
-		Optional<Customer> savedCustomer = customerRepo.findById(customerData.getUserName());
+		sendCustomerRegistrationEmail(customer);
+	} else{
+			savedCustomer = existingCustomer.get();
+		}
 		CustomerData savedCustomerData = new CustomerData();
-		if(savedCustomer.isPresent()) customerPopulator.populate(savedCustomer.get(), savedCustomerData);
+		customerPopulator.populate(savedCustomer, savedCustomerData);
 		return savedCustomerData;
 	}
 
@@ -184,11 +198,28 @@ public class DefaultCustomerService implements CustomerService {
 	}
 
 	@Override
-	public List<AdPostData> retriveAllMyAds(String userName){
+	public PagedAdPostResult retriveAllMyAds(String userName, Integer pageNo, Integer pageSize) {
 		List<AdPostData> myAdDataList = new ArrayList<AdPostData>();
+		int pageNumber = DEFAULT_PAGE_NO;
+		int size = PAGE_SIZE;
+		if(ObjectUtils.isNotEmpty(pageNo))
+		{
+			pageNumber = pageNo.intValue()-1;
+		}
+		if(ObjectUtils.isNotEmpty(pageSize))
+		{
+			size = pageSize.intValue();
+		}
+		PageRequest pageRequest = PageRequest.of(pageNumber, size);
+		PagedAdPostResult pagedResult = new PagedAdPostResult();
+
 		Optional<Customer> customerOpt = customerRepo.findById(userName);
 		if(customerOpt.isPresent()) {
+
 			Customer customer = customerOpt.get();
+			Page<AdPost> pagedAdPosts = adPostRepository.findByCustomer(customer, pageRequest);
+			pagedResult.setCurrentPage(pagedAdPosts.getPageable().getPageNumber());
+			pagedResult.setTotalPages(pagedAdPosts.getTotalPages());
 			List<AdPost> myAdList = customer.getAdList();
 			myAdList.forEach(ad->{
 				AdPostData adData = new AdPostData();
@@ -196,23 +227,39 @@ public class DefaultCustomerService implements CustomerService {
 				myAdDataList.add(adData);
 			});
 		}
-		return Collections.unmodifiableList(myAdDataList);
+		pagedResult.setAdPosts(myAdDataList);
+		return pagedResult;
 	}
 
 	@Override
-	public List<OrderData> getAllMyOrders(String userName){
+	public PagedA2zOrderResult getAllMyOrders(String userName, Integer pageNo, Integer pageSize){
 		List<OrderData> orderDataList = new ArrayList<OrderData>();
+		int pageNumber = DEFAULT_PAGE_NO;
+		int size = PAGE_SIZE;
+		if(ObjectUtils.isNotEmpty(pageNo))
+		{
+			pageNumber = pageNo.intValue()-1;
+		}
+		if(ObjectUtils.isNotEmpty(pageSize))
+		{
+			size = pageSize.intValue();
+		}
+		PageRequest pageRequest = PageRequest.of(pageNumber, size);
+		PagedA2zOrderResult pagedResult = new PagedA2zOrderResult();
 		Optional<Customer> customerOpt = customerRepo.findById(userName);
 		if(customerOpt.isPresent()) {
 			Customer customer = customerOpt.get();			
-			List<A2zOrder> myOrdList = rootRepository.getMyOrders(customer);
+			Page<A2zOrder> myOrdList = rootRepository.getMyOrders(customer,pageRequest);
+			pagedResult.setCurrentPage(myOrdList.getPageable().getPageNumber());
+			pagedResult.setTotalPages(myOrdList.getTotalPages());
 			myOrdList.forEach(ord->{
 				OrderData ordData = new OrderData();
 				orderPopulator.populate(ord, ordData);
 				orderDataList.add(ordData);
 			});
 		}
-		return Collections.unmodifiableList(orderDataList);
+		pagedResult.setA2zOrders(orderDataList);
+		return pagedResult;
 	}
 	@Override
 	public OrderData viewOrder(Long id, String userName){
@@ -229,11 +276,25 @@ public class DefaultCustomerService implements CustomerService {
 		return orderData;
 	}
 	@Override
-	public List<ApprovalRequestData> getAllApprovalRequests(String userName){
+	public PagedA2zApprovalResult getAllApprovalRequests(String userName, Integer pageNo, Integer pageSize){
+		int pageNumber = DEFAULT_PAGE_NO;
+		int size = PAGE_SIZE;
+		if(ObjectUtils.isNotEmpty(pageNo))
+		{
+			pageNumber = pageNo.intValue()-1;
+		}
+		if(ObjectUtils.isNotEmpty(pageSize))
+		{
+			size = pageSize.intValue();
+		}
+		PageRequest pageRequest = PageRequest.of(pageNumber, size);
+		PagedA2zApprovalResult pagedResult = new PagedA2zApprovalResult();
 		Optional<Customer> customerOpt = customerRepo.findById(userName);
 		List<ApprovalRequestData> approvalRequestDataList = new ArrayList<ApprovalRequestData>();
 		if(customerOpt.isPresent()) {
-			List<ApprovalRequest> approvalRequests = rootRepository.getAllApprovalRequests(customerOpt.get());
+			Page<ApprovalRequest> approvalRequests = rootRepository.getAllApprovalRequests(customerOpt.get(),pageRequest);
+			pagedResult.setTotalPages(approvalRequests.getTotalPages());
+			pagedResult.setCurrentPage(approvalRequests.getPageable().getPageNumber());
 			approvalRequests.stream().forEach(approvalRequest->{
 				ApprovalRequestData approvalReqData = new ApprovalRequestData();
 				approvalReqData.setId(approvalRequest.getId());
@@ -248,7 +309,8 @@ public class DefaultCustomerService implements CustomerService {
 			});
 
 		}
-		return approvalRequestDataList;
+		pagedResult.setApprovalRequestDataList(approvalRequestDataList);
+		return pagedResult;
 	}
 	@Override
 	public ApprovalRequestData getApprovalRequest(Long id, String userName){
@@ -301,6 +363,11 @@ public class DefaultCustomerService implements CustomerService {
 		return isPrimeCustomer ? true : (isBasicCustomer && adList.isEmpty() ? true : false);
 		}
 	return false;	
+	}
+
+	private void sendCustomerRegistrationEmail(Customer customer) {
+		CustomerRegistrationEvent event = new CustomerRegistrationEvent(customer);
+		eventPublisher.publishEvent(event);
 	}
 	
 }

@@ -20,13 +20,13 @@ public interface CustomerService {
 
     CustomerData getCustomerProfile(String userName);
 
-    List<AdPostData> retriveAllMyAds(String userName);
+    PagedAdPostResult retriveAllMyAds(String userName, Integer pageNo, Integer pageSize);
 
-    List<OrderData> getAllMyOrders(String userName);
+    PagedA2zOrderResult getAllMyOrders(String userName, Integer pageNo, Integer pageSize);
 
     OrderData viewOrder(Long id, String userName);
 
-    List<ApprovalRequestData> getAllApprovalRequests(String userName);
+    PagedA2zApprovalResult getAllApprovalRequests(String userName, Integer pageNo, Integer pageSize);
 
     ApprovalRequestData getApprovalRequest(Long id, String userName);
 

@@ -90,6 +90,7 @@ export class OauthTokenService {
           this.isRefreshing = false;
           this.authStateService.setLoggedIn(false);
           observer.error('Token refresh failed');
+          this.router.navigate(['/loginV3']);
         }
       };
 
@@ -97,6 +98,7 @@ export class OauthTokenService {
         this.isRefreshing = false;
         this.authStateService.setLoggedIn(false);
         observer.error('Token refresh request failed');
+        this.router.navigate(['/loginV3']);
       };
 
       xhr.send(params.toString());

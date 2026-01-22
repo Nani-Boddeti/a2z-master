@@ -30,7 +30,7 @@ export class AdListComponent {
   currentPage = 1;
   totalPages = 10;
   totalItems = 100;
-  itemsPerPage = 1;
+  itemsPerPage = 10;
   selectedCategory: string = 'ALL';
   categories: any[] = [];
   onPageChange(event: Event) {
@@ -48,8 +48,14 @@ export class AdListComponent {
     this.adSearch
       .getAdList(this.currentPage, this.itemsPerPage)
       .subscribe((data: any) => {
+         data.adPosts.forEach((ad: any) => {
+        if(this.userName && ad.customer.userName === this.userName) {
+          ad.isSelfAd = true;
+        } else {
+          ad.isSelfAd = false;    
+      }});
         this.adList = data.adPosts;
-        this.currentPage = data.currentPage;
+        this.currentPage = data.currentPage + 1;
         this.totalPages = data.totalPages;
       });
     this.locationService.getLocationFromBrowser().subscribe({
@@ -71,12 +77,18 @@ export class AdListComponent {
 
   loadItems(page: number) {
     this.adSearch.getAdList(page, this.itemsPerPage).subscribe((data: any) => {
+      data.adPosts.forEach((ad: any) => {
+        if(this.userName && ad.customer.userName === this.userName) {
+          ad.isSelfAd = true;
+        } else {
+          ad.isSelfAd = false;    
+      }});
       this.adList = data.adPosts;
-      this.currentPage = data.currentPage;
+      this.currentPage = data.currentPage + 1;
       this.totalPages = data.totalPages;
     });
   }
-
+  
   onCategoryChange(categoryCode: string) {
     this.selectedCategory = categoryCode;
     this.currentPage = 1; // Reset to page 1

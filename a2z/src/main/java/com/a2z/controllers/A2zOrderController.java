@@ -54,11 +54,11 @@ public class A2zOrderController extends RootController {
 		return orderDataNew;
 	}
 	
-	@GetMapping("/all")
+	/*@GetMapping("/all")
 	public List<OrderData> getOrders(HttpServletRequest request){
 		String userName = getSessionUserName();
 		return orderService.getAllOrders(userName);
-	}
+	}*/
 
 	@GetMapping("/{orderId}")
 	public OrderData getOrderDetails(@PathVariable @Valid long orderId , HttpServletRequest request) {

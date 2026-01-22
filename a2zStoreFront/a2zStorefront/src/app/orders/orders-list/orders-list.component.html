@@ -1,4 +1,4 @@
-@for (order of orderList; track $index) {
+
 <div class="container mx-auto px-4 py-8 max-w-6xl">
   <!-- Orders Header -->
   <div class="content mb-12 p-8">
@@ -24,7 +24,7 @@
       <button class="pill">Cancelled</button>
     </div>
   </div>
-
+@for (order of orderList; track $index) {
   <!-- Orders Grid -->
   <div class="article-grid">
   <!-- 3-Column Order Card -->
@@ -46,7 +46,7 @@
               class="order-image">
       </div>
     }
-}
+    }
     </div>
     
     <!-- MIDDLE COLUMN: Items + Description (45%) -->
@@ -78,20 +78,19 @@
   </div>
 </div>
 
-  <!-- Pagination -->
-  <div class="content mt-12 p-6">
-    <div class="pill-group justify-center">
-      <button class="pill">‹ Previous</button>
-      <button class="pill">1</button>
-      <button class="pill active">2</button>
-      <button class="pill">3</button>
-      <button class="pill">Next ›</button>
-    </div>
-  </div>
-</div>
+
+
 
 
 }
 
 
-
+  <!-- Pagination -->
+    <app-pagination
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    [totalItems]="totalItems"
+    [itemsPerPage]="itemsPerPage"
+    (pageChange)="getOrders($event)">
+  </app-pagination>
+</div>

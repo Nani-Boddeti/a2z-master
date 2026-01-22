@@ -69,8 +69,8 @@ export class AdService {
     };
   }
 
-  getApprovalRequests(): Observable<any> {
-    return this.http.get('/myAccount/approvalRequests');
+  getApprovalRequests(page: number, size: number): Observable<any> {
+    return this.http.get(`/myAccount/approvalRequests?page=${page}&size=${size}`);
   }
   submitApprovalRequest(approvalRequestForm: any): Observable<any> {
     const headers = new HttpHeaders({

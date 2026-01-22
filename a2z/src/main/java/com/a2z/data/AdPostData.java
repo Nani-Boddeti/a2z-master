@@ -37,6 +37,7 @@ public class AdPostData extends RootData {
 	private double latitude;
 	private double longitude;
 	private String categoryCode;
+	private boolean selfAdded;
 	@Override
 	public void setErrorMessage(String errorMessage) {
 		// TODO Auto-generated method stub
@@ -142,5 +143,13 @@ public class AdPostData extends RootData {
 
 	public void setCategoryCode(String categoryCode) {
 		this.categoryCode = categoryCode;
+	}
+
+	public boolean isSelfAdded() {
+		return selfAdded;
+	}
+
+	public void setSelfAdded(boolean selfAdded) {
+		this.selfAdded = selfAdded;
 	}
 }

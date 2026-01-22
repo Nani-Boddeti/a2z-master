@@ -86,7 +86,7 @@ public class DefaultOrderService implements OrderService {
 		return order;
 	}
 
-	@Override
+/*	@Override
 	public List<OrderData> getAllOrders(String userName){
 		List<OrderData> orderDataList = new ArrayList<OrderData>();
 		if(StringUtils.isNotEmpty(userName)) {
@@ -101,7 +101,7 @@ public class DefaultOrderService implements OrderService {
 			}
 		}
 		return orderDataList;
-	}
+	}*/
 	@Override
 	public OrderData getOrderDetail(String userName, Long id){
 		OrderData orderData = new OrderData();

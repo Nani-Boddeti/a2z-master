@@ -3,6 +3,7 @@ package com.a2z;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @EnableScheduling
 @CrossOrigin("http://localhost:4200") 
 @EnableTransactionManagement
+@EnableAsync
 public class A2zApplication {
 
 	/*

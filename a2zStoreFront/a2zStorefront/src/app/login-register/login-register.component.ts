@@ -6,6 +6,7 @@ import { UserModel } from '../models/user.model';
 import { CountryModel } from '../models/country.model';
 import { AuthStateService } from '../services/auth-state.service';
 import { OauthTokenService } from '../services/oauth-token.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-register',
@@ -28,6 +29,7 @@ export class LoginRegisterComponent implements OnInit {
     private registrationService: RegistrationService,
     private authStateService: AuthStateService,
     private oauthTokenService: OauthTokenService,
+    private router: Router
   ) {
     this.registrationForm = this.formBuilder.group({
       userName: ['', [Validators.required, Validators.minLength(2)]],
@@ -157,6 +159,7 @@ export class LoginRegisterComponent implements OnInit {
   register() {
     this.isRegistered = false;
     this.isHome = false;
+    this.showLoginForm = false;
   }
 
   goHome() {
@@ -272,14 +275,16 @@ export class LoginRegisterComponent implements OnInit {
           this.isRegistered = true;
           this.isHome = true;
           // Reset form
-          this.registrationForm.reset();
+          //this.registrationForm.reset();
           this.isSubmitting = false;
+          this.router.navigate(['/loginV3']);
         },
         error: (error) => {
           this.errorMessage =
             error.error?.message || 'Registration failed. Please try again.';
           console.error('Registration error:', error);
           this.isSubmitting = false;
+          
         }
       });
     }

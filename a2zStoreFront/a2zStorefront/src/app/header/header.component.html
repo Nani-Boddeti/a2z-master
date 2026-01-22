@@ -45,7 +45,7 @@
           <circle cx="11" cy="11" r="8"></circle>
           <path d="m21 21-4.35-4.35"></path>
         </svg>       
-        <input  #searchInput id="query" formControlName="query" type="text" class="search-input" placeholder="Search...">
+        <input  #searchInput id="query"  type="text" class="search-input" placeholder="Search...">
         <button class="search-btn" type="submit" (click)="onSearch(searchInput.value)">
           <svg class="search-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="9 18 15 12 9 6"></polyline>
@@ -69,7 +69,7 @@
   </div>
 
   <!-- Modern User Dropdown (Desktop Logged In) -->
-  <div class="user-dropdown" *ngIf="isLoggedIn && userMenuOpen" [@fadeIn]>
+  <div class="user-dropdown" *ngIf="isLoggedIn && userMenuOpen">
     <a (click)="goToProfile(); toggleUserMenu()">Profile</a>
     <a (click)="goToSubmitAd(); toggleUserMenu()">Submit Ad</a>
     <a (click)="goToApprovalRequests(); toggleUserMenu()">Approval Requests</a>
@@ -101,7 +101,14 @@
         </svg>
         <span>Submit Ad</span>
       </a>
-
+      <!-- My Ads-->
+      <a class="menu-item" (click)="goToMyAds(); closeMenu()" *ngIf="isLoggedIn">
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17,8 17,15 7,15 7,8"></polyline>
+        </svg>
+        <span>My Ads</span>
+      </a>
       <!-- Approval Requests -->
       <a class="menu-item" (click)="goToApprovalRequests(); closeMenu()" *ngIf="isLoggedIn">
         <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

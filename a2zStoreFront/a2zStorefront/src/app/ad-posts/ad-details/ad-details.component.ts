@@ -30,11 +30,17 @@ private router: Router, ){}
   isItemSelected: boolean = false;
   isBackToAllPosts:boolean= false; 
   isOrderPlaced : boolean = false;
+  currentIndex = 0;
   ngOnInit() {
     this.adId = +this.route.snapshot.queryParams['adId'] || 0;
     if(this.adId) {
     this.viewAd(this.adId);}
     this.initializeForm();
+  setInterval(() => {
+      if (this.selectedItem?.mediaContainerData?.medias?.length > 1) {
+        this.currentIndex = (this.currentIndex + 1) % this.selectedItem.mediaContainerData.medias.length;
+      }
+    }, 4000);
   }
 
   viewAd(newValue: number) {
@@ -126,8 +132,14 @@ private router: Router, ){}
       console.log('Response from the server:', response);
     }, error => {
       console.error('Error:', error);
+      this.router.navigate(['/loginV3']);
     });
   }
+
+   openMap(lat : number, lng: number  ) {
+                  const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+                  window.open(url, "_blank", "noopener");
+                }
 }
 
 

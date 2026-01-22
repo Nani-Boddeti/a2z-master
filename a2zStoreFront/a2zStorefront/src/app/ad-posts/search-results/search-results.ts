@@ -71,6 +71,7 @@ longitude: number = 0;
       },
       error: (error) => {
         console.error('Location error:', error);
+        this.router.navigate(['/ad-list']);
       },
     });
   

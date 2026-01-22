@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { RegistrationService } from '../login-register/registration.service';
 import { AuthStateService } from '../services/auth-state.service';
@@ -27,7 +27,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private registrationService: RegistrationService,
     private authStateService: AuthStateService,
     private adService: AdService,
-    private orderService: OrderServiceService
+    private orderService: OrderServiceService,
+    private elementRef: ElementRef
   ) {}
 
   ngOnInit(): void {
@@ -99,6 +100,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   goToLogin(): void {
     this.navigateTo('/loginV3');
   }
+  goToMyAds(): void {
+    this.navigateTo('/my-ads');
+  }
 onSearch(query:string) {
     
     // Navigate to search results
@@ -107,6 +111,13 @@ onSearch(query:string) {
     }
     
   }
+
+  @HostListener('document:click', ['$event'])
+    onClickOutside(event: Event) {
+      if (!this.elementRef.nativeElement.contains(event.target)) {
+        this.closeMenu();
+      }
+    }
 
   logout(): void {
     this.registrationService.logout().subscribe({

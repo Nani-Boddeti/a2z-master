@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { RegistrationService } from '../../login-register/registration.service';
 import { registerLocaleData } from '@angular/common';
+import { Router } from '@angular/router';
+import { CustomerService } from '../../services/customer-service';
 
 @Component({
   selector: 'app-profile',
@@ -9,7 +11,7 @@ import { registerLocaleData } from '@angular/common';
 })
 export class ProfileComponent implements OnInit {
 userData :any;
-  constructor(private registrationService : RegistrationService) { }
+  constructor(private customerService : CustomerService,private router: Router) { }
 
   ngOnInit(): void {
    
@@ -18,10 +20,16 @@ userData :any;
      this.getProfileData();
   }
   getProfileData(): void {
-    this.registrationService.getUserProfile().subscribe((data:any)=>{
-  console.log('User Profile Data:', data);
-  this.userData = data;
-}); 
+     this.customerService.getProfileData().subscribe({
+    next: (profileData) => {
+      // Use emitted profile data
+      this.userData = profileData;
+    },
+    error: (error) => {
+      console.error('Error fetching user profile:', error);
+      this.router.navigate(['/loginV3']);
+    }
+  });
   }
 updateProfile(): void {
   // Implement profile update logic here

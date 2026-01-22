@@ -3,6 +3,7 @@ import { AdService } from '../../services/ad.service';
 import { AdPostUtilService } from '../../ad-posts/ad-post-util.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApprovalRequestSubmitModel } from '../../models/approvalRequestSubmit.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-approval-list',
@@ -11,18 +12,30 @@ import { ApprovalRequestSubmitModel } from '../../models/approvalRequestSubmit.m
 })
 export class ApprovalListComponent implements OnInit {
   approvalRequestsList: any;
+    currentIndex = 0;
+       currentPage = 1;
+  totalPages = 10;
+  totalItems = 100;
+  itemsPerPage = 10;
 approvalRequestModel:ApprovalRequestSubmitModel=new ApprovalRequestSubmitModel(0,'');
-  constructor(private adService: AdService,private adPostUtilService: AdPostUtilService) {
+  constructor(private adService: AdService,private adPostUtilService: AdPostUtilService, private router: Router) {
   }
 
   ngOnInit(): void {}
   ngAfterViewInit() {
     this.approvalRequests();
+    //  setInterval(() => {
+    //   if (this.selectedItem?.mediaContainerData?.medias?.length > 1) {
+    //     this.currentIndex = (this.currentIndex + 1) % this.selectedItem.mediaContainerData.medias.length;
+    //   }
+    // }, 4000);
   }
-  approvalRequests(): void {
-    this.adService.getApprovalRequests().subscribe((data: any) => {
+  approvalRequests(page: number = 1): void {
+    this.adService.getApprovalRequests(page, this.itemsPerPage).subscribe((data: any) => {
       console.log('User Profile Data:', data);
-      this.approvalRequestsList = data;
+      this.approvalRequestsList = data.approvalRequestDataList;
+      this.totalPages = data.totalPages;
+      this.currentPage = data.currentPage + 1; 
     });
   }
 
@@ -41,6 +54,7 @@ approvalRequestModel:ApprovalRequestSubmitModel=new ApprovalRequestSubmitModel(0
       },
       (error) => {
         console.error('Error approving request:', error);
+        this.router.navigate(['/loginV3']);
       }
     );
     }
@@ -59,7 +73,12 @@ approvalRequestModel:ApprovalRequestSubmitModel=new ApprovalRequestSubmitModel(0
       },
       (error) => {
         console.error('Error rejecting request:', error);
+        this.router.navigate(['/loginV3']);
       }
     );
   } 
+  changePageSize(newSize: number) {
+    this.itemsPerPage = newSize;
+    this.approvalRequests(1); // Reload items with new page size, starting from page 1
+  }
 }

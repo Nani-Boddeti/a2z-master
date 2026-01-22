@@ -6,7 +6,7 @@ import {
   HttpInterceptor,
   HttpErrorResponse
 } from '@angular/common/http';
-import { Observable, throwError, BehaviorSubject } from 'rxjs';
+import { Observable, throwError, BehaviorSubject, EMPTY } from 'rxjs';
 import { catchError, filter, take, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from './services/auth-state.service';
 import { OauthTokenService } from './services/oauth-token.service';
@@ -47,8 +47,28 @@ export class AuthInterceptor implements HttpInterceptor {
     })
   );
 }
-
-    return this.addTokenAndForwardRequest(request, next);
+  //  this.addTokenAndForwardRequest(request, next).subscribe({
+  //   error: (error : HttpErrorResponse) => {
+  //     if(error.status === 401){
+  //       this.authStateService.setLoggedIn(false);
+  //     this.authStateService.removeTokens();
+  //     this.authStateService.removeUserInfo();
+  //     this.router.navigate(['/loginV3']);
+  //     }
+      
+  //   }
+  // });
+  return this.addTokenAndForwardRequest(request, next).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401) {
+        this.authStateService.setLoggedIn(false);
+        this.authStateService.removeTokens();
+        this.authStateService.removeUserInfo();
+        this.router.navigate(['/loginV3']);
+      }
+      throw error;  // Re-throw to maintain chain
+    })
+  );
   }
 
   private addTokenAndForwardRequest(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {

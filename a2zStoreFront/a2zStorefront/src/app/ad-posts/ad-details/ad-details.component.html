@@ -7,13 +7,75 @@
     <div class="details-card">
       <!-- LEFT 20%: Image -->
       <div class="details-image-cell">
-        @for (media of selectedItem?.mediaContainerData?.medias; track $index) {
-          <img
-            src="/uploads/{{ selectedItem?.mediaContainerData?.code }}/{{
-              media?.fileName
-            }}"
-          />
-        }
+        <div
+          class="image-carousel"
+          *ngIf="selectedItem?.mediaContainerData?.medias"
+          style="position: relative; overflow: hidden"
+        >
+          <!-- Carousel Track -->
+          <div
+            class="carousel-track"
+            [style.transform]="'translateX(-' + currentIndex * 100 + '%)'"
+            style="
+              display: flex;
+              transition: transform 0.3s ease;
+              height: 300px;
+            "
+          >
+            @for (
+              media of selectedItem.mediaContainerData.medias;
+              track $index
+            ) {
+              <div
+                class="carousel-slide"
+                style="min-width: 100%; box-sizing: border-box"
+              >
+                <img
+                  [src]="
+                    '/uploads/' +
+                    selectedItem.mediaContainerData.code +
+                    '/' +
+                    media.fileName
+                  "
+                  [alt]="'Product image ' + $index"
+                  style="width: 100%; height: 100%; object-fit: cover"
+                  loading="lazy"
+                />
+              </div>
+            }
+          </div>
+
+          <!-- Navigation Dots -->
+          @if (selectedItem.mediaContainerData.medias.length > 1) {
+            <div
+              class="carousel-dots"
+              style="text-align: center; margin-top: 15px; gap: 8px"
+            >
+              @for (
+                dot of selectedItem.mediaContainerData.medias;
+                track $index
+              ) {
+                <button
+                  class="carousel-dot"
+                  type="button"
+                  [class.active]="currentIndex === $index"
+                  (click)="currentIndex = $index"
+                  [style.background]="
+                    currentIndex === $index ? '#007bff' : '#ddd'
+                  "
+                  style="
+                    border: none;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    transition: background 0.2s;
+                  "
+                ></button>
+              }
+            </div>
+          }
+        </div>
       </div>
 
       <!-- MIDDLE 50%: Info -->
@@ -21,6 +83,13 @@
         <h3>{{ selectedItem?.productName }}</h3>
         <p class="product-description">{{ selectedItem?.description }}</p>
         <div class="location-display">
+          <button
+            class="rent-btn"
+            (click)="openMap(selectedItem?.latitude, selectedItem?.longitude)"
+          >
+            Open Map
+          </button>
+
           <span class="location"
             >{{ selectedItem?.latitude }}, {{ selectedItem?.longitude }}</span
           >
@@ -46,6 +115,4 @@
       </div>
     </div>
   </div>
-
-  
 </div>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { OrderModel } from '../../models/order.model';
+import { AuthStateService } from '../../services/auth-state.service';
 
 @Component({
   selector: 'app-order-confirm',
@@ -14,10 +15,14 @@ export class OrderConfirmComponent implements OnInit {
   orderDate: string = '';
   orderDetails: any = {};
 
-  constructor(private router: Router) {}
+  constructor(private router: Router,private authStateService: AuthStateService) {}
 
   ngOnInit(): void {
     // Get order data from router state or sessionStorage
+    if (!this.authStateService.getLoggedInStatus()) {
+      this.router.navigate(['/loginV3']);
+      return;
+    }
     const navigation = this.router.getCurrentNavigation();
     const orderData = sessionStorage.getItem('lastOrder');
     

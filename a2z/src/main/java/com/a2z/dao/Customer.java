@@ -4,15 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 @Entity
 public class Customer {
@@ -44,6 +36,7 @@ public class Customer {
 	private String password;
 
 	@Id
+	@Column(unique = true, nullable = false)
 	private final String userName;
 
 	/* private final Set<GrantedAuthority> authorities; */
@@ -61,6 +54,7 @@ public class Customer {
 	@JoinColumn(name = "defaultCountry_isoCode" , referencedColumnName="isoCode")
 	private Country defaultCountry;
 	private String email;
+	@Column(unique = true, nullable = false)
 	private String phoneNumber;
 	@OneToMany(mappedBy="customer")
 	private List<A2zAddress> address;

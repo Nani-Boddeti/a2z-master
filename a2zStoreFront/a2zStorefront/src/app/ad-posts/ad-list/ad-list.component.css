@@ -1,45 +1,50 @@
-/* GRID - Multiple Cards Per Row (FIXED) */
+/* BASE GRID - Fully Responsive */
 .ad-list-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));  /* Reduced min width */
   gap: 1.5rem;
   padding: 1rem;
-  max-width: 1400px;
+  max-width: 100%;  /* Changed from 1400px */
   margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* Desktop: 4 cards */
-@media (min-width: 1200px) {
+/* Desktop: Max 4 cards */
+@media (min-width: 1400px) {
   .ad-list-grid {
-    grid-template-columns: repeat(4, 350px);
+    grid-template-columns: repeat(4, 1fr);  /* 1fr not fixed 350px */
   }
 }
 
-/* Tablet: 3 cards */
-@media (min-width: 900px) and (max-width: 1199px) {
+/* Large Desktop: 3-4 cards */
+@media (min-width: 1100px) and (max-width: 1399px) {
   .ad-list-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-/* Mobile: 2 cards */
-@media (max-width: 768px) {
+/* Tablet: 2 cards */
+@media (max-width: 900px) {
   .ad-list-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
+    padding: 0.5rem;
   }
 }
 
-/* Mobile Single: 1 card */
-@media (max-width: 480px) {
+/* Mobile: 1 card */
+@media (max-width: 600px) {
   .ad-list-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0.5rem;
   }
 }
-
 /* AD CARD - VERTICAL STACK (UNCHANGED) */
 .ad-card {
-  height: 440px;
+  height: auto;
+  min-height: 420px;
   display: flex;
   flex-direction: column;
   background: #f8fafc;
@@ -154,3 +159,39 @@
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
 }
+
+.ad-card {
+  position: relative;  /* ← CRITICAL: Contains absolute children */
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  opacity: 1 !important;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: rgba(34, 197, 94, 0.95);
+  color: white;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 10;
+  
+  &.self-badge {
+    .badge-icon {
+      width: 14px;
+      height: 14px;
+      stroke: white;
+      stroke-width: 2.5;
+    }
+  }
+}
+
+

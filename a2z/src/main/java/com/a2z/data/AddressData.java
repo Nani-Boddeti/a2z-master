@@ -12,49 +12,48 @@ import jakarta.validation.constraints.Size;
 public class AddressData extends RootData {
 
 	private Long id;
-	@Pattern(regexp="^[a-zA-Z0-9[ ]*]*")
+	@Pattern(regexp="^[a-zA-Z0-9 ,']*$")
 	@Size(min = 2, message = "{validation.firstName.size.too_short}")
 	@Size(max = 30, message = "{validation.firstName.size.too_long}")
 	private String firstName;
-	@Pattern(regexp="^[a-zA-Z0-9[ ]*]*")
+	@Pattern(regexp="^[a-zA-Z0-9 ,']*$")
 	@Size(min = 2, message = "{validation.lastName.size.too_short}")
 	@Size(max = 30, message = "{validation.lastName.size.too_long}")
 	private String lastName;
-	@Pattern(regexp="^[a-zA-Z0-9[ ]*]*")
+	@Pattern(regexp="^[a-zA-Z0-9 ,']*$")
 	@Size(min = 2, message = "{validation.line1.size.too_short}")
 	@Size(max = 30, message = "{validation.line1.size.too_long}")
 	private String line1;
-	@Pattern(regexp="^[a-zA-Z0-9[ ]*]*")
+	@Pattern(regexp="^[a-zA-Z0-9 ,']*$")
 	@Size(min = 2, message = "{validation.line2.size.too_short}")
 	@Size(max = 30, message = "{validation.line2.size.too_long}")
 	private String line2;
-	@Pattern(regexp="^[a-zA-Z0-9[ ]*]*")
+	@Pattern(regexp="^[a-zA-Z0-9 ,']*$")
 	@Size(min = 2, message = "{validation.apartment.size.too_short}")
 	@Size(max = 30, message = "{validation.apartment.size.too_long}")
 	private String apartment;
-	@Pattern(regexp="^[a-zA-Z0-9[ ]*]*")
+	@Pattern(regexp="^[a-zA-Z0-9 ,']*$")
 	@Size(min = 2, message = "{validation.building.size.too_short}")
 	@Size(max = 30, message = "{validation.building.size.too_long}")
 	private String building;
-	@Pattern(regexp="^[a-zA-Z0-9[ ]*]*")
-	@Size(min = 8, message = "{validation.cellphone.size.too_short}")
+	@Size(min = 10, message = "{validation.cellphone.size.too_short}")
 	@Size(max = 12, message = "{validation.cellphone.size.too_long}")
 	@Pattern(regexp = "/^\\d+$/")
 	private String cellphone;
-	@Pattern(regexp="^[a-zA-Z0-9[ ]*]*")
-	@Size(min = 8, message = "{validation.company.size.too_short}")
+	@Pattern(regexp="^[a-zA-Z0-9 ,']*$")
+	@Size(min = 2, message = "{validation.company.size.too_short}")
 	@Size(max = 30, message = "{validation.company.size.too_long}")
 	private String company;
 	@Valid
 	private CountryData country;
-	@Pattern(regexp="^[a-zA-Z0-9[ ]*]*")
-	@Size(min = 8, message = "{validation.district.size.too_short}")
+	@Pattern(regexp="^[a-zA-Z0-9 ,']*$")
+	@Size(min = 2, message = "{validation.district.size.too_short}")
 	@Size(max = 30, message = "{validation.district.size.too_long}")
 	private String district;
 	@Email
 	private String email;
-	@Pattern(regexp="^[a-zA-Z0-9[ ]*]*")
-	@Size(min = 8, message = "{validation.customerId.size.too_short}")
+	@Pattern(regexp="^[a-zA-Z0-9 ,']*$")
+	@Size(min = 3, message = "{validation.customerId.size.too_short}")
 	@Size(max = 30, message = "{validation.customerId.size.too_long}")
 	private String customerId;
 	private double latitude;

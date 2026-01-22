@@ -5,34 +5,44 @@
   </app-categories>
 </div>
 <section class="ad-list-grid">
-  
-    @for (ad of adList; track $index) {
-      <div class="ad-card" (click)="viewAd(ad?.id)">
-        <!-- 1. TOP: Image (Full Width) -->
-        <div class="ad-image-section">
-          @for (media of ad?.mediaContainerData?.medias; track $index){
+  @for (ad of adList; track $index) {
+    <div class="ad-card" (click)="viewAd(ad?.id)">
+      <!-- 1. TOP: Image (Full Width) -->
+      <div class="ad-image-section">
+        @for (media of ad?.mediaContainerData?.medias; track media; let i = $index) {
+          @if (i < 1) { 
             <img src="/uploads/{{ad?.mediaContainerData?.code}}/{{media?.fileName}}"/> 
           }
-        </div>
-        
-        <!-- 2. MIDDLE: Product Info + Address -->
-        <div class="ad-info-section">
-          <h2>{{ad?.productName}}</h2>
-          <p>{{ad?.description}}</p>
-          <div class="ad-address">
-            <span>{{ad?.sourceAddress?.latitude}}, {{ad?.sourceAddress?.longitude}}</span>
-          </div>
-        </div>
-        
-        <!-- 3. BOTTOM: Price + Action -->
-        <div class="ad-price-section">
-          <span class="price">{{ad?.price?.currency}} {{ad?.price?.amount}}</span>
-          <a href="#" class="add-to-cart">Add to Cart</a>
+        }
+      </div>
+      
+      <!-- ✅ BADGE MOVED INSIDE ad-card -->
+      <div class="status-badge self-badge" *ngIf="ad.isSelfAd">
+        <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9 12l2 2 4-4"></path>
+        </svg>
+        <span>Self</span>
+      </div>
+      
+      <!-- 2. MIDDLE: Product Info + Address -->
+      <div class="ad-info-section">
+        <h2>{{ad?.productName}}</h2>
+        <p>{{ad?.description}}</p>
+        <div class="ad-address">
+          <span>{{ad?.sourceAddress?.latitude}}, {{ad?.sourceAddress?.longitude}}</span>
         </div>
       </div>
-    }
-  
+      
+      <!-- 3. BOTTOM: Price + Action -->
+      <div class="ad-price-section">
+        <span class="price">{{ad?.price?.currency}} {{ad?.price?.amount}}</span>
+        <a href="#" class="add-to-cart">Add to Cart</a>
+      </div>
+    </div>
+  }
 </section>
+
 
 <!-- parent.component.html -->
   <app-pagination

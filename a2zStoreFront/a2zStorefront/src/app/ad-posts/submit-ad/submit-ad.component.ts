@@ -4,6 +4,7 @@ import { AdSubmissionService } from '../../services/ad-submission.service';
 import { AuthStateService } from '../../services/auth-state.service';
 import { Router } from '@angular/router';
 import { AdSearch } from '../../services/ad-search';
+import { CustomerService } from '../../services/customer-service';
 
 @Component({
   selector: 'app-submit-ad',
@@ -22,6 +23,7 @@ export class SubmitAdComponent implements OnInit {
  selectedCategory: string = 'ALL';
   searchQuery: string = '';
 categories: any[] = [];
+
   // ADD THESE METHODS
   onCategoryChange() {
     console.log('Category changed:', this.selectedCategory);
@@ -32,7 +34,8 @@ categories: any[] = [];
     private adSubmissionService: AdSubmissionService,
     private authStateService: AuthStateService,
     private router: Router,
-    private adSearch: AdSearch
+    private adSearch: AdSearch,
+    private customerService : CustomerService
   ) {
     
   }
@@ -47,6 +50,27 @@ categories: any[] = [];
     this.loadCategories();
     // Get location from browser
     this.getLocationFromBrowser();
+    this.getProfileData();
+  }
+
+  getProfileData(): void {
+     this.customerService.getProfileData().subscribe({
+    next: (profileData) => {
+      // Use emitted profile data
+       this.submitAdForm.patchValue({ firstName: profileData?.firstName || '' });
+        this.submitAdForm.patchValue({ lastName: profileData?.lastName || '' });
+        this.submitAdForm.patchValue({ email: profileData?.email || '' });
+        this.submitAdForm.patchValue({ line1: profileData?.defaultAddress?.line1 || '' });
+        this.submitAdForm.patchValue({ line2: profileData?.defaultAddress?.line2 || '' });
+        this.submitAdForm.patchValue({ apartment: profileData?.defaultAddress?.apartment || '' });
+        this.submitAdForm.patchValue({ district: profileData?.defaultAddress?.district || '' });
+
+    },
+    error: (error) => {
+      console.error('Error fetching user profile:', error);
+      this.router.navigate(['/loginV3']);
+    }
+  });
   }
 
   myForm = this.formBuilder.group({
@@ -250,9 +274,10 @@ this.adSearch.getListedCategories().subscribe((data: any) => {
         }, 2000);
       },
       error: (error) => {
-        console.error('Ad submission failed:', error);
+        console.log('Ad submission failed:');
         this.errorMessage = error?.error?.message || 'Failed to submit ad. Please try again.';
         this.isSubmitting = false;
+        this.router.navigate(['/ad-posts']);
       }
     });
   }

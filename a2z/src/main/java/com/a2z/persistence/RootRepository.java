@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -35,7 +37,7 @@ public interface RootRepository extends CrudRepository<RootEntity, Long> {
 	Optional<A2zAddress> getAddressById(@Param("id") Long id , @Param("customer") Customer customer);
 	
 	@Query("SELECT ord FROM A2zOrder ord WHERE ord.customer=:customer")
-	List<A2zOrder> getMyOrders(@Param("customer") Customer customer);
+	Page<A2zOrder> getMyOrders(@Param("customer") Customer customer, PageRequest pageRequest);
 	
 	@Query("SELECT ord FROM A2zOrder ord WHERE ord.id=:id AND ord.customer=:customer")
 	Optional<A2zOrder> getOrderDetails(@Param("id") Long id , @Param("customer") Customer customer);
@@ -63,7 +65,7 @@ public interface RootRepository extends CrudRepository<RootEntity, Long> {
 	Optional<UserGroup> getUserGroup(@Param("id") Long id);
 	
 	@Query("SELECT ar FROM ApprovalRequest ar WHERE ar.customer=:customer")
-	List<ApprovalRequest> getAllApprovalRequests(@Param("customer") Customer customer);
+	Page<ApprovalRequest> getAllApprovalRequests(@Param("customer") Customer customer , PageRequest pageRequest);
 	
 	@Query("SELECT ar FROM ApprovalRequest ar WHERE ar.id=:id AND ar.customer=:customer")
 	Optional<ApprovalRequest> getApprovalRequestDetails(@Param("id") Long id, @Param("customer") Customer customer);

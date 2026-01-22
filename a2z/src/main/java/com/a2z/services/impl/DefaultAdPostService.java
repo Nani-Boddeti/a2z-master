@@ -1,19 +1,17 @@
 package com.a2z.services.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import com.a2z.dao.*;
+import com.a2z.events.AdPostSubmissionEvent;
 import com.a2z.services.interfaces.AdPostService;
+import com.a2z.services.interfaces.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.session.data.redis.RedisSessionRepository;
 import org.springframework.stereotype.Service;
 
-import com.a2z.dao.A2zOrder;
-import com.a2z.dao.AdPost;
-import com.a2z.dao.OrderStatus;
-import com.a2z.dao.Price;
 import com.a2z.data.AdPostData;
 import com.a2z.persistence.A2zAdPostRepository;
 import com.a2z.persistence.A2zPriceRepository;
@@ -47,6 +45,12 @@ public class DefaultAdPostService implements AdPostService {
 	
 	@Autowired
 	A2zPriceRepository a2zPriceRepository;
+
+	@Autowired
+	EmailService emailService;
+
+	@Autowired
+	ApplicationEventPublisher eventPublisher;
 	
 	@Transactional
 	@Override
@@ -62,6 +66,7 @@ public class DefaultAdPostService implements AdPostService {
 			adPost.setActive(true);
 			adPost.setModifiedTime(new Date());
 			adPostRepository.save(adPost);
+			sendAdPostSubmissionEmail(adPost);
 			adPostPopulator.populate(adPost, adPostData);
 		}
 		} else {
@@ -137,5 +142,8 @@ public class DefaultAdPostService implements AdPostService {
 		return adPostData;
 	}
 	
-	
+	private void sendAdPostSubmissionEmail(AdPost adPost) {
+		AdPostSubmissionEvent event = new AdPostSubmissionEvent(adPost);
+		eventPublisher.publishEvent(event);
+	}
 }
