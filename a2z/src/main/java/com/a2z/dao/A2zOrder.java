@@ -2,6 +2,9 @@ package com.a2z.dao;
 
 import java.util.List;
 
+import com.a2z.enums.DeliveryMode;
+import com.a2z.enums.OrderStatus;
+import com.a2z.enums.OrderType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,15 +14,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrimaryKeyJoinColumn;
 
 @Entity
 public class A2zOrder  extends RootEntity{
-
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {CascadeType.REFRESH})
 	@JoinColumn(name = "customer_userName", referencedColumnName = "userName")
 	private Customer customer;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {CascadeType.REFRESH})
 	@JoinColumn(name = "price_id", referencedColumnName = "id")
 	private Price price;
 	@Enumerated(EnumType.ORDINAL)
@@ -29,24 +30,26 @@ public class A2zOrder  extends RootEntity{
 
 	private String namedDeliveryDate;
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "a2zAddress_id", referencedColumnName = "id")
+	@ManyToOne
+	@JoinColumn(name = "a2zAddress_id")
 	private A2zAddress deliveryAddress;
 
 	
-	@OneToMany(mappedBy="order",cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+	@OneToMany(mappedBy="order",cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval=true)
 	private List<OrderEntry> entries;
 	
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name = "paymentInfo_id", referencedColumnName = "id")
 	private PaymentInfo paymentInfo;
 	
-	@OneToOne(mappedBy="order")
+	@OneToOne
 	private ApprovalRequest approvalRequest;
-	
-	@OneToOne(cascade = CascadeType.ALL)
+
+	@ManyToOne(cascade = {CascadeType.REFRESH})
 	@JoinColumn(name = "a2zOrder_id", referencedColumnName = "id")
 	private A2zOrder originalVersion ;
+	@Enumerated(EnumType.ORDINAL)
+	private OrderType orderType;
 	
 	public Customer getCustomer() {
 		return customer;
@@ -107,5 +110,13 @@ public class A2zOrder  extends RootEntity{
 	}
 	public void setOriginalVersion(A2zOrder originalVersion) {
 		this.originalVersion = originalVersion;
+	}
+
+	public OrderType getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(OrderType orderType) {
+		this.orderType = orderType;
 	}
 }

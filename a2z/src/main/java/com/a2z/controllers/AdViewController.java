@@ -55,9 +55,9 @@ public class AdViewController extends RootController {
 		return adPostService.activatePost(id);
 	}
 	
-	@GetMapping("/return/{id}")
-	public AdPostData returnStatus(@PathVariable @Valid final Long id, @RequestParam(required = true , defaultValue = "false" )@Valid  boolean isReceived , @RequestParam(required = true , defaultValue = "false" )@Valid boolean reactivate ,   HttpServletRequest request) {
-		return adPostService.receivedStatusUpdate(id,isReceived,reactivate);
-	}
+//	@GetMapping("/return/{id}")
+//	public AdPostData returnStatus(@PathVariable @Valid final Long id, @RequestParam(required = true , defaultValue = "false" )@Valid  boolean isReceived , @RequestParam(required = true , defaultValue = "false" )@Valid boolean reactivate ,   HttpServletRequest request) {
+//		return adPostService.receivedStatusUpdate(id,isReceived,reactivate);
+//	}
 	
 }

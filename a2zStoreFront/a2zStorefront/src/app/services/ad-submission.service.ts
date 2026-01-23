@@ -71,7 +71,8 @@ export class AdSubmissionService {
     currency: string,
     address: any,
     userName: string,
-    isActive: boolean = true
+    isActive: boolean = true,
+    orderType: string = 'Rental'
   ): any {
     return {
       description,

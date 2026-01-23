@@ -1,9 +1,11 @@
 package com.a2z.services.interfaces;
 
+import com.a2z.dao.AdPost;
 import com.a2z.data.AdPostData;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AdPostService {
     @Transactional
@@ -13,7 +15,9 @@ public interface AdPostService {
 
     AdPostData getAdById(Long id);
 
+    Optional<AdPost> getAdEntityById(Long id);
+
     AdPostData activatePost(Long id);
 
-    AdPostData receivedStatusUpdate(Long id, boolean isReceived, boolean isAcivate);
+    /*AdPostData receivedStatusUpdate(Long id, boolean isReceived, boolean isAcivate);*/
 }

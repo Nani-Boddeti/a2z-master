@@ -38,14 +38,13 @@
             Product name is required (min 3 characters)
           </span>
         </div>
-       <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+
           <!-- Regular inputs -->
           
           
           <!-- ✅ MAGIC: Single field like input -->
-          <app-category-dropdown formControlName="category"></app-category-dropdown>
+          <app-category-dropdown formControlName="categoryCode"></app-category-dropdown>
 
-        </form>
         <div class="form-group">
           <label>Description *</label>
           <textarea
@@ -93,7 +92,7 @@
           </label>
         </div>
       </div>
-
+      <app-order-type-dropdown formControlName="orderType"></app-order-type-dropdown>
       <!-- Media Upload Section -->
       <div class="form-section">
         <h2>Upload Media</h2>

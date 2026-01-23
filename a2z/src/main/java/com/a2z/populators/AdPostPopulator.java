@@ -46,7 +46,8 @@ public class AdPostPopulator implements Populator<AdPost,AdPostData>{
 		target.setLatitude(addressData.getLatitude());
 		target.setLongitude(addressData.getLongitude());
 		}
-		
+		if(source.getAdPostType()!= null )
+		target.setOrderType(source.getAdPostType().name());
 	}
 
 }

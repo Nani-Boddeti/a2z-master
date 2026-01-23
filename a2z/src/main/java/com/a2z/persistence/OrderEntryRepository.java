@@ -1,7 +1,9 @@
 package com.a2z.persistence;
 
+import java.util.List;
 import java.util.Optional;
 
+import com.a2z.dao.AdPost;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +16,6 @@ import jakarta.transaction.Transactional;
 public interface OrderEntryRepository extends CrudRepository<OrderEntry, Long> {
 
 	 Optional<OrderEntry> findById(Long id);
+
+	 List<OrderEntry> findByAdPost(AdPost adPost);
 }

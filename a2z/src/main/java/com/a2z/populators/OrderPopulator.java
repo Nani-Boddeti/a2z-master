@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.a2z.enums.OrderStatus;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionException;
 
@@ -59,6 +61,14 @@ public class OrderPopulator implements Populator<A2zOrder,OrderData>{
 		pricePopulator.populate(source.getPrice(), priceData);
 		target.setPrice(priceData);
 		target.setStatus(source.getStatus().name());
+		target.setOrderType(source.getOrderType().name());
+		target.setEligibleToCancel(source.getStatus() != null &&
+				(source.getStatus().equals(OrderStatus.REVIEW)));
+		target.setEligibleToExtend(ObjectUtils.isEmpty(source.getOriginalVersion() ));
+		target.setReturnable(source.getStatus().equals(OrderStatus.APPROVED));
+		if(source.getOriginalVersion() != null){
+			target.setOriginalOrderId(source.getOriginalVersion().getId().toString());
+		}
 	}
 
 }

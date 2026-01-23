@@ -53,7 +53,7 @@ public class InitRegisteredClients implements ApplicationRunner {
 					.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_JWT)
 					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 					.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-					.redirectUri("http://localhost:4200/")
+					.redirectUri("http://localhost:4200/ad-list")
 					//.redirectUri("http://localhost:8080/loginSuccess")
 					.scope("app.read")
 					.scope("app.write")

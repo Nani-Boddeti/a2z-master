@@ -42,8 +42,8 @@ public class CategoryController extends RootController {
 
 	}
 
-	@GetMapping("/all")
-	public Iterable<CategoryData> getAllCategories() {
+	@GetMapping("/allCategories")
+	public List<CategoryData> getAllCategories() {
 		return categoryService.getAllCategories();
 	}
 

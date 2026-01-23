@@ -238,3 +238,140 @@
     border-top: 1px solid var(--border-light);
   }
 }
+
+.ord-btn {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  margin-bottom: 0.8rem;
+}
+.ord-btn {
+  background: var(--bright-blue, #3b82f6);
+  color: white;
+}
+.ord-btn:hover {
+  background: color-mix(in srgb, var(--bright-blue, #3b82f6) 90%, black);
+  transform: translateY(-1px);
+}
+.ord-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+@media (max-width: 768px) {
+  .ord-btn {
+    flex: 1;
+    padding: 0.75rem;
+  }
+}
+
+/* CHILD ORDER SPECIFIC - Smaller & Right Aligned */
+.child-order-container {
+  margin-top: 0.75rem;
+  margin-left: 1.5rem;
+  padding: 0.75rem;
+  border-left: 3px solid color-mix(in srgb, var(--gray-300) 50%, transparent);
+  background: color-mix(in srgb, var(--gray-50) 100%, transparent);
+  border-radius: 8px;
+}
+
+/* FIXED: Child Order Card - Proper Flex Structure */
+.child-order-card-three-col {
+  height: 280px;
+  padding: 0.75rem;
+  display: flex;           /* ✅ ADDED: Missing flex */
+  flex-direction: row;     /* ✅ ADDED: Horizontal layout */
+  gap: 0.75rem;
+  align-items: stretch;    /* ✅ ADDED: Stretch to full height */
+  opacity: 0.85;
+}
+
+/* Child Left Section - FIXED */
+.child-order-left-section {
+  flex: 0 0 18%;           /* ✅ Proper flex */
+  display: flex;           /* ✅ ADDED */
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Child Middle Section - FIXED (Remove conflicting styles) */
+.child-order-middle-section {
+  flex: 0 0 32%;           /* ✅ Slightly larger to fit content */
+  display: flex;           /* ✅ Proper flex */
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0 0.25rem;
+  gap: 0.25rem;            /* ✅ Internal spacing */
+}
+
+/* Child Right Section - FIXED */
+.child-order-right-section {
+  flex: 0 0 18%;
+  display: flex;           /* ✅ ADDED */
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  gap: 0.25rem;            /* ✅ Button spacing */
+}
+
+/* Child Media */
+.child-order-media {
+  flex: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.child-order-image {
+  width: 160px;         /* ✅ Smaller */
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Child Text Sizes */
+.child-mini-item-title {
+  font-size: 0.95rem;    /* ✅ Smaller */
+  max-width: 90px;
+  line-height: 1.1;
+}
+
+.child-mini-item-qty {
+  font-size: 0.9rem;
+}
+
+.child-item-details-mini {
+  font-size: 0.85rem;    /* ✅ Much smaller */
+  line-height: 1.15;
+}
+
+.child-total-price-large {
+  font-size: 1.15rem;    /* ✅ Smaller */
+  font-weight: 700;
+}
+
+.child-ord-btn {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .child-order-card-three-col {
+    flex-direction: column;
+    height: 320px;
+  }
+  .child-order-container {
+    margin-left: 1rem;
+  }
+}
+

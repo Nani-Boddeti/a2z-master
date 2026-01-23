@@ -9,5 +9,6 @@ export interface AdPostModel {
     customer : CustomerModel,
     productName:string,
     qty : number,
-    address: AddressModel
+    address: AddressModel,
+    orderType: string
   }

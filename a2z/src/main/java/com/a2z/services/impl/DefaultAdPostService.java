@@ -1,10 +1,11 @@
 package com.a2z.services.impl;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import com.a2z.dao.*;
+import com.a2z.enums.OrderStatus;
 import com.a2z.events.AdPostSubmissionEvent;
+import com.a2z.persistence.OrderEntryRepository;
 import com.a2z.services.interfaces.AdPostService;
 import com.a2z.services.interfaces.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,9 @@ public class DefaultAdPostService implements AdPostService {
 
 	@Autowired
 	ApplicationEventPublisher eventPublisher;
+
+	@Autowired
+	OrderEntryRepository orderEntryRepository;
 	
 	@Transactional
 	@Override
@@ -94,16 +98,26 @@ public class DefaultAdPostService implements AdPostService {
 			AdPostData adPostData = new AdPostData();
 			if(ad.isPresent()) {adPostPopulator.populate(ad.get(), adPostData);} 
 		return adPostData;
-	} 
+	}
+
+	@Override
+	public Optional<AdPost> getAdEntityById(Long id) {
+		Optional<AdPost> adOpt = adPostRepository.findById(id);
+		return  adOpt;
+	}
 
 	@Override
 	public AdPostData activatePost(Long id) {
 		Optional<AdPost> adOpt = adPostRepository.findById(id);
 		AdPostData adPostData = new AdPostData();
+		boolean isAdOrdersCompleted = true;
 		if(adOpt.isPresent()) {
 			AdPost adPost = adOpt.get();
-			A2zOrder order = adPost.getOrderEntry().getOrder();
-			if(order.getStatus().compareTo(OrderStatus.COMPLETED)== 0) {
+			List<OrderEntry> orderEntries = orderEntryRepository.findByAdPost(adPost);
+			isAdOrdersCompleted = orderEntries.stream()
+					.allMatch(orderEntry -> orderEntry.getOrder().getStatus().equals(OrderStatus.COMPLETED));
+
+			if(isAdOrdersCompleted){
 				adPost.setActive(true);
 				adPost.setIndexed(false);
 				adPost.setModifiedTime(new Date());
@@ -113,13 +127,15 @@ public class DefaultAdPostService implements AdPostService {
 				a2zPriceRepository.save(price);
 				adPost.setPrice(price);
 				adPostRepository.save(adPost);
-				adPostPopulator.populate(adPost, adPostData);	
-			} else adPostData.setErrorMessage("Corresponding Order is not Completed Yet.");
+				adPostPopulator.populate(adPost, adPostData);
+			}
+			else adPostData.setErrorMessage("Corresponding Order is not Completed Yet.");
 		}
+
 		return adPostData;
 	}
 
-	@Override
+	/*@Override
 	public AdPostData receivedStatusUpdate(Long id, boolean isReceived, boolean isAcivate) {
 		Optional<AdPost> adOpt = adPostRepository.findById(id);
 		AdPostData adPostData = new AdPostData();
@@ -140,7 +156,7 @@ public class DefaultAdPostService implements AdPostService {
 		}
 
 		return adPostData;
-	}
+	}*/
 	
 	private void sendAdPostSubmissionEmail(AdPost adPost) {
 		AdPostSubmissionEvent event = new AdPostSubmissionEvent(adPost);

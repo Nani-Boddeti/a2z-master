@@ -4,6 +4,8 @@ package com.a2z.dao;
 import java.util.List;
 
 
+import com.a2z.enums.OrderType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,39 +24,38 @@ public class AdPost extends RootEntity{
 	
 	private String Description;
 	
-	@OneToOne(fetch = FetchType.EAGER ,cascade = CascadeType.REFRESH)
+	@OneToOne(cascade = CascadeType.REFRESH)
 	@JoinColumn(name = "price_id", referencedColumnName = "id")
 	private Price Price;
 	
-	@OneToOne(fetch = FetchType.EAGER)
+	@OneToOne
 	@JoinColumn(name = "mediaContainer_code", referencedColumnName = "code")
 	private MediaContainer mediaContainer;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn(name = "customer_userName", foreignKey = @ForeignKey(name = "adPost_customer"))
 	private Customer customer;
 
 	private boolean active;
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany
 	@JoinTable(
 			  name = "adPost_category", 
 			  joinColumns = @JoinColumn(name = "adPost_id"), 
 			  inverseJoinColumns = @JoinColumn(name = "category_id"))
 	private List<A2zCategory> categories;
 
-	@OneToOne(mappedBy="adPost")
-	private ApprovalRequest approvalRequest;
-	
+
 	private String productName;
 	
 	private boolean isIndexed;
-	
-	@OneToOne(mappedBy="adPost")
-	private OrderEntry  orderEntry;
-	
+
+
 	@OneToOne
 	@JoinColumn(name = "a2zAddress_id")
 	private A2zAddress sourceAddress;
+
+	@Enumerated
+	private OrderType adPostType;
 	
 	public String getDescription() {
 		return Description;
@@ -104,13 +105,6 @@ public class AdPost extends RootEntity{
 		this.active = isActive;
 	}
 
-	public ApprovalRequest getApprovalRequest() {
-		return approvalRequest;
-	}
-
-	public void setApprovalRequest(ApprovalRequest approvalRequest) {
-		this.approvalRequest = approvalRequest;
-	}
 
 	public String getProductName() {
 		return productName;
@@ -128,14 +122,6 @@ public class AdPost extends RootEntity{
 		this.isIndexed = isIndexed;
 	}
 
-	public OrderEntry getOrderEntry() {
-		return orderEntry;
-	}
-
-	public void setOrderEntry(OrderEntry orderEntry) {
-		this.orderEntry = orderEntry;
-	}
-
 	public A2zAddress getSourceAddress() {
 		return sourceAddress;
 	}
@@ -144,7 +130,11 @@ public class AdPost extends RootEntity{
 		this.sourceAddress = sourceAddress;
 	}
 
+	public OrderType getAdPostType() {
+		return adPostType;
+	}
 
-
-	
+	public void setAdPostType(OrderType adPostType) {
+		this.adPostType = adPostType;
+	}
 }

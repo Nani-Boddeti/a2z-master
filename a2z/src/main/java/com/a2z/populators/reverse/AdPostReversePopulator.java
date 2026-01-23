@@ -1,6 +1,7 @@
 package com.a2z.populators.reverse;
 
 import com.a2z.dao.A2zCategory;
+import com.a2z.enums.OrderType;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -75,7 +76,7 @@ public class AdPostReversePopulator implements Populator<AdPostData , AdPost>{
 
 		}
 		target.setCategories(categoryList);
-
+		target.setAdPostType(OrderType.valueOf(source.getOrderType().toUpperCase()));
 	}
 
 }

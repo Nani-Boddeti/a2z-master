@@ -11,6 +11,7 @@ import com.a2z.dao.*;
 import com.a2z.data.OrderData;
 import com.a2z.data.OrderEntryData;
 import com.a2z.data.PaymentInfoData;
+import com.a2z.enums.PrimeStatus;
 import com.a2z.persistence.A2zAdPostRepository;
 import com.a2z.services.interfaces.AddressService;
 import com.a2z.services.interfaces.PaymentService;

@@ -1,15 +1,7 @@
 package com.a2z.dao;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrimaryKeyJoinColumn;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 
 
 @Entity
@@ -18,22 +10,23 @@ public class OrderEntry {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long code;
 	private int qty;
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name="basePrice_id")
 	private Price basePrice;
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name="discountedPrice_id")
 	private Price discountedPrice;
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name="totalPrice_id")
 	private Price totalPrice;
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "adPost_id", referencedColumnName = "id")
+	@ManyToOne
+	@JoinColumn(name = "ad_post_id", nullable = true)
+	@JsonIgnoreProperties("orderEntries")  // Prevent recursion
 	private AdPost adPost;
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@PrimaryKeyJoinColumn
 	private Price tax;
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne(cascade={CascadeType.REFRESH})
 	@JoinColumn(name="order_id", referencedColumnName="id")
 	private A2zOrder order;
 	public Long getCode() {

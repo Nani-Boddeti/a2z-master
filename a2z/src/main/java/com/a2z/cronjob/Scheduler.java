@@ -13,12 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.a2z.dao.A2zMedia;
 import com.a2z.dao.AdPost;
 import com.a2z.dao.Customer;
-import com.a2z.dao.PrimeStatus;
+import com.a2z.enums.PrimeStatus;
 import com.a2z.dao.PrimeUser;
 import com.a2z.dao.UserGroup;
 import com.a2z.persistence.A2zAdPostRepository;

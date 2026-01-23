@@ -7,6 +7,7 @@ public class PagedA2zOrderResult {
     private int currentPage;
     private int totalPages;
 
+
     public List<OrderData> getA2zOrders() {
         return a2zOrders;
     }

@@ -1,0 +1,24 @@
+<div class="combo-control" (click)="$event.stopPropagation()">
+  <div class="combo-trigger" (click)="toggleDropdown($event)" tabindex="0">
+    <span>{{ selectedOrderTypeCode }}</span>
+    <svg class="dropdown-icon" viewBox="0 0 24 24">
+      <polyline points="6,9 12,15 18,9"></polyline>
+    </svg>
+  </div>
+
+  <div class="dropdown-panel" *ngIf="showDropdown">
+    <div class="search-input">
+      <input name="OrderTypeDropDownItem" 
+             [(ngModel)]="searchTerm" 
+             (input)="filterOrderTypes()"
+             placeholder="Search OrderType...">
+    </div>
+    <div class="orderType-list">
+      <div *ngFor="let ordType of filteredorderTypes" 
+           class="orderType-item" 
+           (click)="selectOrderType(ordType); $event.stopPropagation()">
+        {{ ordType }}
+      </div>
+    </div>
+  </div>
+</div>

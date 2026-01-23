@@ -36,7 +36,14 @@ public class OrderData extends RootData {
 	private List<OrderEntryData> entries;
 	@Valid
 	private PaymentInfoData paymentInfo;
-
+	@NotNull
+	private String orderType;
+	private Boolean isEligibleToExtend;
+	private Boolean isEligibleToCancel;
+	private Boolean isReturnable;
+	private Boolean extendedOrder;
+	private String originalOrderId;
+	private List<OrderData> childOrders;
 	public Long getId() {
 		return id;
 	}
@@ -117,4 +124,59 @@ public class OrderData extends RootData {
 		this.paymentInfo = paymentInfo;
 	}
 
+	public String getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
+	}
+
+	public Boolean getEligibleToExtend() {
+		return isEligibleToExtend;
+	}
+
+	public void setEligibleToExtend(Boolean eligibleToExtend) {
+		isEligibleToExtend = eligibleToExtend;
+	}
+
+	public Boolean getEligibleToCancel() {
+		return isEligibleToCancel;
+	}
+
+	public void setEligibleToCancel(Boolean eligibleToCancel) {
+		isEligibleToCancel = eligibleToCancel;
+	}
+
+	public Boolean getReturnable() {
+		return isReturnable;
+	}
+
+	public void setReturnable(Boolean returnable) {
+		isReturnable = returnable;
+	}
+
+	public Boolean getExtendedOrder() {
+		return extendedOrder;
+	}
+
+	public void setExtendedOrder(Boolean extendedOrder) {
+		this.extendedOrder = extendedOrder;
+	}
+
+	public String getOriginalOrderId() {
+		return originalOrderId;
+	}
+
+	public void setOriginalOrderId(String originalOrderId) {
+		this.originalOrderId = originalOrderId;
+	}
+
+	public List<OrderData> getChildOrders() {
+		return childOrders;
+	}
+
+	public void setChildOrders(List<OrderData> childOrders) {
+		this.childOrders = childOrders;
+	}
 }

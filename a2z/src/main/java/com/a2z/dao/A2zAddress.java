@@ -2,6 +2,7 @@ package com.a2z.dao;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
@@ -20,18 +21,15 @@ public class A2zAddress extends RootEntity{
 	private String building;
 	private String cellphone;
 	private String company;
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = {CascadeType.REFRESH})
 	@JoinColumn(name = "country_isoCode", referencedColumnName = "isoCode")
 	private Country country;
 	private String district;
 	private String email;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {CascadeType.REFRESH})
 	@JoinColumn(name = "customer_userName", referencedColumnName = "userName")
 	private Customer customer;
-	
-	@OneToOne(mappedBy = "deliveryAddress")
-	private A2zOrder order;
-	
+
 	@OneToOne(mappedBy="paymentAddress")
 	private PaymentInfo paymentInfo;
 		
@@ -121,12 +119,6 @@ public class A2zAddress extends RootEntity{
 	}
 	public void setPaymentAddress(boolean isPaymentAddress) {
 		this.isPaymentAddress = isPaymentAddress;
-	}
-	public A2zOrder getOrder() {
-		return order;
-	}
-	public void setOrder(A2zOrder order) {
-		this.order = order;
 	}
 	public PaymentInfo getPaymentInfo() {
 		return paymentInfo;

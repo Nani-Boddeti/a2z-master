@@ -22,10 +22,11 @@ const routes: Routes = [
   { path: 'loginV3', component: LoginRegisterComponent},
   {path:'order-confirm',component:OrderConfirmComponent},
   { path: 'search-results', component: SearchResults },
-  {path:'my-ads', component:MyAdsComponent}
+  {path:'my-ads', component:MyAdsComponent},
+
   //{path:'map',component:MapComponent}
   
-  // {path: '', redirectTo: '/ad-list', pathMatch: 'full' }
+
 ];
 
 @NgModule({

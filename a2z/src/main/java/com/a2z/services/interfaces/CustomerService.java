@@ -10,7 +10,8 @@ public interface CustomerService {
 
     CustomerData saveCustomer(CustomerData customerData);
 
-    void deleteCustomer(Long id);
+
+    void deleteCustomer(String userName);
 
     void disableCustomer(String id);
 
@@ -20,7 +21,11 @@ public interface CustomerService {
 
     CustomerData getCustomerProfile(String userName);
 
+    CustomerData updateCustomer(CustomerData customerData);
+
     PagedAdPostResult retriveAllMyAds(String userName, Integer pageNo, Integer pageSize);
+
+    PagedA2zOrderResult getAllMyOrdersInStatus(String userName, Integer pageNo, Integer pageSize, String orderStatus);
 
     PagedA2zOrderResult getAllMyOrders(String userName, Integer pageNo, Integer pageSize);
 

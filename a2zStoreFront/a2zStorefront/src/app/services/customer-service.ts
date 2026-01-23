@@ -18,33 +18,23 @@ public profileData$ = this.profileDataSubject.asObservable();
   constructor(private registrationService : RegistrationService, private router: Router, private http: HttpClient) { }
 
   getProfileData(): Observable<any> {
-
-     this.registrationService.getUserProfile().subscribe({
-      next: (profileData) => {
-        console.log('📡 EMITTING:', profileData);
-        this.profileDataSubject.next(profileData);  // ✅ Emit to subscribers
-      },
-      error: (error) => {
-        console.error('Error fetching user profile:', error);
+    console.log('🔄 CustomerService.getProfileData() called');
+    return this.registrationService.getUserProfile().pipe(
+      tap((profileData) => {
+        console.log('✅ Profile data from API:', profileData);
+        this.profileDataSubject.next(profileData);
+      }),
+      catchError((error) => {
+        console.error('❌ Error fetching user profile:', error);
+        console.error('Status:', error?.status);
+        console.error('Message:', error?.message);
+        console.error('Response body:', error?.error);
         this.router.navigate(['/loginV3']);
-        return EMPTY;  // Don't emit error downstream
-      }
-    })
-return this.profileDataSubject.asObservable();
-
-  // return this.registrationService.getUserProfile().pipe(
-  //   tap(data => {
-  //     console.log('📡 EMITTING:', data);
-  //     this.profileDataSubject.next(data);  // ✅ Emit to subscribers
-  //   }),
-  //   catchError(error => {
-  //     console.error('Error fetching user profile:', error);
-  //     this.router.navigate(['/loginV3']);
-  //     return EMPTY;  // Don't emit error downstream
-  //   })
-  // );
-}
+        return EMPTY;
+      })
+    );
+  }
   getMyAdList(page:number,size:number){
-  return this.http.get<JSON>("/myAccount/myAds?pageNo=" + page + "&pageSize=" + size);
+  return this.http.get<any>("/myAccount/myAds?pageNo=" + page + "&pageSize=" + size);
  }
 }

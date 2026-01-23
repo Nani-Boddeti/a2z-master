@@ -43,7 +43,7 @@ public class DefaultCategoryService implements CategoryService {
 	public List<CategoryData> getAllCategories(){
 		List<A2zCategory> cateogriesList = rootRepo.getAllCategories(true);
 		return Stream.ofNullable(cateogriesList).flatMap(Collection::stream)
-				.map(this::convertCategory).collect(Collectors.toUnmodifiableList());
+				.map(this::convertCategory).collect(Collectors.toList());
 	}
 	
 	private CategoryData convertCategory(A2zCategory category) {

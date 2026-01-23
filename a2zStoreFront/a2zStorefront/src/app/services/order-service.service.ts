@@ -19,4 +19,21 @@ export class OrderServiceService {
     return this.http.get(`/myAccount/myAdOrders?page=${page}&size=${size}`);
   }
   
+  getOrderTypesList(): Observable<any> {
+    return this.http.get('/order/allTypes');
+  }
+  getOrderStatusList(): Observable<any> {
+    return this.http.get('/order/allOrderStatuses');
+  }
+
+  extendOrder(orderId: number): Observable<any> {
+    return this.http.get(`/order/return`, {params: { orderId: orderId ,isReturn:false,isExtend:true}});
+  }
+   returnOrder(orderId: number): Observable<any> {
+    return this.http.get(`/order/return`, {params: { orderId: orderId ,isReturn:true,isExtend:false}});
+  }
+
+  getMyAdOrdersByStatus(page: number, size: number, status: string): Observable<any> {
+    return this.http.get(`/myAccount/myAdOrders/status?status=${status}&page=${page}&size=${size}`);
+  }
 }

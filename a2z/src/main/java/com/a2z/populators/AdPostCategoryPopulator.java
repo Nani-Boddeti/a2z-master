@@ -31,6 +31,7 @@ public class AdPostCategoryPopulator implements Populator<AdPost, AdPostData> {
             target.setLatitude(source.getSourceAddress().getLatitude());
             target.setLongitude(source.getSourceAddress().getLongitude());
         }
-
+        if(source.getAdPostType()!= null )
+        target.setOrderType(source.getAdPostType().name());
     }
 }

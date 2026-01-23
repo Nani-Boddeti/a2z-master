@@ -3,6 +3,7 @@ package com.a2z.dao;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 
@@ -33,6 +34,7 @@ public class Customer {
 	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 5242540514408950189L;
 
+	@JsonIgnore // Ensure password is not serialized
 	private String password;
 
 	@Id
@@ -47,20 +49,20 @@ public class Customer {
 	private boolean isDisabled;
 	private Date lastLogin;
 	private Date deactivationDate;
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name = "paymentInfo_id", referencedColumnName = "id")
 	private PaymentInfo defaultPaymentInfo;
-	@ManyToOne(cascade = CascadeType.ALL, optional = false)
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = false)
 	@JoinColumn(name = "defaultCountry_isoCode" , referencedColumnName="isoCode")
 	private Country defaultCountry;
 	private String email;
 	@Column(unique = true, nullable = false)
 	private String phoneNumber;
-	@OneToMany(mappedBy="customer")
+	@OneToMany(mappedBy="customer", orphanRemoval=true)
 	private List<A2zAddress> address;
-	@OneToMany(mappedBy="customer")
+	@OneToMany(mappedBy="customer", orphanRemoval=true)
 	private List<A2zOrder> orders;
-	@OneToMany(mappedBy="customer")
+	@OneToMany(mappedBy="customer", orphanRemoval=true)
 	private List<AdPost> adList;
 	@ManyToMany
 	@JoinTable(
@@ -69,10 +71,10 @@ public class Customer {
 			  inverseJoinColumns = @JoinColumn(name = "userGroup_id"))
 	private List<UserGroup> userGroups;
 	
-	@OneToMany(mappedBy="customer")
+	@OneToMany(mappedBy="customer", orphanRemoval=true)
 	private List<ApprovalRequest> approvalRequest;
 	
-	@OneToMany(mappedBy="customer")
+	@OneToMany(mappedBy="customer", orphanRemoval=true)
 	private List<A2zWishlist> a2zWishlist;
 	
 	private String role;

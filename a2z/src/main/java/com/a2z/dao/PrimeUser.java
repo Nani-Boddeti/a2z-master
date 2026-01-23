@@ -1,12 +1,13 @@
 package com.a2z.dao;
 
 import java.time.LocalDate;
-import java.util.Date;
 
+import com.a2z.enums.PrimeStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
@@ -14,14 +15,14 @@ import jakarta.persistence.ManyToOne;
 public class PrimeUser extends RootEntity {
 
 	@Enumerated(EnumType.ORDINAL)
-	PrimeStatus status;
-	@ManyToOne(cascade = CascadeType.ALL)
+    PrimeStatus status;
+	@ManyToOne(cascade = {CascadeType.REFRESH})
 	@JoinColumn(name = "price_id", referencedColumnName = "id")
 	Price PrimeAmount;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {CascadeType.REFRESH})
 	@JoinColumn(name = "customer_userName", referencedColumnName = "userName")
 	Customer customer;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {CascadeType.REFRESH})
 	@JoinColumn(name = "primeGroup_id", referencedColumnName = "id")
 	UserGroup primeGroup;
 	LocalDate primedDate;

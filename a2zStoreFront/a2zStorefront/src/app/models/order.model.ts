@@ -11,7 +11,8 @@ export class OrderModel {
   public deliveryAddress:AddressModel| null,
   public deliveryMode:string| null,
   public paymentAddress: AddressModel| null,
-  public paymentInfo: PaymentInfoModel| null){}
+  public paymentInfo: PaymentInfoModel| null,
+public orderType:string| 'Rental'){}
 
   
   }

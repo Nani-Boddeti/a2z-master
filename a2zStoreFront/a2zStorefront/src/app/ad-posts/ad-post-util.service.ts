@@ -11,7 +11,7 @@ export class AdPostUtilService {
   adsList : any;
 
  getAdById(id:number){
-  return this.http.get<JSON>(`/ad/view/${id}`);
+  return this.http.get<any>(`/ad/view/${id}`);
  }
 
  postAd(){

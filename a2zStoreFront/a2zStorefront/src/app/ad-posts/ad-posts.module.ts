@@ -12,6 +12,7 @@ import { SearchResults } from './search-results/search-results';
 import { Categories } from './categories/categories';
 import { CategoryDropdown } from './category-dropdown/category-dropdown';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { OrderTypeDropdown } from './order-type-dropdown/order-type-dropdown';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
     SearchResults,
     Categories,
     CategoryDropdown,
+    OrderTypeDropdown,
   ],
   imports: [
     CommonModule,

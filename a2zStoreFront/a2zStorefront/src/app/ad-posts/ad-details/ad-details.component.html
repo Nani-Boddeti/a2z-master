@@ -1,6 +1,22 @@
 <div class="details-header">
   <h2>Ad Details</h2>
 </div>
+    <div class="error-banner" *ngIf="showError" role="alert">
+        <div class="error-icon">⚠️</div>
+           <div class="error-text">         
+          {{ errorMessage }}
+        </div>
+        <button 
+          class="error-close" 
+          (click)="closeError()"
+          aria-label="Dismiss">
+          <svg width="14" height="14" viewBox="0 0 14 14">
+            <path d="M1 1 L13 13 M13 1 L1 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+</div>
+
+
 <div class="details-container">
   <div *ngIf="isItemSelected && !isBackToAllPosts && !isOrderPlaced">
     <!-- SAME 3-COLUMN STRUCTURE AS APPROVAL -->
@@ -108,8 +124,8 @@
 
         <div class="action-buttons">
           <button (click)="backToList()" class="back-btn">Back to List</button>
-          <button (click)="rentIt(selectedItem)" class="rent-btn">
-            Rent It
+          <button (click)="rentIt(selectedItem)"  class="rent-btn" *ngIf="!selectedItem?.isSelfAd">
+            {{submitButtonName}}
           </button>
         </div>
       </div>

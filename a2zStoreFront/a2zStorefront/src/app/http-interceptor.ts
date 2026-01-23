@@ -25,61 +25,56 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Do not intercept token refresh requests
-
     if (this.requestMatcherService.matchRequest(request.url)) {
       return next.handle(request);
     }
+    
     // Check if token is expired and refresh if needed
     if (this.authStateService.isTokenExpired()) {
-  return this.oauthTokenService.refreshAccessToken().pipe(
-    switchMap(() => {
-      return this.addTokenAndForwardRequest(request, next);
-    }),
-    // ✅ Use tap() instead of catchError()
-    tap({
-      error: (error) => {
-        // Side effects ONLY - no return needed
-        this.authStateService.setLoggedIn(false);
-        this.authStateService.removeTokens();
-        this.authStateService.removeUserInfo();
-        this.router.navigate(['/']);
-      }
-    })
-  );
-}
-  //  this.addTokenAndForwardRequest(request, next).subscribe({
-  //   error: (error : HttpErrorResponse) => {
-  //     if(error.status === 401){
-  //       this.authStateService.setLoggedIn(false);
-  //     this.authStateService.removeTokens();
-  //     this.authStateService.removeUserInfo();
-  //     this.router.navigate(['/loginV3']);
-  //     }
-      
-  //   }
-  // });
-  return this.addTokenAndForwardRequest(request, next).pipe(
-    catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
-        this.authStateService.setLoggedIn(false);
-        this.authStateService.removeTokens();
-        this.authStateService.removeUserInfo();
-        this.router.navigate(['/loginV3']);
-      }
-      throw error;  // Re-throw to maintain chain
-    })
-  );
+      return this.oauthTokenService.refreshAccessToken().pipe(
+        switchMap(() => {
+          return this.addTokenAndForwardRequest(request, next);
+        }),
+        catchError((error) => {
+          // Handle token refresh failure
+          this.authStateService.setLoggedIn(false);
+          this.authStateService.removeTokens();
+          this.authStateService.removeUserInfo();
+          this.router.navigate(['/']);
+          return throwError(() => error);
+        })
+      );
+    }
+    
+    return this.addTokenAndForwardRequest(request, next).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          this.authStateService.setLoggedIn(false);
+          this.authStateService.removeTokens();
+          this.authStateService.removeUserInfo();
+          this.router.navigate(['/loginV3']);
+        }
+        return throwError(() => error);
+      })
+    );
   }
 
   private addTokenAndForwardRequest(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const token = sessionStorage.getItem('access_token') || localStorage.getItem('access_token');
 
+    console.log('🔐 Interceptor - Request URL:', request.url);
+    console.log('🔐 Interceptor - Token available:', !!token);
+    console.log('🔐 Interceptor - Token expired:', this.authStateService.isTokenExpired());
+
     if (token) {
+      console.log('🔐 Interceptor - Adding Authorization header with token');
       request = request.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`
         }
       });
+    } else {
+      console.warn('⚠️ Interceptor - No token found for request:', request.url);
     }
 
     return next.handle(request);

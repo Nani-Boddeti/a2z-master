@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import com.a2z.dao.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.Query;
@@ -11,17 +12,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.a2z.dao.A2zAddress;
-import com.a2z.dao.A2zCategory;
-import com.a2z.dao.A2zOrder;
-import com.a2z.dao.A2zWishlist;
-import com.a2z.dao.ApprovalRequest;
-import com.a2z.dao.Customer;
-import com.a2z.dao.OrderStatus;
-import com.a2z.dao.PrimeStatus;
-import com.a2z.dao.PrimeUser;
-import com.a2z.dao.RootEntity;
-import com.a2z.dao.UserGroup;
+import com.a2z.enums.OrderStatus;
+import com.a2z.enums.PrimeStatus;
 
 import jakarta.transaction.Transactional;
 
@@ -32,7 +24,9 @@ public interface RootRepository extends CrudRepository<RootEntity, Long> {
 
 	@Query("SELECT add FROM A2zAddress add WHERE add.customer=:customer")
 	List<A2zAddress> getMyAddresses(@Param("customer") Customer customer);
-	
+
+	Optional<A2zOrder> findByApprovalRequest(ApprovalRequest approvalRequest);
+
 	@Query("SELECT add FROM A2zAddress add WHERE add.id=:id AND add.customer=:customer")
 	Optional<A2zAddress> getAddressById(@Param("id") Long id , @Param("customer") Customer customer);
 	
@@ -45,7 +39,10 @@ public interface RootRepository extends CrudRepository<RootEntity, Long> {
 	@Query("SELECT ord FROM A2zOrder ord WHERE ord.status!=:status AND ord.customer=:customer")
 	List<A2zOrder> getOrdersByCustomerAndNotInStatus(@Param("status") OrderStatus status , @Param("customer") Customer customer);
 
-	
+	@Query("SELECT ord FROM A2zOrder ord WHERE ord.status=:status AND ord.customer=:customer")
+	Page<A2zOrder> getOrdersByCustomerAndInStatus(@Param("status") OrderStatus status , @Param("customer") Customer customer, PageRequest pageRequest);
+
+
 	@Query("SELECT cat FROM A2zCategory cat WHERE cat.isVisible=:isVisible")
 	List<A2zCategory> getAllCategories(@Param("isVisible") boolean isVisible);
 

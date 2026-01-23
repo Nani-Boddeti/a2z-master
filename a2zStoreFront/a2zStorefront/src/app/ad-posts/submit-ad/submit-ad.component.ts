@@ -1,17 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AdSubmissionService } from '../../services/ad-submission.service';
 import { AuthStateService } from '../../services/auth-state.service';
 import { Router } from '@angular/router';
 import { AdSearch } from '../../services/ad-search';
 import { CustomerService } from '../../services/customer-service';
+import { Subject } from 'rxjs';
+import { takeUntil, concatMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-submit-ad',
   templateUrl: './submit-ad.component.html',
   styleUrl: './submit-ad.component.css'
 })
-export class SubmitAdComponent implements OnInit {
+export class SubmitAdComponent implements OnInit, OnDestroy {
   submitAdForm!: FormGroup;
   selectedFiles: File[] = [];
   isSubmitting = false;
@@ -20,15 +22,16 @@ export class SubmitAdComponent implements OnInit {
   userName: string = '';
   isLoadingLocation = false;
   isDragOver = false;
- selectedCategory: string = 'ALL';
+  selectedCategory: string = 'ALL';
   searchQuery: string = '';
-categories: any[] = [];
+  categories: any[] = [];
+  private destroy$ = new Subject<void>();
 
   // ADD THESE METHODS
-  onCategoryChange() {
-    console.log('Category changed:', this.selectedCategory);
-    // Trigger your existing filter/search logic
-  }
+  // onCategoryChange() {
+  //   console.log('Category changed:', this.selectedCategory);
+  //   // Trigger your existing filter/search logic
+  // }
   constructor(
     private formBuilder: FormBuilder,
     private adSubmissionService: AdSubmissionService,
@@ -39,55 +42,57 @@ categories: any[] = [];
   ) {
     
   }
-
   ngOnInit(): void {
+    // Initialize form first
+    this.initializeForm();
+
     // Get logged-in user's name
-    this.authStateService.userName$.subscribe(userName => {
+    this.authStateService.userName$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(userName => {
       this.userName = userName;
     });
 
-    this.initializeForm();
-    this.loadCategories();
     // Get location from browser
     this.getLocationFromBrowser();
-    this.getProfileData();
-  }
 
-  getProfileData(): void {
-     this.customerService.getProfileData().subscribe({
-    next: (profileData) => {
-      // Use emitted profile data
-       this.submitAdForm.patchValue({ firstName: profileData?.firstName || '' });
-        this.submitAdForm.patchValue({ lastName: profileData?.lastName || '' });
-        this.submitAdForm.patchValue({ email: profileData?.email || '' });
-        this.submitAdForm.patchValue({ line1: profileData?.defaultAddress?.line1 || '' });
-        this.submitAdForm.patchValue({ line2: profileData?.defaultAddress?.line2 || '' });
-        this.submitAdForm.patchValue({ apartment: profileData?.defaultAddress?.apartment || '' });
-        this.submitAdForm.patchValue({ district: profileData?.defaultAddress?.district || '' });
-
-    },
-    error: (error) => {
-      console.error('Error fetching user profile:', error);
-      this.router.navigate(['/loginV3']);
-    }
-  });
-  }
-
-  myForm = this.formBuilder.group({
-    name: [''],
-    category: ['ALL']  // ✅ Works like any input!
-  });
-
-  onSubmit() {
-    console.log(this.myForm.value);  // { name: '...', category: 'FURNITURE' }
-  }
-
-  loadCategories(){
-this.adSearch.getListedCategories().subscribe((data: any) => {
-
-      this.categories = data;
-
+    // Chain requests: load categories first, then profile data
+    // This prevents race conditions
+    this.adSearch.getListedCategories().pipe(
+      concatMap((categories) => {
+        console.log('✅ Categories loaded:', categories);
+        this.categories = categories;
+        this.categories.unshift({ code: 'ALL', name: 'All Categories' });
+        // Now load profile data after categories are loaded
+        return this.customerService.getProfileData();
+      }),
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (profileData) => {
+        console.log('✅ Profile data loaded:', profileData);
+        if (profileData && this.submitAdForm) {
+          this.submitAdForm.patchValue({
+            firstName: profileData?.firstName || '',
+            lastName: profileData?.lastName || '',
+            email: profileData?.email || '',
+            line1: profileData?.defaultAddress?.line1 || '',
+            line2: profileData?.defaultAddress?.line2 || '',
+            apartment: profileData?.defaultAddress?.apartment || '',
+            district: profileData?.defaultAddress?.district || '',
+          });
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error in data loading chain:', error);
+        console.error('Status:', error?.status);
+        console.error('Response:', error?.error);
+      }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   getLocationFromBrowser(): void {
@@ -145,7 +150,8 @@ this.adSearch.getListedCategories().subscribe((data: any) => {
   initializeForm(): void {
     this.submitAdForm = this.formBuilder.group({
       productName: ['', [Validators.required, Validators.minLength(3)]],
-      category: [this.myForm?.value?.category, Validators.required],
+      categoryCode: ['ALL', Validators.required],
+      orderType: ['Rental', Validators.required],
       description: ['', [Validators.required, Validators.minLength(10)]],
       price: ['', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]],
       currency: ['INR', Validators.required],
@@ -246,19 +252,23 @@ this.adSearch.getListedCategories().subscribe((data: any) => {
     // Create ad submission payload
     const adPayload = this.adSubmissionService.createAdSubmissionPayload(
       this.submitAdForm.get('productName')?.value,
-      this.submitAdForm.get('category')?.value,
+      this.submitAdForm.get('categoryCode')?.value,
       this.submitAdForm.get('description')?.value,
       parseFloat(this.submitAdForm.get('price')?.value),
       this.submitAdForm.get('currency')?.value,
       address,
       this.userName,
-      this.submitAdForm.get('isActive')?.value
+      this.submitAdForm.get('isActive')?.value,
+      this.submitAdForm.get('orderType')?.value
     );
-    adPayload.categoryCode = this.myForm?.value?.category;
+    adPayload.categoryCode = this.submitAdForm.get('categoryCode')?.value;
+    adPayload.orderType = this.submitAdForm.get('orderType')?.value;
     console.log('Submitting ad with payload:', adPayload);
 
     // Submit ad with media files
-    this.adSubmissionService.submitAdWithMedia(this.selectedFiles, adPayload).subscribe({
+    this.adSubmissionService.submitAdWithMedia(this.selectedFiles, adPayload).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response) => {
         console.log('Ad submitted successfully:', response);
         this.successMessage = 'Ad posted successfully!';

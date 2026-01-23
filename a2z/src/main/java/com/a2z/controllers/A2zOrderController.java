@@ -1,7 +1,6 @@
 package com.a2z.controllers;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.a2z.facades.OrderFacade;
 import com.a2z.services.interfaces.MediaService;
@@ -44,6 +43,7 @@ public class A2zOrderController extends RootController {
 	MediaService mediaService;
 	
 	@PostMapping("/submit")
+	@ResponseBody
 	public OrderData submitOrder(@RequestBody @Valid OrderData orderData, HttpServletRequest request) {
 		String userName = getSessionUserName();
 		OrderData orderDataNew = new OrderData();
@@ -60,24 +60,40 @@ public class A2zOrderController extends RootController {
 		return orderService.getAllOrders(userName);
 	}*/
 
-	@GetMapping("/{orderId}")
+	/*@GetMapping("/{orderId}")
 	public OrderData getOrderDetails(@PathVariable @Valid long orderId , HttpServletRequest request) {
-		String userName = (String) request.getSession().getAttribute("currentUser");
+		String userName = getSessionUserName();
 		return orderService.getOrderDetail(userName, orderId);
-	}
+	}*/
 	
-	@GetMapping("/return/{orderId}")
-	public OrderData returnOrExtend(@PathVariable @Valid long orderId ,@RequestParam @Valid boolean isReturned , @RequestParam @Valid boolean isExtend ,  HttpServletRequest request) {
-		String userName = (String) request.getSession().getAttribute("currentUser");
-		return orderFacade.returnOrExtend(userName, orderId ,isReturned , isExtend);
+	@GetMapping("/return")
+	@ResponseBody
+	public OrderData returnOrExtend(@RequestParam @Valid long orderId ,@RequestParam @Valid boolean isReturn
+			, @RequestParam @Valid boolean isExtend ,  HttpServletRequest request) {
+		String userName = getSessionUserName();
+		return orderFacade.returnOrExtend(userName, orderId ,isReturn , isExtend);
 	}
 	
 	@PostMapping("/proof/upload")
+	@ResponseBody
 	public MediaContainerData uploadProof(@RequestPart("files") MultipartFile[] files, HttpServletRequest request) throws IOException {
-		String userName = (String) request.getSession().getAttribute("currentUser");
+		String userName = getSessionUserName();
 		if (isSessionValid())
 			return mediaService.uploadMedia(userName+"-proofs", files, false);
 		return new MediaContainerData();
 	}
+	@GetMapping("/allTypes")
+	@ResponseBody
+	public Iterable<String> getAllOrderTypes() {
+		return orderFacade.getAllOrderTypes();
+	}
+
+	@GetMapping("/allOrderStatuses")
+	@ResponseBody
+	public Iterable<String> getAllOrderStatuses() {
+		return orderFacade.getAllOrderStatuses();
+	}
+
+
 }
 

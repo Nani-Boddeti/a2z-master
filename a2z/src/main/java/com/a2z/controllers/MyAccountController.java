@@ -38,6 +38,7 @@ public class MyAccountController extends RootController {
 	WishlistService wishlistService;
 
 	@GetMapping("/profile")
+	@ResponseBody
 	public CustomerData getProfile(HttpServletRequest request) {
 		String userName = getSessionUserName();
 		if(StringUtils.isEmpty(userName)) {
@@ -45,8 +46,17 @@ public class MyAccountController extends RootController {
 		}
 		return customerService.getCustomerProfile(userName);
 	}
-	
+
+	@PutMapping("/profile/update")
+	public CustomerData getProfileUpdate(HttpServletRequest request, @RequestBody @Valid CustomerData customerData) {
+		String userName = getSessionUserName();
+		if(StringUtils.isEmpty(userName)) {
+			return null;
+		}
+		return customerService.getCustomerProfile(userName);
+	}
 	@GetMapping("/myAds")
+	@ResponseBody
 	public PagedAdPostResult viewAllMyAds( HttpServletRequest request,@RequestParam(required = false) Integer pageNumber
 			, @RequestParam(required = false) Integer pageSize){
 		String userName = getSessionUserName();
@@ -57,6 +67,7 @@ public class MyAccountController extends RootController {
 	}
 	
 	@GetMapping("/myAdOrders")
+	@ResponseBody
 	public PagedA2zOrderResult viewAllMyAdOrders(HttpServletRequest request,
 												 @RequestParam(required = false) Integer pageNumber
 			, @RequestParam(required = false) Integer pageSize){
@@ -66,9 +77,21 @@ public class MyAccountController extends RootController {
 		}
 		return new PagedA2zOrderResult();
 	}
-	
-	@GetMapping("/order/{orderId}")
-	public OrderData viewOrder(@PathVariable @Valid final Long orderId, HttpServletRequest request){
+	@GetMapping("/myAdOrders/status")
+	@ResponseBody
+	public PagedA2zOrderResult viewAllMyAdOrdersByStatus(HttpServletRequest request,@RequestParam(required = true) String status,
+												 @RequestParam(required = false) Integer pageNumber
+			, @RequestParam(required = false) Integer pageSize){
+		String userName = getSessionUserName();
+		if(StringUtils.isNotEmpty(userName)) {
+			return customerService.getAllMyOrdersInStatus(userName, pageNumber, pageSize,status);
+		}
+		return new PagedA2zOrderResult();
+	}
+
+	@GetMapping("/order/details/")
+	@ResponseBody
+	public OrderData viewOrder(@RequestParam(required = true) @Valid final Long orderId, HttpServletRequest request){
 		String userName = getSessionUserName();
 		OrderData orderData = new OrderData();
 		if(StringUtils.isNotEmpty(userName)) {
@@ -84,6 +107,7 @@ public class MyAccountController extends RootController {
 	}
 	
 	@GetMapping("/approvalRequests")
+	@ResponseBody
 	public PagedA2zApprovalResult getApprovalRequests(HttpServletRequest request,@RequestParam(required = false) Integer pageNumber
 			, @RequestParam(required = false) Integer pageSize){
 		String userName = getSessionUserName();
@@ -91,6 +115,7 @@ public class MyAccountController extends RootController {
 	}
 	
 	@PostMapping("/approvalRequests/update")
+	@ResponseBody
 	public ApprovalRequestData submitApprovalRequest(@RequestBody @Valid ApprovalRequestPostData requestData , HttpServletRequest request){
 		String userName = getSessionUserName();
 		return customerService.submitApprovalRequest(requestData,userName);
@@ -128,5 +153,12 @@ public class MyAccountController extends RootController {
 	public MediaContainerData getProofMedia(HttpServletRequest request) {
 		String userName = getSessionUserName();
 		return mediaService.getProofMedia(userName);
+	}
+
+	@GetMapping("/deleteAccount")
+	public void deleteAccount(HttpServletRequest request,@RequestParam(required = true) String userName ) {
+		String sessionUserName = getSessionUserName();
+		if(sessionUserName.equals(userName))
+		customerService.deleteCustomer(userName);
 	}
 }

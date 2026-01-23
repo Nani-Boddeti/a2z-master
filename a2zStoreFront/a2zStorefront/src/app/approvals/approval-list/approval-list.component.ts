@@ -43,7 +43,7 @@ approvalRequestModel:ApprovalRequestSubmitModel=new ApprovalRequestSubmitModel(0
     this.adPostUtilService.triggerClick(newValue);
 
   }
-  approveRequest(requestId: number): void {
+  submitApproveRequest(requestId: number): void {
     this.approvalRequestModel.id = requestId;
     this.approvalRequestModel.status = 'APPROVED';
     this.adService.submitApprovalRequest(JSON.stringify(this.approvalRequestModel)).subscribe(

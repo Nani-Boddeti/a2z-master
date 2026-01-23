@@ -29,6 +29,9 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
@@ -117,6 +120,8 @@ public class AuthorizationServerConfig {
 		http
 				.authorizeHttpRequests(authz -> authz
 						.requestMatchers(WHITE_LIST_URLS).permitAll()
+						// Allow OPTIONS requests for CORS preflight
+						.requestMatchers("OPTIONS", "/**").permitAll()
 						.anyRequest().authenticated()
 				)
 				.formLogin(form -> form
@@ -129,6 +134,8 @@ public class AuthorizationServerConfig {
 		configureSession(http);  // ✅ Reuse
 		http.csrf(AbstractHttpConfigurer::disable);
 		http.requestCache(Customizer.withDefaults());
+		// Enable CORS for all endpoints
+		http.cors(Customizer.withDefaults());
 		return http.build();
 	}
 	@Bean
@@ -178,5 +185,20 @@ public class AuthorizationServerConfig {
 	@Bean
 	JdbcRegisteredClientRepository registeredClientRepository(DataSource dataSource) {
 		return new JdbcRegisteredClientRepository(new JdbcTemplate(dataSource));
+	}
+
+	// ✅ CORS Configuration Bean to fix Angular preflight requests
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(java.util.List.of("http://localhost:4200", "http://localhost:4201"));
+		configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+		configuration.setAllowedHeaders(java.util.List.of("*"));
+		configuration.setAllowCredentials(true);
+		configuration.setMaxAge(3600L);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
 	}
 }

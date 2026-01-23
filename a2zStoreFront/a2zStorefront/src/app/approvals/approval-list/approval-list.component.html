@@ -94,7 +94,7 @@
           <span class="price">{{approvalRequest?.adPostData?.price?.currency}} {{approvalRequest?.adPostData?.price?.amount}}</span>
         </div>
         <div class="action-buttons">
-          <button *ngIf="approvalRequest?.status === 'IN_REVIEW'" class="approval-btn" (click)="approveRequest(approvalRequest?.id)">
+          <button *ngIf="approvalRequest?.status === 'IN_REVIEW'" class="approval-btn" (click)="submitApproveRequest(approvalRequest?.id)">
             Approve
           </button> 
           <button class="reject-btn" (click)="rejectRequest(approvalRequest?.id)">

@@ -16,72 +16,135 @@
     </div>
 
     <!-- Filters -->
-    <div class="pill-group justify-center mt-6">
-      <button class="pill active">All Orders</button>
-      <button class="pill">Processing</button>
-      <button class="pill">Shipped</button>
-      <button class="pill">Delivered</button>
-      <button class="pill">Cancelled</button>
-    </div>
+  <div class="filters pill-group">
+  <!-- Filter Buttons (Track selected filter) -->
+  <button class="pill" 
+          [class.active]="selectedStatus === filter"
+          (click)="getOrdersByStatus(currentPage, filter)"
+          *ngFor="let filter of orderStatusList">
+    {{filter}}
+  </button>
+</div>
   </div>
 @for (order of orderList; track $index) {
   <!-- Orders Grid -->
-  <div class="article-grid">
-  <!-- 3-Column Order Card -->
-  <div class="order-card-three-col article-card">
-    
-    <!-- LEFT COLUMN: Header + Image (35%) -->
-    <div class="order-left-section">
-      <div class="order-header-compact">
-        <div class="flex items-start gap-2">
-          <span class="order-id">{{order?.id}}</span><br>
-          <span class="status-badge delivered">{{order?.status}}</span>
-        </div>
-        <span class="order-date">{{order?.date}}</span>
-      </div>
-      @for (ad of order?.entries;track $index){
-       @for (media of ad.adPost?.mediaContainerData?.medias; track $index){
-         <div class="order-media">
-        <img src="/uploads/{{ad.adPost?.mediaContainerData?.code}}/{{media?.fileName}}" 
-              class="order-image">
-      </div>
-    }
-    }
-    </div>
-    
-    <!-- MIDDLE COLUMN: Items + Description (45%) -->
-    <div class="order-middle-section">
-      <div class="order-items-preview">
-        <div class="order-item-mini">
+      <div class="article-grid">
+      <!-- 3-Column Order Card -->
+      <div class="order-card-three-col article-card">
+        
+        <!-- LEFT COLUMN: Header + Image (35%) -->
+        <div class="order-left-section">
+          <div class="order-header-compact">
+            <div class="flex items-start gap-2">
+              <span class="order-id">{{order?.id}}</span><br>
+              <span class="order-id" *ngIf="order?.originalOrderId"> Original Order ID:{{order?.originalOrderId}}</span><br>
+              <span class="status-badge delivered">{{order?.status}}</span>
+            </div>
+            <span class="order-date">{{order?.date}}</span>
+          </div>
           @for (ad of order?.entries;track $index){
-          <div>
-            <h4 class="mini-item-title">{{ad?.adPost?.productName}}</h4>
-            <p class="mini-item-qty">Qty: 1</p>
-            <span class="mini-item-desc item-details-mini">
-        Owner : {{ad?.adPost?.customerData?.firstName}}<br>
-        {{ad?.adPost?.sourceAddress?.line1}}, {{ad?.adPost?.sourceAddress?.city}}<br>
-        {{ad?.adPost?.sourceAddress?.latitude}}, {{ad?.adPost?.sourceAddress?.longitude}}
-      </span>
-          </div>}
+          @for (media of ad.adPost?.mediaContainerData?.medias; track $index){
+            <div class="order-media">
+            <img src="/uploads/{{ad.adPost?.mediaContainerData?.code}}/{{media?.fileName}}" 
+                  class="order-image">
+          </div>
+        }
+        }
+        </div>
+        
+        <!-- MIDDLE COLUMN: Items + Description (45%) -->
+        <div class="order-middle-section">
+          <div class="order-items-preview">
+            <div class="order-item-mini">
+              @for (ad of order?.entries;track $index){
+              <div>
+                <h4 class="mini-item-title">{{ad?.adPost?.productName}}</h4>
+                <p class="mini-item-qty">Qty: 1</p>
+                <span class="mini-item-desc item-details-mini">
+            Owner : {{ad?.adPost?.customerData?.firstName}}<br>
+            {{ad?.adPost?.sourceAddress?.line1}}, {{ad?.adPost?.sourceAddress?.city}}<br>
+            {{ad?.adPost?.sourceAddress?.latitude}}, {{ad?.adPost?.sourceAddress?.longitude}}
+          </span>
+              </div>}
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- RIGHT COLUMN: Price + Actions (20%) -->
+        <div class="order-right-section">
+          <div class="total-price-large">{{order?.price?.amount}}</div>
+          <button class="ord-btn" *ngIf="order.eligibleToExtend" (click)="OnSubmitExtendOrder(order.id)">Extend</button>
+          <button class="ord-btn" *ngIf="order.returnable" (click)="OnSubmitReturnOrder(order.id)">Return</button>
+          <button class="ord-btn" *ngIf="order.eligibleToCancel">Cancel</button>
+          <div class="order-actions">
+            <a href="/order/1245" class="view-details">View →</a>
+          </div>
         </div>
       </div>
-      
     </div>
-    
-    <!-- RIGHT COLUMN: Price + Actions (20%) -->
-    <div class="order-right-section">
-      <div class="total-price-large">{{order?.price?.amount}}</div>
-      <div class="order-actions">
-        <a href="/order/1245" class="view-details">View →</a>
-      </div>
-    </div>
-  </div>
-</div>
 
-
-
-
-
+    <!-- Child Orders Loop -->
+      <div class="child-order-container">
+            @for (childOrder of order.childOrders; track $index) {
+          <!-- Orders Grid -->
+              <div class="article-grid">
+              <!-- 3-Column Order Card -->
+              <div class="child-order-card-three-col article-card">
+                
+                <!-- LEFT COLUMN: Header + Image (35%) -->
+                <div class="child-order-left-section">
+                  <div class="order-header-compact">
+                    <div class="flex items-start gap-2">
+                      <span class="order-id">{{childOrder?.id}}</span><br>
+                      <span class="order-id" *ngIf="childOrder?.originalOrderId"> Original Order ID:{{childOrder?.originalOrderId}}</span><br>
+                      <span class="status-badge delivered">{{childOrder?.status}}</span>
+                    </div>
+                    <span class="child-order-date">{{childOrder?.date}}</span>
+                  </div>
+                  @for (ad of childOrder?.entries;track $index){
+                  @for (media of ad.adPost?.mediaContainerData?.medias; track $index){
+                    <div class="child-order-media">
+                    <img src="/uploads/{{ad.adPost?.mediaContainerData?.code}}/{{media?.fileName}}" 
+                          class="order-image">
+                  </div>
+                }
+                }
+                </div>
+                
+                <!-- MIDDLE COLUMN: Items + Description (45%) -->
+                <div class="child-order-middle-section">
+                  <div class="order-items-preview">
+                    <div class="order-item-mini">
+                      @for (ad of childOrder?.entries;track $index){
+                      <div>
+                        <h4 class="child-mini-item-title">{{ad?.adPost?.productName}}</h4>
+                        <p class="child-mini-item-qty">Qty: 1</p>
+                        <span class="child-mini-item-desc item-details-mini">
+                    Owner : {{ad?.adPost?.customerData?.firstName}}<br>
+                    {{ad?.adPost?.sourceAddress?.line1}}, {{ad?.adPost?.sourceAddress?.city}}<br>
+                    {{ad?.adPost?.sourceAddress?.latitude}}, {{ad?.adPost?.sourceAddress?.longitude}}
+                  </span>
+                      </div>}
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <!-- RIGHT COLUMN: Price + Actions (20%) -->
+                <div class="child-order-right-section">
+                  <div class="child-total-price-large">{{childOrder?.price?.amount}}</div>
+                  <button class="child-ord-btn ord-btn" *ngIf="childOrder.eligibleToExtend" (click)="OnSubmitExtendOrder(childOrder.id)">Extend</button>
+                  <button class="child-ord-btn ord-btn" *ngIf="childOrder.returnable" (click)="OnSubmitReturnOrder(childOrder.id)">Return</button>
+                  <button class="child-ord-btn ord-btn" *ngIf="childOrder.eligibleToCancel">Cancel</button>
+                  <div class="order-actions">
+                    <a href="/order/1245" class="view-details">View →</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+        }
+        </div>
 }
 
 
@@ -91,6 +154,6 @@
     [totalPages]="totalPages"
     [totalItems]="totalItems"
     [itemsPerPage]="itemsPerPage"
-    (pageChange)="getOrders($event)">
+    (pageChange)="getOrdersByStatus($event,selectedStatus)">
   </app-pagination>
 </div>

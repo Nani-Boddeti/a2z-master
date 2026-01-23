@@ -38,6 +38,8 @@ public class AdPostData extends RootData {
 	private double longitude;
 	private String categoryCode;
 	private boolean selfAdded;
+	@NotNull
+	private String orderType;
 	@Override
 	public void setErrorMessage(String errorMessage) {
 		// TODO Auto-generated method stub
@@ -151,5 +153,13 @@ public class AdPostData extends RootData {
 
 	public void setSelfAdded(boolean selfAdded) {
 		this.selfAdded = selfAdded;
+	}
+
+	public String getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
 	}
 }

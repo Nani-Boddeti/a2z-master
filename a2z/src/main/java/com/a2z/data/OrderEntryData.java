@@ -25,6 +25,9 @@ public class OrderEntryData extends RootData {
 	private PriceData tax;
 	@Valid
 	private OrderData order;
+
+	private boolean extendedOrder;
+
 	public Long getCode() {
 		return code;
 	}
@@ -72,5 +75,13 @@ public class OrderEntryData extends RootData {
 	}
 	public void setOrder(OrderData order) {
 		this.order = order;
+	}
+
+	public boolean isExtendedOrder() {
+		return extendedOrder;
+	}
+
+	public void setExtendedOrder(boolean extendedOrder) {
+		this.extendedOrder = extendedOrder;
 	}
 }

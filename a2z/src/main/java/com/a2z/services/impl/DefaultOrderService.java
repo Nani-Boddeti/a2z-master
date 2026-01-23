@@ -10,6 +10,8 @@ import java.util.Optional;
 
 import com.a2z.dao.*;
 import com.a2z.data.OrderEntryData;
+import com.a2z.enums.ApprovalStatus;
+import com.a2z.enums.OrderStatus;
 import com.a2z.services.interfaces.OrderService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,6 @@ import com.a2z.persistence.OrderEntryRepository;
 import com.a2z.persistence.PODCustomerRepository;
 import com.a2z.persistence.RootRepository;
 import com.a2z.populators.OrderPopulator;
-import com.a2z.populators.reverse.AddressReversePopulator;
 import com.a2z.populators.reverse.OrderEntryReversePopulator;
 
 
@@ -79,7 +80,6 @@ public class DefaultOrderService implements OrderService {
 			order.setOriginalVersion(originalOrder);
 		}
 		approvalRequest.setApprovalStatus(ApprovalStatus.IN_REVIEW);
-		approvalRequest.setOrder(order);
 		rootRepo.save(approvalRequest);
 		order.setApprovalRequest(approvalRequest);
 		rootRepo.save(order);
@@ -136,15 +136,14 @@ public class DefaultOrderService implements OrderService {
 		int count = 0;
 		for(OrderEntryData orderEntryData : orderData.getEntries()) {
 			OrderEntry orderEntry = new OrderEntry();
+			orderEntryData.setExtendedOrder(orderData.getExtendedOrder());
 			orderEntryReversePopulator.populate(orderEntryData, orderEntry);
 			/* orderEntry.setCode((String.valueOf(count))); */
 			Optional<AdPost> adPostOpt = adPostRepo.findById(orderEntryData.getAdPost().getId());
 			if(adPostOpt.isPresent()) {
 				AdPost adPost = adPostOpt.get();
 				orderEntry.setAdPost(adPost);
-				adPost.setOrderEntry(orderEntry);
 				orderEntryRepo.save(orderEntry);
-				adPostRepo.save(adPost);
 			}
 			orderEntryList.add(orderEntry);
 			count++;

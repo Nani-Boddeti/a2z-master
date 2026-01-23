@@ -1,14 +1,12 @@
 package com.a2z.services.impl;
 
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import com.a2z.dao.*;
 import com.a2z.data.*;
+import com.a2z.enums.ApprovalStatus;
+import com.a2z.enums.OrderStatus;
 import com.a2z.events.CustomerRegistrationEvent;
 import com.a2z.populators.reverse.AddressReversePopulator;
 import com.a2z.services.interfaces.CustomerService;
@@ -146,8 +144,8 @@ public class DefaultCustomerService implements CustomerService {
 	}
 
 	@Override
-	public void deleteCustomer(Long id) {
-		customerRepo.deleteById(null);
+	public void deleteCustomer(String userName) {
+		disableCustomer(userName);
 	}
 
 	@Override
@@ -198,6 +196,11 @@ public class DefaultCustomerService implements CustomerService {
 	}
 
 	@Override
+	public CustomerData updateCustomer(CustomerData customerData)
+	{
+		return saveCustomer(customerData);
+	}
+	@Override
 	public PagedAdPostResult retriveAllMyAds(String userName, Integer pageNo, Integer pageSize) {
 		List<AdPostData> myAdDataList = new ArrayList<AdPostData>();
 		int pageNumber = DEFAULT_PAGE_NO;
@@ -231,9 +234,34 @@ public class DefaultCustomerService implements CustomerService {
 		return pagedResult;
 	}
 
+
+	@Override
+	public PagedA2zOrderResult getAllMyOrdersInStatus(String userName, Integer pageNo, Integer pageSize, String orderStatus){
+		int pageNumber = DEFAULT_PAGE_NO;
+		int size = PAGE_SIZE;
+		if(ObjectUtils.isNotEmpty(pageNo))
+		{
+			pageNumber = pageNo.intValue()-1;
+		}
+		if(ObjectUtils.isNotEmpty(pageSize))
+		{
+			size = pageSize.intValue();
+		}
+		PageRequest pageRequest = PageRequest.of(pageNumber, size);
+		PagedA2zOrderResult pagedResult = new PagedA2zOrderResult();
+		Optional<Customer> customerOpt = customerRepo.findById(userName);
+		if(customerOpt.isPresent()) {
+			Customer customer = customerOpt.get();
+			Page<A2zOrder> myOrdList = rootRepository.getOrdersByCustomerAndInStatus(OrderStatus.valueOf(orderStatus.toUpperCase()),customer,pageRequest);
+			pagedResult.setCurrentPage(myOrdList.getPageable().getPageNumber());
+			pagedResult.setTotalPages(myOrdList.getTotalPages());
+			pagedResult.setA2zOrders(populateNestedA2zOrders(myOrdList));
+		}
+		return pagedResult;
+	}
+
 	@Override
 	public PagedA2zOrderResult getAllMyOrders(String userName, Integer pageNo, Integer pageSize){
-		List<OrderData> orderDataList = new ArrayList<OrderData>();
 		int pageNumber = DEFAULT_PAGE_NO;
 		int size = PAGE_SIZE;
 		if(ObjectUtils.isNotEmpty(pageNo))
@@ -252,14 +280,41 @@ public class DefaultCustomerService implements CustomerService {
 			Page<A2zOrder> myOrdList = rootRepository.getMyOrders(customer,pageRequest);
 			pagedResult.setCurrentPage(myOrdList.getPageable().getPageNumber());
 			pagedResult.setTotalPages(myOrdList.getTotalPages());
-			myOrdList.forEach(ord->{
-				OrderData ordData = new OrderData();
-				orderPopulator.populate(ord, ordData);
-				orderDataList.add(ordData);
-			});
+			pagedResult.setA2zOrders(populateNestedA2zOrders(myOrdList));
 		}
-		pagedResult.setA2zOrders(orderDataList);
 		return pagedResult;
+	}
+
+	private List<OrderData> populateNestedA2zOrders(Page<A2zOrder> orderDataList){
+		List<OrderData> flatOrderDataList = new ArrayList<>();
+		orderDataList.stream().forEach(order->{
+			List<OrderData> nestedOrders = new ArrayList<>();
+			if(Objects.nonNull(order.getOriginalVersion())){
+				A2zOrder originalOrder = order.getOriginalVersion();
+				Optional<OrderData> originalOrderDataOpt =  flatOrderDataList.stream().filter(od->
+					od.getId().equals(originalOrder.getId())
+				).findFirst();
+				if(originalOrderDataOpt.isPresent()){
+					OrderData originalOrderData = originalOrderDataOpt.get();
+					if(CollectionUtils.isNotEmpty(originalOrderData.getChildOrders())){
+						nestedOrders.addAll(originalOrderData.getChildOrders());
+					}
+					OrderData ordData = new OrderData();
+					orderPopulator.populate(order, ordData);
+					nestedOrders.add(ordData);
+					originalOrderData.setChildOrders(nestedOrders);
+				} else {
+					OrderData ordData = new OrderData();
+					orderPopulator.populate(order, ordData);
+					flatOrderDataList.add(ordData);
+				}
+			} else {
+				OrderData ordData = new OrderData();
+				orderPopulator.populate(order, ordData);
+				flatOrderDataList.add(ordData);
+			}
+		});
+		return flatOrderDataList;
 	}
 	@Override
 	public OrderData viewOrder(Long id, String userName){
@@ -303,7 +358,7 @@ public class DefaultCustomerService implements CustomerService {
 				adPostPopulator.populate(approvalRequest.getAdPost(), adPostData);
 				approvalReqData.setAdPostData(adPostData);
 				CustomerData customerData = new CustomerData();
-				customerPopulator.populate(approvalRequest.getOrder().getCustomer(), customerData);
+				customerPopulator.populate(approvalRequest.getCustomer(), customerData);
 				approvalReqData.setCustomerData(customerData);
 				approvalRequestDataList.add(approvalReqData);
 			});
@@ -339,8 +394,12 @@ public class DefaultCustomerService implements CustomerService {
 			if(approvalRequestOpt.isPresent()) {
 				ApprovalRequest approvalRequest = approvalRequestOpt.get();
 				approvalRequest.setApprovalStatus(ApprovalStatus.valueOf(requestData.getStatus()));
-				approvalRequest.getOrder().setStatus(OrderStatus.valueOf(requestData.getStatus()));
-				rootRepository.save(approvalRequest.getOrder());
+				Optional<A2zOrder> orderOpt = rootRepository.findByApprovalRequest(approvalRequest);
+				if(orderOpt.isPresent()){
+					A2zOrder order = orderOpt.get();
+					order.setStatus(OrderStatus.valueOf(requestData.getStatus()));
+					rootRepository.save(order);
+				}
 				rootRepository.save(approvalRequest);
 					approvalReqData.setId(approvalRequest.getId());
 					approvalReqData.setStatus(approvalRequest.getApprovalStatus().toString());
