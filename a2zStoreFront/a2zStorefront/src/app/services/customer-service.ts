@@ -34,6 +34,24 @@ public profileData$ = this.profileDataSubject.asObservable();
       })
     );
   }
+  updateProfileData(profileData: any): Observable<any> {
+    console.log('🔄 CustomerService.updateProfileData() called');
+    return this.registrationService.updateProfile(profileData).pipe(
+      tap((updatedProfileData) => {
+        console.log('✅ Updated profile data from API:', updatedProfileData);
+        this.profileDataSubject.next(updatedProfileData);
+      }),
+      catchError((error) => {
+        console.error('❌ Error fetching user profile:', error);
+        console.error('Status:', error?.status);
+        console.error('Message:', error?.message);
+        console.error('Response body:', error?.error);
+        this.router.navigate(['/profile']);
+        return EMPTY;
+      })
+    );
+  }
+
   getMyAdList(page:number,size:number){
   return this.http.get<any>("/myAccount/myAds?pageNo=" + page + "&pageSize=" + size);
  }

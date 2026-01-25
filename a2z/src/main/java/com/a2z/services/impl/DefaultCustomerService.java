@@ -213,10 +213,10 @@ public class DefaultCustomerService implements CustomerService {
 			Customer customer = customerOpt.get();
 			customerProfileReversePopulator.populate(customerProfileUpdateData, customer);
 			customerRepo.save(customer);
-			entityManager.refresh(customer);
+			//entityManager.refresh(customer);
 			customerPopulator.populate(customer,customerData);
 		}
-		return saveCustomer(customerData);
+		return customerData;
 	}
 	@Override
 	public PagedAdPostResult retriveAllMyAds(String userName, Integer pageNo, Integer pageSize) {

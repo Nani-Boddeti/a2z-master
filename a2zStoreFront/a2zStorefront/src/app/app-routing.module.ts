@@ -10,6 +10,7 @@ import { OrderConfirmComponent } from './orders/order-confirm/order-confirm.comp
 import { SearchResults } from './ad-posts/search-results/search-results';
 import { MapComponent } from './ad-posts/map-component/map-component';
 import { MyAdsComponent } from './customers/my-ads/my-ads.component';
+import { ProfileUpdate } from './customers/profile-update/profile-update';
 
 
 const routes: Routes = [
@@ -23,6 +24,7 @@ const routes: Routes = [
   {path:'order-confirm',component:OrderConfirmComponent},
   { path: 'search-results', component: SearchResults },
   {path:'my-ads', component:MyAdsComponent},
+  {path:'profile-update',component:ProfileUpdate},
   
 
 ];

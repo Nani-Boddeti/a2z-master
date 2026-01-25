@@ -13,6 +13,7 @@ export class RegistrationService {
   private pkceUrl = '/pkce/store'; // Endpoint to store PKCE data
   private tokenExchangeUrl = '/oauth2/token'; // Endpoint to exchange code for token
   private profileUrl = '/myAccount/profile';
+  private updateProfileUrl = '/myAccount/profile/update';
   
   constructor(private http: HttpClient) { }
   
@@ -53,5 +54,12 @@ export class RegistrationService {
 
   getUserProfile(): Observable<any> {
     return this.http.get(this.profileUrl);
+  }
+
+  updateProfile(profileData: any): Observable<any> {
+    const jsonheaders = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    return this.http.put(this.updateProfileUrl, profileData, { headers: jsonheaders });
   }
 }

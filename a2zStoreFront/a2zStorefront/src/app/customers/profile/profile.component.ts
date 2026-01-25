@@ -12,10 +12,13 @@ import { CustomerService } from '../../services/customer-service';
 export class ProfileComponent implements OnInit {
 userData :any;
 userGroupName: string = '';
+successMessage = '';
+  errorMessage = '';
+updateProfileVisible: boolean = false;
   constructor(private customerService : CustomerService,private router: Router) { }
 
   ngOnInit(): void {
-   
+   this.updateProfileVisible = false;
   }
   ngAfterViewInit() {
      this.getProfileData();
@@ -36,6 +39,25 @@ userGroupName: string = '';
   }
 updateProfile(): void {
   // Implement profile update logic here
-  console.log('Update profile clicked');  
+  console.log('Update profile clicked');
+  this.updateProfileVisible = true;
+  // this.router.navigate(['/profile-update'], { 
+  //   state: { customerData: this } 
+  // });
 }
+  // ✅ Receive updated data from child
+  onProfileUpdated(event: any) {
+    console.log('Profile updated:', event.data);
+    
+    if (event.success) {
+      // Update local data
+      this.scrollToTop();
+      this.successMessage = 'Profile updated successfully.';
+     this.updateProfileVisible = false;
+      this.userData = event.data;
+    }
+  }
+  scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }

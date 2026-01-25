@@ -1,0 +1,63 @@
+<form [formGroup]="updateProfileForm">
+<div class="form-section">
+        <h2>Update Profile</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name *</label>
+            <input
+              type="text"
+              class="form-input"
+              formControlName="firstName"
+              placeholder="First name"
+              [class.is-invalid]="updateProfileForm.get('firstName')?.invalid && updateProfileForm.get('firstName')?.touched"
+            >
+          </div>
+
+          <div class="form-group">
+            <label>Last Name *</label>
+            <input
+              type="text"
+              class="form-input"
+              formControlName="lastName"
+              placeholder="Last name"
+              [class.is-invalid]="updateProfileForm.get('lastName')?.invalid && updateProfileForm.get('lastName')?.touched"
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Email *</label>
+          <input
+            type="email"
+            class="form-input"
+            formControlName="email"
+            placeholder="email@example.com"
+            [class.is-invalid]="updateProfileForm.get('email')?.invalid && updateProfileForm.get('email')?.touched"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>phoneNumber *</label>
+          <input
+            type="text"
+            class="form-input"
+            formControlName="phoneNumber"
+            placeholder="Phone number"
+            [class.is-invalid]="updateProfileForm.get('phoneNumber')?.invalid && updateProfileForm.get('phoneNumber')?.touched"
+        ></div>
+       
+</div>
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="updateProfile()"
+          [disabled]="isSubmitting || updateProfileForm.invalid"
+        >
+          <span *ngIf="!isSubmitting">Update</span>
+          <span *ngIf="isSubmitting">Submitting...</span>
+        </button>
+      </div>
+    </form>
