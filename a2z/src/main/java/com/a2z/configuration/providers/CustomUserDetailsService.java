@@ -33,8 +33,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		Optional<Customer> customerOpt = userRepository.findById(email);
+	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+		Optional<Customer> customerOpt = userRepository.getUserByPhoneOrUserName(userName);
 		if (customerOpt.isEmpty()) {
 			throw new UsernameNotFoundException("No User Found");
 		}

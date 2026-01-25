@@ -15,6 +15,7 @@ public class MediaData extends RootData {
 	private Long size;
 	private MediaContainerData mediaContainer;
 	private boolean isMap ;
+	private String originalFileName;
 	public String getFileName() {
 		return fileName;
 	}
@@ -62,5 +63,13 @@ public class MediaData extends RootData {
 	}
 	public void setMap(boolean isMap) {
 		this.isMap = isMap;
+	}
+
+	public String getOriginalFileName() {
+		return originalFileName;
+	}
+
+	public void setOriginalFileName(String originalFileName) {
+		this.originalFileName = originalFileName;
 	}
 }

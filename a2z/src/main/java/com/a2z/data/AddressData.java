@@ -22,11 +22,11 @@ public class AddressData extends RootData {
 	private String lastName;
 	@Pattern(regexp="^[a-zA-Z0-9 ,']*$")
 	@Size(min = 2, message = "{validation.line1.size.too_short}")
-	@Size(max = 30, message = "{validation.line1.size.too_long}")
+	@Size(max = 100, message = "{validation.line1.size.too_long}")
 	private String line1;
 	@Pattern(regexp="^[a-zA-Z0-9 ,']*$")
 	@Size(min = 2, message = "{validation.line2.size.too_short}")
-	@Size(max = 30, message = "{validation.line2.size.too_long}")
+	@Size(max = 100, message = "{validation.line2.size.too_long}")
 	private String line2;
 	@Pattern(regexp="^[a-zA-Z0-9 ,']*$")
 	@Size(min = 2, message = "{validation.apartment.size.too_short}")

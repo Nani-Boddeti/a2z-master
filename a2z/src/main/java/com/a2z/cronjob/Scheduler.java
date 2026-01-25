@@ -96,6 +96,7 @@ public class Scheduler {
 			 adPostSearch.setPriceId(ad.getPrice().getId());
 			 adPostSearch.setProductName(ad.getProductName());
 			 adPostSearch.setCustomerUserName(ad.getCustomer().getUserName());
+			 adPostSearch.setModifiedTime(ad.getModifiedTime());
 			 adPostSearchList.add(adPostSearch);
 			 ad.setIndexed(true);
 			 adPostRepository.save(ad);
@@ -112,6 +113,7 @@ public class Scheduler {
 			 LocalDate modifiedTime = ad.getModifiedTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().plusDays(DAYS_OFFSET);
 			 if(currentDate.isAfter(modifiedTime)) {
 				 ad.setActive(false);
+				 ad.setModifiedTime(new Date());
 				 adPostRepository.save(ad);
 			 }
 		 });
@@ -124,6 +126,7 @@ public class Scheduler {
 		 primeUserList.stream().forEach(pu->{
 			 pu.setIsActive(false);
 			 pu.setStatus(PrimeStatus.EXPIRED);
+			 pu.setModifiedTime(new Date());
 				 rootRepo.save(pu);
 			Customer customer = pu.getCustomer();
 			List<UserGroup> userGroups = Optional.ofNullable(pu.getCustomer().getUserGroups()).stream().flatMap(List::stream)
@@ -142,9 +145,11 @@ public class Scheduler {
 			if(adPost.isPresent()) {
 				if(!adPost.get().isActive()) {
 					ad.setActive(false);
+					ad.setModifiedTime(new Date());
 					searchRepo.save(ad);					
 				} 
 			} else {
+				ad.setModifiedTime(new Date());
 				ad.setActive(false);
 				searchRepo.save(ad);
 			}

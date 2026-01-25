@@ -17,7 +17,8 @@ public class MediaPopulator implements Populator<A2zMedia,MediaData>{
 		}
 		target.setMap(source.isMap());
 		target.setMime(source.getMime());
-		target.setSize(source.getSize());		
+		target.setSize(source.getSize());
+		target.setOriginalFileName(source.getOriginalFileName());
 	}
 
 }

@@ -1,6 +1,8 @@
 package com.a2z.search.dao;
 
 
+import java.util.Date;
+
 public class A2zMediaSearch {
 
 	private String fileName;
@@ -12,6 +14,15 @@ public class A2zMediaSearch {
 
 	private String mediaContainerCode;
 	private boolean isMap ;
+	private Date modifiedTime ;
+
+	public Date getModifiedTime() {
+		return modifiedTime;
+	}
+
+	public void setModifiedTime(Date modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
 	public String getFileName() {
 		return fileName;
 	}

@@ -9,16 +9,6 @@
     "secure": false,
     "changeOrigin": true
   },
-  "/login": {
-    "target": "http://localhost:8080",
-    "secure": false,
-    "changeOrigin": true
-  },
-  "/loginV2": {
-    "target": "http://localhost:8080",
-    "secure": false,
-    "changeOrigin": true
-  },
   "/logoutV2": {
     "target": "http://localhost:8080",
     "secure": false,

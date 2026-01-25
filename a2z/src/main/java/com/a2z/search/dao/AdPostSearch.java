@@ -1,6 +1,7 @@
 package com.a2z.search.dao;
 
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -32,7 +33,7 @@ public class AdPostSearch {
 
 	
 	private Long priceId;
-	
+
 
 	@Field(type = FieldType.Nested, includeInParent = true)
 	private MediaContainerSearch mediaContainer;
@@ -61,7 +62,16 @@ public class AdPostSearch {
 	
 	private double latitude;
 	private double longitude;
-	
+	private Date modifiedTime ;
+
+	public Date getModifiedTime() {
+		return modifiedTime;
+	}
+
+	public void setModifiedTime(Date modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
+
 	public String getDescription() {
 		return Description;
 	}

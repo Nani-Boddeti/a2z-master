@@ -11,10 +11,11 @@ import com.a2z.services.interfaces.WishlistService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
+import com.a2z.services.impl.ForgotPasswordTokenGeneratorService.ResetToken;
 import com.a2z.services.impl.DefaultCustomerService;
 import com.a2z.services.impl.DefaultMediaService;
 
@@ -48,12 +49,14 @@ public class MyAccountController extends RootController {
 	}
 
 	@PutMapping("/profile/update")
-	public CustomerData getProfileUpdate(HttpServletRequest request, @RequestBody @Valid CustomerData customerData) {
+	public CustomerData getProfileUpdate(HttpServletRequest request, @RequestBody @Valid CustomerProfileUpdateData customerProfileUpdateData) {
 		String userName = getSessionUserName();
-		if(StringUtils.isEmpty(userName)) {
-			return null;
+		if(StringUtils.isNotEmpty(userName) && userName.equals(customerProfileUpdateData.getUserName())) {
+			return customerService.updateCustomer(customerProfileUpdateData);
 		}
-		return customerService.getCustomerProfile(userName);
+		CustomerData customerData = new CustomerData();
+		customerData.setErrorMessage("Unauthorized profile update attempt");
+		return customerData;
 	}
 	@GetMapping("/myAds")
 	@ResponseBody
@@ -160,5 +163,21 @@ public class MyAccountController extends RootController {
 		String sessionUserName = getSessionUserName();
 		if(sessionUserName.equals(userName))
 		customerService.deleteCustomer(userName);
+	}
+
+	@GetMapping("/forgot-password")
+	public ResponseEntity forgotPassword(HttpServletRequest request, @RequestParam(required = true) String userName){
+		customerService.sendForgotPasswordLink(userName);
+		return ResponseEntity.ok(HttpStatus.OK);
+	}
+
+	@PostMapping("/api/reset-password")
+	public ResponseEntity resetPassword(@RequestParam String token, @RequestBody PasswordResetRequest request) {
+		ResetToken resetToken = customerService.verifyUserForForgotPasswordLink(token);
+		if (resetToken!=null) {
+			customerService.updatePassword(request.getNewPassword(), resetToken.userId());
+			return ResponseEntity.ok("Password reset successful");
+		}
+		return ResponseEntity.badRequest().body("Invalid or expired token");
 	}
 }

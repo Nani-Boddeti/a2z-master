@@ -24,11 +24,11 @@ public class AdPost extends RootEntity{
 	
 	private String Description;
 	
-	@OneToOne(cascade = CascadeType.REFRESH)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "price_id", referencedColumnName = "id")
 	private Price Price;
 	
-	@OneToOne
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "mediaContainer_code", referencedColumnName = "code")
 	private MediaContainer mediaContainer;
 	
@@ -37,7 +37,7 @@ public class AdPost extends RootEntity{
 	private Customer customer;
 
 	private boolean active;
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
 			  name = "adPost_category", 
 			  joinColumns = @JoinColumn(name = "adPost_id"), 
@@ -50,7 +50,7 @@ public class AdPost extends RootEntity{
 	private boolean isIndexed;
 
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "a2zAddress_id")
 	private A2zAddress sourceAddress;
 

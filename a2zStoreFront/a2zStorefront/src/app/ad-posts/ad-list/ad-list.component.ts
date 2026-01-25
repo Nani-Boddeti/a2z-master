@@ -30,7 +30,7 @@ export class AdListComponent {
   currentPage = 1;
   totalPages = 10;
   totalItems = 100;
-  itemsPerPage = 10;
+  itemsPerPage = 12;
   selectedCategory: string = 'ALL';
   categories: any[] = [];
   onPageChange(event: Event) {

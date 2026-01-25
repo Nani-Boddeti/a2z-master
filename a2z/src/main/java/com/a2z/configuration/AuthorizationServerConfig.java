@@ -32,6 +32,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import com.a2z.filters.AdminAuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.List;
 
@@ -44,7 +46,8 @@ public class AuthorizationServerConfig {
 	private static final String[] WHITE_LIST_URLS = {
 			"/", "/ad/all", "/ad/view/**", "/c/**", "/customerSubmit",
 			"/suggest/password", "/generate/otp/**", "/validateOTP",
-			"/login**", "/loginV2", "/oauth2/**", "/login", "/search/**", "/.well-known/**","/uploads/**","/error","/error/**","/callback"
+			"/login**", "/loginV2", "/oauth2/**", "/login", "/search/**", "/.well-known/**","/uploads/**","/error","/error/**","/callback",
+			"/api/admin/login", "/api/admin/health"
 	};
 
 	private static final String[] AUTHENTICATED_URLS = {
@@ -81,7 +84,10 @@ public class AuthorizationServerConfig {
 				.authorizeHttpRequests(authz -> authz  // ✅ Fixed syntax
 						.requestMatchers("/oauth2/authorize").authenticated()
 						.anyRequest().permitAll()
-				)
+				)/*.sessionManagement(session -> session  // ✅ STATEFUL kept to get the authcode for admin users.
+						.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+						.sessionFixation().migrateSession()
+				)*/
 				.with(configurer, c -> c.oidc(Customizer.withDefaults()))
 				.exceptionHandling(exceptions -> exceptions
 						.defaultAuthenticationEntryPointFor(
@@ -136,6 +142,8 @@ public class AuthorizationServerConfig {
 		http.requestCache(Customizer.withDefaults());
 		// Enable CORS for all endpoints
 		http.cors(Customizer.withDefaults());
+		// Register admin filter before form login filter
+		//http.addFilterBefore(UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 	@Bean
@@ -201,4 +209,6 @@ public class AuthorizationServerConfig {
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
+
+
 }

@@ -31,9 +31,10 @@ public class OTPGenerator {
 		Collections.shuffle(listOfChar);
 		String finalOTP = listOfChar.stream().collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
 				.toString();
-		Customer customer = customerService.getUserByEmailORPhone(mobile, mobile);
+		Optional<Customer> customerOpt = customerService.getUserByUserNameORPhone(mobile);
 		boolean isOTPSaved = false;
-		if (Objects.nonNull(customer)) {
+		if (customerOpt.isPresent()) {
+			Customer customer = customerOpt.get();
 			Optional<OTP> otpOptional = otpRepo.findById(customer.getUserName());
 			OTP otp = new OTP();
 			if (otpOptional.isEmpty()) {

@@ -8,8 +8,11 @@ import com.a2z.data.*;
 import com.a2z.enums.ApprovalStatus;
 import com.a2z.enums.OrderStatus;
 import com.a2z.events.CustomerRegistrationEvent;
+import com.a2z.populators.*;
 import com.a2z.populators.reverse.AddressReversePopulator;
+import com.a2z.populators.reverse.CustomerProfileReversePopulator;
 import com.a2z.services.interfaces.CustomerService;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -18,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,13 +29,9 @@ import com.a2z.persistence.A2zAdPostRepository;
 import com.a2z.persistence.PODCustomerRepository;
 import com.a2z.persistence.PODOTPRepository;
 import com.a2z.persistence.RootRepository;
-import com.a2z.populators.AdPostPopulator;
-import com.a2z.populators.CustomerPopulator;
-import com.a2z.populators.OrderPopulator;
-import com.a2z.populators.WishlistPopulator;
 import com.a2z.populators.reverse.CustomerReversePopulator;
 import com.nimbusds.oauth2.sdk.util.CollectionUtils;
-
+import com.a2z.services.impl.ForgotPasswordTokenGeneratorService.ResetToken;
 
 @Service
 public class DefaultCustomerService implements CustomerService {
@@ -43,35 +43,42 @@ public class DefaultCustomerService implements CustomerService {
 	
 	@Autowired
 	private PODOTPRepository otpRepo;
-	
+
 	@Autowired
 	private CustomerReversePopulator customerReversePopulator;
-	
+
 	@Autowired
 	private CustomerPopulator customerPopulator;
-	
+
 	@Autowired
 	private AdPostPopulator  adPostPopulator;
-	
+
 	@Autowired
 	private RootRepository rootRepository;
-	
+
 	@Autowired
 	private OrderPopulator orderPopulator;
-	
+
 	@Autowired
 	private A2zAdPostRepository adPostRepository;
-	
+
 	@Autowired
 	private WishlistPopulator wishlistPopulator;
-	
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	@Autowired
 	AddressReversePopulator addressReversePopulator;
+	@Autowired
+	CustomerProfileReversePopulator customerProfileReversePopulator;
+	@Autowired
+	EntityManager entityManager;
 
 	@Autowired
 	ApplicationEventPublisher eventPublisher;
+
+	@Autowired
+	ForgotPasswordTokenGeneratorService tokenGeneratorService;
 
 	private static final int PAGE_SIZE = 10;
 	private static final int DEFAULT_PAGE_NO = 0;
@@ -155,20 +162,22 @@ public class DefaultCustomerService implements CustomerService {
 		if (customer.isPresent()) {
 			Customer cust = customer.get();
 			cust.setDisabled(true);
+			cust.setDeactivationDate(new Date());
 			customerRepo.save(cust);
 		}
 	}
 
 	@Override
-	public Customer getUserByEmailORPhone(String phone, String email) {
-		return customerRepo.getUserByEmailORPhone(phone, email);
+	public Optional<Customer> getUserByUserNameORPhone(String userName) {
+		return customerRepo.getUserByPhoneOrUserName(userName);
 	}
 
 	@Override
 	public CustomerData validateOTP(OTPFormData otpFormData) {
 		CustomerData customerData = new CustomerData();
-		Customer customer = getUserByEmailORPhone(otpFormData.getPhone(),otpFormData.getPhone());
-		if(Objects.nonNull(customer)) {
+		Optional<Customer> customerOpt = getUserByUserNameORPhone(otpFormData.getPhone());
+		if(customerOpt.isPresent()) {
+			Customer customer = customerOpt.get();
 		Optional<OTP> otpOptional = otpRepo.findById(customer.getUserName());
 		if(otpOptional.isPresent()) {
 			OTP otp = otpOptional.get();
@@ -196,8 +205,17 @@ public class DefaultCustomerService implements CustomerService {
 	}
 
 	@Override
-	public CustomerData updateCustomer(CustomerData customerData)
+	public CustomerData updateCustomer(CustomerProfileUpdateData customerProfileUpdateData)
 	{
+		CustomerData customerData = new CustomerData();
+		Optional<Customer> customerOpt = customerRepo.findById(customerProfileUpdateData.getUserName());
+		if(customerOpt.isPresent()){
+			Customer customer = customerOpt.get();
+			customerProfileReversePopulator.populate(customerProfileUpdateData, customer);
+			customerRepo.save(customer);
+			entityManager.refresh(customer);
+			customerPopulator.populate(customer,customerData);
+		}
 		return saveCustomer(customerData);
 	}
 	@Override
@@ -213,7 +231,8 @@ public class DefaultCustomerService implements CustomerService {
 		{
 			size = pageSize.intValue();
 		}
-		PageRequest pageRequest = PageRequest.of(pageNumber, size);
+		Sort sort = Sort.by("modifiedTime").descending();
+		PageRequest pageRequest = PageRequest.of(pageNumber, size , sort);
 		PagedAdPostResult pagedResult = new PagedAdPostResult();
 
 		Optional<Customer> customerOpt = customerRepo.findById(userName);
@@ -247,7 +266,8 @@ public class DefaultCustomerService implements CustomerService {
 		{
 			size = pageSize.intValue();
 		}
-		PageRequest pageRequest = PageRequest.of(pageNumber, size);
+		Sort sort = Sort.by("modifiedTime").descending();
+		PageRequest pageRequest = PageRequest.of(pageNumber, size, sort);
 		PagedA2zOrderResult pagedResult = new PagedA2zOrderResult();
 		Optional<Customer> customerOpt = customerRepo.findById(userName);
 		if(customerOpt.isPresent()) {
@@ -272,7 +292,8 @@ public class DefaultCustomerService implements CustomerService {
 		{
 			size = pageSize.intValue();
 		}
-		PageRequest pageRequest = PageRequest.of(pageNumber, size);
+		Sort sort = Sort.by("modifiedTime").descending();
+		PageRequest pageRequest = PageRequest.of(pageNumber, size, sort);
 		PagedA2zOrderResult pagedResult = new PagedA2zOrderResult();
 		Optional<Customer> customerOpt = customerRepo.findById(userName);
 		if(customerOpt.isPresent()) {
@@ -342,7 +363,8 @@ public class DefaultCustomerService implements CustomerService {
 		{
 			size = pageSize.intValue();
 		}
-		PageRequest pageRequest = PageRequest.of(pageNumber, size);
+		Sort sort = Sort.by("modifiedTime").descending();
+		PageRequest pageRequest = PageRequest.of(pageNumber, size, sort);
 		PagedA2zApprovalResult pagedResult = new PagedA2zApprovalResult();
 		Optional<Customer> customerOpt = customerRepo.findById(userName);
 		List<ApprovalRequestData> approvalRequestDataList = new ArrayList<ApprovalRequestData>();
@@ -428,5 +450,31 @@ public class DefaultCustomerService implements CustomerService {
 		CustomerRegistrationEvent event = new CustomerRegistrationEvent(customer);
 		eventPublisher.publishEvent(event);
 	}
-	
+
+	@Override
+	public void sendForgotPasswordLink(String userName){
+		Optional<Customer> customerOpt = customerRepo.getUserByPhoneOrUserName(userName);
+		if (customerOpt.isPresent()) {
+			tokenGeneratorService.generateToken(customerOpt.get().toString());
+		}
+	}
+
+	@Override
+	public ResetToken verifyUserForForgotPasswordLink(String key){
+		return  tokenGeneratorService.verifyToken(key);
+	}
+
+	@Override
+	public Boolean updatePassword(String newPassword, String userName){
+		Boolean isUpdated = false;
+		Optional<Customer> customerOpt = customerRepo.getUserByPhoneOrUserName(userName);
+		if (customerOpt.isPresent()) {
+			Customer customer = customerOpt.get();
+			String encodedPassword = passwordEncoder.encode(newPassword);
+			customer.setPassword(encodedPassword);
+			customerRepo.save(customer);
+			isUpdated = true;
+		}
+		return isUpdated;
+	}
 }

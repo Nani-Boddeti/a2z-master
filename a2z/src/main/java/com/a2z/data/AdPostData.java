@@ -11,7 +11,7 @@ import jakarta.validation.constraints.Size;
 public class AdPostData extends RootData {
 	private Long id;
 	
-	@Pattern(regexp="^[a-zA-Z0-9[ .@!@#$%^&*+=_-]*]*" )
+	@Pattern(regexp="^[a-zA-Z0-9[ .,@!@#$%^&*+=_-]*]*" )
 	@Size(min = 10, message = "{validation.description.size.too_short}")
 	@Size(max = 200, message = "{validation.description.size.too_long}")
 	private String description;

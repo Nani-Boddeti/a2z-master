@@ -1,6 +1,7 @@
 package com.a2z.search.dao;
 
 
+import java.util.Date;
 import java.util.List;
 
 public class A2zCategorySearch {
@@ -8,7 +9,15 @@ public class A2zCategorySearch {
     String categoryName;
     boolean isVisible;
     List<AdPostSearch> adPosts;
+    private Date modifiedTime ;
 
+    public Date getModifiedTime() {
+        return modifiedTime;
+    }
+
+    public void setModifiedTime(Date modifiedTime) {
+        this.modifiedTime = modifiedTime;
+    }
     public String getCategoryCode() {
         return categoryCode;
     }

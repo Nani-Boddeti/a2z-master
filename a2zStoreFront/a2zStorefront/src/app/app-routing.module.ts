@@ -23,8 +23,6 @@ const routes: Routes = [
   {path:'order-confirm',component:OrderConfirmComponent},
   { path: 'search-results', component: SearchResults },
   {path:'my-ads', component:MyAdsComponent},
-
-  //{path:'map',component:MapComponent}
   
 
 ];

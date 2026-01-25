@@ -1,0 +1,428 @@
+ADMIN API - HTTP REQUEST EXAMPLES
+==================================
+
+These are exact HTTP requests you can use to test the admin system.
+
+
+1. HEALTH CHECK (Test if API is running)
+=========================================
+
+GET /api/admin/health HTTP/1.1
+Host: localhost:8080
+Connection: close
+
+
+Expected Response (200 OK):
+----------------------------
+Admin API is running
+
+
+2. ADMIN LOGIN (Get token with app.write scope)
+===============================================
+
+POST /api/admin/login HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+Content-Length: 51
+Connection: close
+
+{"username":"admin","password":"admin@12345"}
+
+
+Expected Response (200 OK):
+---------------------------
+{
+  "success": true,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "username": "admin",
+  "email": "admin@a2z.local",
+  "scope": "app.write",
+  "message": "Admin authenticated successfully",
+  "timestamp": 1674567890123
+}
+
+SAVE THIS TOKEN FOR NEXT REQUEST!
+
+
+3. CREATE NEW ADMIN USER (Protected - requires token from step 2)
+================================================================
+
+POST /api/admin/create-user HTTP/1.1
+Host: localhost:8080
+Authorization: Bearer [PASTE_TOKEN_HERE]
+Content-Type: application/json
+Content-Length: 178
+Connection: close
+
+{
+  "username": "john_admin",
+  "password": "SecurePass@123",
+  "email": "john@a2z.com",
+  "firstName": "John",
+  "lastName": "Doe",
+  "phoneNumber": "+1234567890"
+}
+
+
+Expected Response (201 Created):
+--------------------------------
+{
+  "username": "john_admin",
+  "email": "john@a2z.com",
+  "firstName": "John",
+  "lastName": "Doe",
+  "message": "Admin user created successfully",
+  "success": true
+}
+
+
+4. LOGIN AS NEW ADMIN USER
+==========================
+
+POST /api/admin/login HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+Content-Length: 52
+Connection: close
+
+{"username":"john_admin","password":"SecurePass@123"}
+
+
+Expected Response (200 OK):
+---------------------------
+{
+  "success": true,
+  "token": "[NEW_TOKEN]",
+  "username": "john_admin",
+  "email": "john@a2z.com",
+  "scope": "app.write",
+  "message": "Admin authenticated successfully",
+  "timestamp": 1674567890456
+}
+
+
+ERROR RESPONSES
+===============
+
+1. Invalid Credentials (401 Unauthorized)
+------------------------------------------
+
+Request:
+POST /api/admin/login HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+{"username":"admin","password":"wrong_password"}
+
+
+Response:
+{
+  "success": false,
+  "message": "Invalid username or password",
+  "timestamp": 1674567890000
+}
+
+
+2. Non-Admin User (403 Forbidden)
+----------------------------------
+
+Request:
+POST /api/admin/login HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+{"username":"regular_user","password":"password123"}
+
+
+Response:
+{
+  "success": false,
+  "message": "User is not an admin",
+  "timestamp": 1674567890000
+}
+
+
+3. Disabled User Account (403 Forbidden)
+-----------------------------------------
+
+Request:
+POST /api/admin/login HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+{"username":"disabled_admin","password":"password123"}
+
+
+Response:
+{
+  "success": false,
+  "message": "User account is disabled",
+  "timestamp": 1674567890000
+}
+
+
+4. Username Already Exists (400 Bad Request)
+---------------------------------------------
+
+Request:
+POST /api/admin/create-user HTTP/1.1
+Host: localhost:8080
+Authorization: Bearer [TOKEN]
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Pass123",
+  "email": "other@a2z.com",
+  "firstName": "Test",
+  "lastName": "User",
+  "phoneNumber": "+1234567890"
+}
+
+
+Response:
+{
+  "username": "admin",
+  "email": "other@a2z.com",
+  "firstName": "Test",
+  "lastName": "User",
+  "message": "Username already exists",
+  "success": false
+}
+
+
+5. Missing/Invalid Token (401 Unauthorized)
+--------------------------------------------
+
+Request:
+POST /api/admin/create-user HTTP/1.1
+Host: localhost:8080
+Authorization: Bearer invalid_token
+Content-Type: application/json
+
+{
+  "username": "newadmin",
+  "password": "Pass123",
+  "email": "new@a2z.com",
+  "firstName": "New",
+  "lastName": "Admin",
+  "phoneNumber": "+1234567890"
+}
+
+
+Response:
+{
+  "username": "newadmin",
+  "email": "new@a2z.com",
+  "firstName": "New",
+  "lastName": "Admin",
+  "message": "Unauthorized",
+  "success": false
+}
+
+
+6. Malformed Request (400 Bad Request)
+---------------------------------------
+
+Request:
+POST /api/admin/login HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+
+{invalid json}
+
+
+Response:
+{
+  "success": false,
+  "message": "Invalid request format",
+  "timestamp": 1674567890000
+}
+
+
+USING WITH CURL
+===============
+
+Test health:
+curl -X GET http://localhost:8080/api/admin/health
+
+Login as admin:
+curl -X POST http://localhost:8080/api/admin/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin@12345"}'
+
+Create new admin (save token from above):
+curl -X POST http://localhost:8080/api/admin/create-user \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+  -d '{
+    "username":"newadmin",
+    "password":"Secure@Pass123",
+    "email":"admin@example.com",
+    "firstName":"John",
+    "lastName":"Doe",
+    "phoneNumber":"+1234567890"
+  }'
+
+
+USING WITH POSTMAN
+===================
+
+1. Create new collection "Admin API"
+
+2. Add request: GET /api/admin/health
+   - Method: GET
+   - URL: http://localhost:8080/api/admin/health
+   - Click Send → Should see "Admin API is running"
+
+3. Add request: POST /api/admin/login
+   - Method: POST
+   - URL: http://localhost:8080/api/admin/login
+   - Headers: Content-Type: application/json
+   - Body (raw):
+     {
+       "username": "admin",
+       "password": "admin@12345"
+     }
+   - Click Send → Should see token in response
+
+4. Add request: POST /api/admin/create-user
+   - Method: POST
+   - URL: http://localhost:8080/api/admin/create-user
+   - Headers:
+     Content-Type: application/json
+     Authorization: Bearer [PASTE_TOKEN_FROM_STEP_3]
+   - Body (raw):
+     {
+       "username": "john",
+       "password": "SecurePass@123",
+       "email": "john@example.com",
+       "firstName": "John",
+       "lastName": "Doe",
+       "phoneNumber": "+1234567890"
+     }
+   - Click Send → Should see success response
+
+
+USING WITH JAVASCRIPT/FETCH
+============================
+
+// Login
+const loginResponse = await fetch('http://localhost:8080/api/admin/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    username: 'admin',
+    password: 'admin@12345'
+  })
+});
+
+const loginData = await loginResponse.json();
+const token = loginData.token;
+
+// Create new admin
+const createResponse = await fetch('http://localhost:8080/api/admin/create-user', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  },
+  body: JSON.stringify({
+    username: 'newadmin',
+    password: 'SecurePass@123',
+    email: 'admin@example.com',
+    firstName: 'John',
+    lastName: 'Doe',
+    phoneNumber: '+1234567890'
+  })
+});
+
+const createData = await createResponse.json();
+console.log(createData);
+
+
+USING WITH ANGULAR (TYPESCRIPT)
+================================
+
+// In your service:
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+@Injectable()
+export class AdminService {
+  constructor(private http: HttpClient) {}
+
+  loginAdmin(username: string, password: string) {
+    return this.http.post('/api/admin/login', {
+      username,
+      password
+    });
+  }
+
+  createAdmin(adminData: any, token: string) {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    return this.http.post('/api/admin/create-user', adminData, { headers });
+  }
+}
+
+// In your component:
+this.adminService.loginAdmin('admin', 'admin@12345').subscribe(
+  (response: any) => {
+    this.token = response.token;
+    console.log('Logged in as:', response.username);
+  },
+  (error) => {
+    console.error('Login failed:', error.error.message);
+  }
+);
+
+// Create new admin
+this.adminService.createAdmin({
+  username: 'newadmin',
+  password: 'SecurePass@123',
+  email: 'admin@example.com',
+  firstName: 'John',
+  lastName: 'Doe',
+  phoneNumber: '+1234567890'
+}, this.token).subscribe(
+  (response: any) => {
+    console.log('Admin created:', response.username);
+  },
+  (error) => {
+    console.error('Creation failed:', error.error.message);
+  }
+);
+
+
+TROUBLESHOOTING REQUESTS
+========================
+
+If you get CORS error:
+- Admin endpoints should already be whitelisted
+- Check that your Angular app is on http://localhost:4200
+- Try from same origin first (using REST client, Postman, curl)
+
+If you get 404 Not Found:
+- Verify application is running
+- Check endpoint paths are exactly: /api/admin/login, /api/admin/create-user
+- Check HTTP method is correct (POST, GET)
+
+If you get 400 Bad Request:
+- Check JSON is valid (no syntax errors)
+- All required fields present: username, password, email, firstName, lastName, phoneNumber
+- Verify Content-Type header is application/json
+
+If you get 401 Unauthorized:
+- Default credentials are: admin / admin@12345
+- Check username exists in database
+- Check password is correct
+- For create-user endpoint, check token is valid and sent in Authorization header
+
+If you get 403 Forbidden:
+- User must have ROLE_ADMIN to login
+- User must not be disabled
+- For create-user endpoint, user must have ROLE_ADMIN (check with login endpoint)
+

@@ -2,6 +2,8 @@ package com.a2z.search.dao;
 
 import com.a2z.dao.Country;
 
+import java.util.Date;
+
 public class AddressSearch {
 	private String firstName;
 	private String lastName;
@@ -16,6 +18,15 @@ public class AddressSearch {
 	private String email;
 	private double latitude;
 	private double longitude;
+	private Date modifiedTime ;
+
+	public Date getModifiedTime() {
+		return modifiedTime;
+	}
+
+	public void setModifiedTime(Date modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
 	public String getFirstName() {
 		return firstName;
 	}

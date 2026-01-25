@@ -21,7 +21,7 @@ public class A2zMedia extends RootEntity {
 	@JoinColumn(name="mediaContainer_code", referencedColumnName = "code")
 	private MediaContainer mediaContainer;
 	private boolean isMap ;
-	
+	private String originalFileName;
 	public MediaContainer getMediaContainer() {
 		return mediaContainer;
 	}
@@ -71,4 +71,11 @@ public class A2zMedia extends RootEntity {
 		this.absolutePath = absolutePath;
 	}
 
+	public String getOriginalFileName() {
+		return originalFileName;
+	}
+
+	public void setOriginalFileName(String originalFileName) {
+		this.originalFileName = originalFileName;
+	}
 }

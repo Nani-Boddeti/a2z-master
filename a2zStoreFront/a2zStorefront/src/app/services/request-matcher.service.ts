@@ -8,7 +8,8 @@ export class RequestMatcherService {
  private WHITE_LIST_URLS : string[] = [		
             "/", "/ad/all", "/ad/view/**", "/c/**", "/customerSubmit",
             "/suggest/password", "/generate/otp/**", "/validateOTP",
-            "/login**", "/loginV3", "/oauth2/**", "/oauth2/token","/login", "/search/**","/search/all", "/.well-known/**","/perform_login"
+            "/login**", "/loginV3", "/oauth2/**", "/oauth2/token","/login", "/search/**",
+            "/search/all", "/.well-known/**","/perform_login","/search/category/**"
     ];
 
   // Match request.url against URL list

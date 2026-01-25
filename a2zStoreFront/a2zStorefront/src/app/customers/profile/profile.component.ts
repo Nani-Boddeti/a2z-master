@@ -11,6 +11,7 @@ import { CustomerService } from '../../services/customer-service';
 })
 export class ProfileComponent implements OnInit {
 userData :any;
+userGroupName: string = '';
   constructor(private customerService : CustomerService,private router: Router) { }
 
   ngOnInit(): void {
@@ -24,6 +25,8 @@ userData :any;
     next: (profileData) => {
       // Use emitted profile data
       this.userData = profileData;
+      if(profileData.userGroupNames)
+      this.userGroupName = profileData.userGroupNames[0];
     },
     error: (error) => {
       console.error('Error fetching user profile:', error);

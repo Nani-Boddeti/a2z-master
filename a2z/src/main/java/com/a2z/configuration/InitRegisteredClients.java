@@ -42,8 +42,10 @@ public class InitRegisteredClients implements ApplicationRunner {
 		 * .clientSettings(ClientSettings.builder() .requireAuthorizationConsent(true)
 		 * .build());
 		 */
-		String client_ID = "oidc-client";
-		RegisteredClient registeredClient = repository.findByClientId(client_ID);
+
+		// Initialize OIDC Client for web application
+		String clientID = "oidc-client";
+		RegisteredClient registeredClient = repository.findByClientId(clientID);
 		if(Objects.isNull(registeredClient)) {
 			RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
 					.clientId("oidc-client")
@@ -67,6 +69,30 @@ public class InitRegisteredClients implements ApplicationRunner {
 			repository.save(oidcClient);
 		}
 
-
+		// Initialize Admin Client - for admin dashboard with full write access
+		String adminClientID = "admin-client";
+		RegisteredClient adminClient = repository.findByClientId(adminClientID);
+		if(Objects.isNull(adminClient)) {
+			RegisteredClient newAdminClient = RegisteredClient.withId(UUID.randomUUID().toString())
+					.clientId("admin-client")
+					.clientSecret("$2a$11$XXwbVzb4Hyw7xxW4SNfMfexhUwuZMUc2OArmh/wUBn3AK.rlU27KS")
+					.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+					.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+					.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+					.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+					.redirectUri("http://localhost:4200/admin")
+					.scope("app.read")
+					.scope("app.write")
+					.scope("app.admin")
+					.clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).requireProofKey(true).build())
+					.tokenSettings(TokenSettings.builder()
+							.accessTokenTimeToLive(Duration.ofMinutes(60))      // 60 min AT for admin
+							.refreshTokenTimeToLive(Duration.ofDays(7))        // 7 days RT for admin
+							.reuseRefreshTokens(true)
+							.build())
+					.build();
+			repository.save(newAdminClient);
+		}
 	}
 }

@@ -64,6 +64,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.authStateService.checkAndUpdateLoginStatus();
   }
 
+  onClickHomeButtons():void{
+    this.currentRoute = '/ad-list';
+    this.router.navigate(['/ad-list']);
+  }
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

@@ -2,8 +2,10 @@ package com.a2z.services.interfaces;
 
 import com.a2z.dao.Customer;
 import com.a2z.data.*;
+import com.a2z.services.impl.ForgotPasswordTokenGeneratorService.ResetToken;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CustomerService {
     Customer authenticateCustomer(String username, String password);
@@ -15,13 +17,14 @@ public interface CustomerService {
 
     void disableCustomer(String id);
 
-    Customer getUserByEmailORPhone(String phone, String email);
+    Optional<Customer> getUserByUserNameORPhone(String userName);
 
     CustomerData validateOTP(OTPFormData otpFormData);
 
     CustomerData getCustomerProfile(String userName);
 
-    CustomerData updateCustomer(CustomerData customerData);
+
+    CustomerData updateCustomer(CustomerProfileUpdateData customerProfileUpdateData);
 
     PagedAdPostResult retriveAllMyAds(String userName, Integer pageNo, Integer pageSize);
 
@@ -38,4 +41,10 @@ public interface CustomerService {
     ApprovalRequestData submitApprovalRequest(ApprovalRequestPostData requestData, String userName);
 
     boolean isCustomerEligibleToPost(String userName);
+
+    void sendForgotPasswordLink(String email);
+
+    ResetToken verifyUserForForgotPasswordLink(String key);
+
+    Boolean updatePassword(String newPassword, String userName);
 }

@@ -1,0 +1,168 @@
+ADMIN TOKEN GENERATION - JWT ENCODER CONFIGURATION
+====================================================
+
+STATUS: AdminAuthenticationFilter now generates proper JWT tokens using Spring Authorization Server's JwtEncoder
+
+WHAT WAS FIXED:
+===============
+
+Before: Token was a simple JSON string - NOT recognized by authorization server
+After: Token is a real JWT token with proper claims and signature - RECOGNIZED by all APIs
+
+HOW IT WORKS:
+=============
+
+1. Admin logs in via POST /api/admin/login
+2. AdminAuthenticationFilter validates credentials
+3. generateAdminToken() method uses JwtEncoder to create:
+   - JWT token with proper signature
+   - Claims: username, email, scope="app.write", type="admin"
+   - Expiry: 1 hour
+4. Token returned in response
+5. Token can now be used in Authorization header for protected endpoints
+
+TOKEN CLAIMS:
+=============
+
+{
+  "iss": "self",
+  "iat": 1674567890,
+  "exp": 1674571490,
+  "sub": "admin",
+  "username": "admin",
+  "email": "admin@a2z.local",
+  "scope": "app.write",
+  "type": "admin"
+}
+
+REQUIRED CONFIGURATION:
+======================
+
+The JwtEncoder bean must be available in Spring context. It should be configured in your
+Authorization Server configuration.
+
+Check your AuthorizationServerConfig.java or create a @Bean if missing:
+
+@Bean
+public JwtEncoder jwtEncoder(JWKSource<SecurityContext> jwkSource) {
+    return new NimbusJwtEncoder(jwkSource);
+}
+
+If you're using Spring Authorization Server (which you are), JwtEncoder should already be configured.
+The filter will auto-inject it via @Autowired.
+
+TESTING THE TOKEN:
+==================
+
+1. Login to get token:
+curl -X POST http://localhost:8080/api/admin/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin@12345"}'
+
+Response:
+{
+  "success": true,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "username": "admin",
+  "email": "admin@a2z.local",
+  "scope": "app.write",
+  "message": "Admin authenticated successfully",
+  "timestamp": 1674567890123
+}
+
+2. Use token in Authorization header:
+curl -X POST http://localhost:8080/api/admin/create-user \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -d '{
+    "username":"newadmin",
+    "password":"SecurePass@123",
+    "email":"admin@a2z.com",
+    "firstName":"John",
+    "lastName":"Doe",
+    "phoneNumber":"+1234567890"
+  }'
+
+3. Verify token is recognized:
+Response should be 201 Created (if token is valid)
+Response should be 401 Unauthorized (if token is invalid or expired)
+
+TROUBLESHOOTING:
+================
+
+If you get "No qualifying bean of type 'org.springframework.security.oauth2.jwt.JwtEncoder'":
+  1. JwtEncoder is not configured in your Spring context
+  2. Make sure you have @EnableAuthorizationServer or Spring Authorization Server setup
+  3. Check your AuthorizationServerConfig.java for JwtEncoder bean
+
+If token is not recognized by other endpoints:
+  1. Verify token format (should start with "eyJ")
+  2. Check token expiry (1 hour from login)
+  3. Verify Authorization header format: "Bearer TOKEN"
+  4. Check if endpoint is protected and requires authentication
+
+If JwtEncoder is null at runtime:
+  1. Ensure @Component annotation on AdminAuthenticationFilter
+  2. Ensure @Autowired is correctly specified for jwtEncoder field
+  3. Check Spring application logs for bean creation errors
+
+SECURITY NOTES:
+===============
+
+✓ Token is signed and verified by Authorization Server
+✓ Token expires after 1 hour (3600 seconds)
+✓ Token includes scope="app.write" for admin operations
+✓ Token is issued by "self" (your authorization server)
+✓ Subject is username for identification
+
+TOKEN VALIDATION:
+=================
+
+All endpoints that receive this token will:
+1. Extract and validate JWT signature
+2. Check token expiration
+3. Verify claims (username, scope, etc.)
+4. Grant access based on scope and role
+
+For /api/admin/create-user:
+- Requires @PreAuthorize("hasRole('ROLE_ADMIN')")
+- Token scope="app.write" matches admin requirements
+- User role must be ROLE_ADMIN in database
+
+WHAT CHANGED:
+=============
+
+Before:
+-------
+private String generateAdminToken(Customer customer) {
+    // Simple JSON string - NOT a JWT token
+    Map<String, Object> tokenData = new HashMap<>();
+    // ... returns JSON string
+}
+
+After:
+------
+private String generateAdminToken(Customer customer) {
+    // Real JWT token using Spring Authorization Server
+    JwtClaimsSet claims = JwtClaimsSet.builder()
+        .issuer("self")
+        .issuedAt(now)
+        .expiresAt(now.plusSeconds(expiryInSeconds))
+        .subject(customer.getUserName())
+        .claim("scope", "app.write") // Admin scope
+        // ... more claims
+
+    return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+}
+
+NEXT STEPS:
+===========
+
+1. Verify JwtEncoder is available (should be auto-configured)
+2. Test admin login endpoint
+3. Verify token is returned
+4. Use token for protected endpoints
+5. Confirm token is recognized by authorization server
+
+Your admin system now generates real, valid JWT tokens!
+

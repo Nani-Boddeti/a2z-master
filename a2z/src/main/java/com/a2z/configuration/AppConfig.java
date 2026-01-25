@@ -1,6 +1,7 @@
 package com.a2z.configuration;
 
 import com.a2z.populators.*;
+import com.a2z.populators.reverse.*;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,14 +11,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.a2z.filters.BearerTokenFilter;
-import com.a2z.populators.reverse.AdPostReversePopulator;
-import com.a2z.populators.reverse.AddressReversePopulator;
-import com.a2z.populators.reverse.CountryReversePopulator;
-import com.a2z.populators.reverse.CustomerReversePopulator;
-import com.a2z.populators.reverse.OrderEntryReversePopulator;
-import com.a2z.populators.reverse.OrderReversePopulator;
-import com.a2z.populators.reverse.PaymentInfoBasicReversePopulator;
-import com.a2z.populators.reverse.PaymentInfoReversePopulator;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
@@ -130,6 +123,10 @@ public class AppConfig {
 	@Bean
 	public AdPostCategoryPopulator adPostCategoryPopulator() {
 		return new AdPostCategoryPopulator();
+	}
+	@Bean
+	public CustomerProfileReversePopulator customerProfileReversePopulator() {
+		return new CustomerProfileReversePopulator();
 	}
 	/*
 	 * @Bean public FilterRegistrationBean<BearerTokenFilter> bearerTokenFilter() {

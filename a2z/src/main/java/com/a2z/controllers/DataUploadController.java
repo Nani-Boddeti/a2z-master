@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.a2z.services.interfaces.DataUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ import jakarta.validation.Valid;
 @ResponseBody
 @RequestMapping("/upload")
 @Validated
+@Secured({"SCOPE_app.admin","SCOPE_app.read","SCOPE_app.write"})
 public class DataUploadController extends RootController {
 
 	@Autowired

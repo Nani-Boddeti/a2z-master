@@ -20,6 +20,9 @@ public interface PODCustomerRepository extends CrudRepository<Customer, String> 
 	Optional<Customer> findById(String username);
 
 	@Query("SELECT c FROM Customer c WHERE c.phoneNumber=:phone or c.email=:email")
-	public Customer getUserByEmailORPhone(@Param("phone") String phone, @Param("email") String email);
-	
+	public Customer getUserByEmailAndPhone(@Param("phone") String phone, @Param("email") String email);
+
+	@Query("SELECT c FROM Customer c WHERE c.phoneNumber=:phone or  c.userName=:phone")
+	public Optional<Customer> getUserByPhoneOrUserName(@Param("phone") String phone);
+
 }

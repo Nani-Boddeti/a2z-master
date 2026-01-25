@@ -32,6 +32,9 @@ public interface RootRepository extends CrudRepository<RootEntity, Long> {
 	
 	@Query("SELECT ord FROM A2zOrder ord WHERE ord.customer=:customer")
 	Page<A2zOrder> getMyOrders(@Param("customer") Customer customer, PageRequest pageRequest);
+
+	@Query("SELECT ord FROM A2zOrder ord WHERE ord.customer=:customer")
+	Optional<List<A2zOrder>> getMyOrders(@Param("customer") Customer customer);
 	
 	@Query("SELECT ord FROM A2zOrder ord WHERE ord.id=:id AND ord.customer=:customer")
 	Optional<A2zOrder> getOrderDetails(@Param("id") Long id , @Param("customer") Customer customer);

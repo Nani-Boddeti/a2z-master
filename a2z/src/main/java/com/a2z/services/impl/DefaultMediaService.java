@@ -59,12 +59,19 @@ public class DefaultMediaService implements MediaService {
 		List<A2zMedia> uploadedMediaList = new ArrayList<A2zMedia>();
 		Arrays.stream(files).forEach(file->{
 			A2zMedia media = new A2zMedia();
-			StringBuilder fileNames = new StringBuilder();
+			//StringBuilder fileNames = new StringBuilder();
+			String originalFilename = file.getOriginalFilename();// get extension and put it to generated file name
+			String extension = "";
+			if(originalFilename!=null && originalFilename.contains(".")) {
+				extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+			}
+			String generatedFileName = generateRandomGuid()+extension;
 			Path fileNameDirectory = Paths.get(UPLOAD_DIRECTORY.concat("/").concat(container.getCode()));
-            Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY.concat("/").concat(container.getCode()), file.getOriginalFilename());
-            fileNames.append(file.getOriginalFilename());
+            Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY.concat("/").concat(container.getCode()), generatedFileName);
+            //fileNames.append(file.getOriginalFilename());
             try {
-                media.setFileName(file.getOriginalFilename());
+				media.setOriginalFileName(originalFilename);
+                media.setFileName(generatedFileName);
                 media.setAbsolutePath(fileNameAndPath.toString());
                 media.setMap(isMap);
                 media.setSize(file.getSize());
@@ -114,5 +121,9 @@ public class DefaultMediaService implements MediaService {
 			mediaConatinerPopulator.populate(mediaContainerOpt.get(), mediaContainerData);
 		}
 		return mediaContainerData;
+	}
+
+	private String generateRandomGuid() {
+		return java.util.UUID.randomUUID().toString();
 	}
 }
