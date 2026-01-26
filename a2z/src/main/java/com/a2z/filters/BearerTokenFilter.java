@@ -15,16 +15,16 @@ public class BearerTokenFilter extends OncePerRequestFilter {
 
 	// Paths that should NOT have token injected (public endpoints)
 	private static final String[] EXCLUDED_PATHS = {
-		"/c/",           // Category endpoints
-		"/ad/all",       // Ad listing
-		"/ad/view/",     // Ad viewing
-		"/search/",      // Search
-		"/login",        // Login
+		"/api/c/",           // Category endpoints
+		"/api/ad/all",       // Ad listing
+		"/api/ad/view/",     // Ad viewing
+		"/api/search/",      // Search
+		"/api/login",        // Login
 		"/oauth2/",      // OAuth2
-		"/customerSubmit", // Registration
-		"/suggest/password", // Password suggestions
-		"/generate/otp/",   // OTP generation
-		"/validateOTP",     // OTP validation
+		"/api/customerSubmit", // Registration
+		"/api/suggest/password", // Password suggestions
+		"/api/generate/otp/",   // OTP generation
+		"/api/validateOTP",     // OTP validation
 		"/",             // Root
 		"/uploads/",     // Static uploads
 		"/error"         // Error pages

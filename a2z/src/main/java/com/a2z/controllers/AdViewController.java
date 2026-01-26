@@ -17,7 +17,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @ResponseBody
-@RequestMapping("/ad")
+@RequestMapping("/api/ad")
 @Validated
 public class AdViewController extends RootController {
 	

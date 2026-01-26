@@ -29,7 +29,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @ResponseBody
-@RequestMapping("/media")
+@RequestMapping("/api/media")
 @Secured("SCOPE_app.read")
 @Validated
 public class MediaController extends RootController {

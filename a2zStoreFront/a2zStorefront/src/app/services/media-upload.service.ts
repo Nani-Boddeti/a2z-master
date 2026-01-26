@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class MediaUploadService {
-  private mediaUploadUrl = '/media/upload?isMap=false';
+  private mediaUploadUrl = '/api/media/upload?isMap=false';
 
   constructor(private http: HttpClient) { }
 

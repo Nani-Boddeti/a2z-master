@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AdService {
-  private adPostUrl = '/ad/post';
+  private adPostUrl = '/api/ad/post';
 
   constructor(private http: HttpClient) { }
 
@@ -70,14 +70,14 @@ export class AdService {
   }
 
   getApprovalRequests(page: number, size: number): Observable<any> {
-    return this.http.get(`/myAccount/approvalRequests?page=${page}&size=${size}`);
+    return this.http.get(`/api/myAccount/approvalRequests?page=${page}&size=${size}`);
   }
   submitApprovalRequest(approvalRequestForm: any): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
-    return this.http.post('/myAccount/approvalRequests/update', approvalRequestForm, { headers });
+    return this.http.post('/api/myAccount/approvalRequests/update', approvalRequestForm, { headers });
   }
 
  

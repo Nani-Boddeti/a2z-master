@@ -52,7 +52,12 @@ public profileData$ = this.profileDataSubject.asObservable();
     );
   }
 
+   submitForgotPasswordFrom(data: any): Observable<any> {
+    console.log('🔄 CustomerService.updateProfileData() called');
+    return this.registrationService.submitForgotPasswordFrom(data);
+  }
+
   getMyAdList(page:number,size:number){
-  return this.http.get<any>("/myAccount/myAds?pageNo=" + page + "&pageSize=" + size);
+  return this.http.get<any>("/api/myAccount/myAds?pageNo=" + page + "&pageSize=" + size);
  }
 }

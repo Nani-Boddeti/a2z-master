@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+
 import { RegistrationService } from './registration.service';
 import { UserModel } from '../models/user.model';
 import { CountryModel } from '../models/country.model';
 import { AuthStateService } from '../services/auth-state.service';
 import { OauthTokenService } from '../services/oauth-token.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-register',
@@ -16,20 +17,24 @@ import { Router } from '@angular/router';
 export class LoginRegisterComponent implements OnInit {
   registrationForm: FormGroup;
   loginForm:FormGroup;
+  passwordResetForm: FormGroup;
   isRegistered: boolean = false;
   isHome: boolean = true;
   isSubmitting = false;
   errorMessage = '';
   successMessage = '';
    isLoadingLocation = false;
-
+showForgotPasswordForm = false;
+registrationSuccessMessage = '';
+registrationErrorMessage = '';
   
   constructor(
     private formBuilder: FormBuilder,
     private registrationService: RegistrationService,
     private authStateService: AuthStateService,
     private oauthTokenService: OauthTokenService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.registrationForm = this.formBuilder.group({
       userName: ['', [Validators.required, Validators.minLength(2)]],
@@ -51,10 +56,13 @@ export class LoginRegisterComponent implements OnInit {
       //address: ['', [Validators.required, Validators.minLength(15)]],
       //isoCode: ['', [Validators.required, Validators.minLength(2)]],
       acceptTerms: [false, Validators.requiredTrue],
-    });
+    },{ validators: passwordMatchValidator() });
     this.loginForm = this.formBuilder.group({
       userName: ['', [Validators.required, Validators.minLength(2)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
+    });
+    this.passwordResetForm = this.formBuilder.group({
+      userName: ['', [Validators.required, Validators.minLength(2)]]
     });
   }
   title: String = 'Hello test login component';
@@ -65,7 +73,7 @@ export class LoginRegisterComponent implements OnInit {
   user!: UserModel;
   /*  loginPage :HTMLElement = this.oauth.getLoginPage(); */
   public isLoggedIn = false;
-  public showLoginForm = false;
+  public showLoginForm = true;
 
   ngAfterViewInit() {
      //this.login();
@@ -78,6 +86,7 @@ export class LoginRegisterComponent implements OnInit {
   loginV3(){
     this.showLoginForm = true;
     this.isHome = false;
+    this.showForgotPasswordForm = false;
   }
 
   ngOnInit(): void {
@@ -92,7 +101,38 @@ export class LoginRegisterComponent implements OnInit {
       this.loginV3();
     }
     this.getLocationFromBrowser();
-    
+    this.route.queryParams.subscribe(params => {
+      if (params['isRegistrationSuccess']=== 'true') {
+        this.loginV3();
+        this.registrationSuccessMessage = "Registration successful! Please log in.";
+         setTimeout(() => {
+          this.registrationSuccessMessage = '';
+        }, 4000);
+      }
+      else if (params['isRegistrationSuccess']=== 'false') {
+        this.loginV3();
+        this.registrationErrorMessage = "There could be an issue with password reset. Please try again later.";
+          setTimeout(() => {
+          this.registrationErrorMessage = '';
+        },4000);
+      }
+      if (params['isPasswordResetSuccess']=== 'true') {
+        this.showForgotPasswordForm = false;
+        this.loginV3();
+        this.registrationSuccessMessage = "If the username exists, a password reset link has been sent to the associated email.";
+         setTimeout(() => {
+          this.registrationSuccessMessage = '';
+        }, 4000); 
+      } else if (params['isPasswordResetSuccess']=== 'false') {
+        this.showForgotPasswordForm = false;
+        this.loginV3();
+        this.registrationErrorMessage = "There could be an issue with password reset. Please try again later.";
+        setTimeout(() => {
+          this.registrationErrorMessage = '';
+        },4000);
+      }
+    });
+
   }
 
   /**
@@ -160,6 +200,7 @@ export class LoginRegisterComponent implements OnInit {
     this.isRegistered = false;
     this.isHome = false;
     this.showLoginForm = false;
+    this.showForgotPasswordForm = false;
   }
 
   goHome() {
@@ -277,7 +318,11 @@ export class LoginRegisterComponent implements OnInit {
           // Reset form
           //this.registrationForm.reset();
           this.isSubmitting = false;
-          this.router.navigate(['/loginV3']);
+          this.successMessage = 'Registration successful! Please log in.';
+          this.loginV3();
+          this.registrationForm.reset();
+          this.reloadLoginPage('isRegistrationSuccess',true );
+          //this.router.navigate(['/loginV3']);
         },
         error: (error) => {
           this.errorMessage =
@@ -300,7 +345,11 @@ export class LoginRegisterComponent implements OnInit {
         this.login();
        }},
       error: (error) => {
-          console.error('Login failed')
+          //console.error('Login failed')
+          this.errorMessage = 'Login failed. Please check your credentials and try again.';
+           setTimeout(() => {
+          this.errorMessage = '';
+        }, 3000);
         }
     });
     }
@@ -310,6 +359,42 @@ export class LoginRegisterComponent implements OnInit {
     
   }
 
-  
+  onClickForgotPassword() {
+    this.showForgotPasswordForm = true;
+  }
+  onSubmitPasswordReset(): void {
+    const userNameValue = this.passwordResetForm.value.userName;
+    this.registrationService.getForgotPasswordFromEmailLink(userNameValue).subscribe({
+      next: (response) => {
+        this.showForgotPasswordForm = false;
+   // this.router.navigate(['/loginV3']);
+   this.reloadLoginPage('isPasswordResetSuccess',true );
+   this.successMessage = 'If the username exists, a password reset link has been sent to the associated email.';
 
+      },
+      error: (error) => {
+        this.showForgotPasswordForm = false;
+   // this.router.navigate(['/loginV3']);
+   this.reloadLoginPage('isPasswordResetSuccess',true );
+   this.successMessage = 'If the username exists, a password reset link has been sent to the associated email.';
+
+      }
+    });
+      }
+reloadLoginPage(paramName: string = 'isRegistrationSuccess',data:boolean=false){ 
+  this.router.navigateByUrl('/', { skipLocationChange: true })
+    .then(() => this.router.navigate(['/loginV3'], { queryParams: {   [paramName]: data } }));
+}
+get password() { return this.passwordResetForm.get('password'); }
+get confirmPassword() { return this.passwordResetForm.get('confirmPassword'); }
+}
+export function passwordMatchValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const password = control.get('password')?.value;
+    const confirmPassword = control.get('confirmPassword')?.value;
+    
+    if (!password || !confirmPassword) return null;
+    
+    return password === confirmPassword ? null : { passwordMismatch: true };
+  };
 }

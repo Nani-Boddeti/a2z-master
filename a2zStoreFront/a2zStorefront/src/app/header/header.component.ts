@@ -102,6 +102,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.navigateTo('/my-orders');
   }
   goToLogin(): void {
+    this.currentRoute = '/loginV3';
     this.navigateTo('/loginV3');
   }
   goToMyAds(): void {
@@ -131,14 +132,14 @@ onSearch(query:string) {
         sessionStorage.removeItem('userInfo');
         this.authStateService.setLoggedIn(false);
         this.closeMenu();
-        this.router.navigate(['/']);
+        this.router.navigate(['/ad-list']);
       },
       error: (error) => {
         console.error('Logout failed:', error);
         sessionStorage.removeItem('access_token');
         localStorage.removeItem('access_token');
         this.authStateService.setLoggedIn(false);
-        this.router.navigate(['/']);
+        this.router.navigate(['/ad-list']);
       }
     });
   }

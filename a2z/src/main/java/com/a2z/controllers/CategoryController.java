@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @ResponseBody
-@RequestMapping("/c")
+@RequestMapping("/api/c")
 @Validated
 public class CategoryController extends RootController {
 	

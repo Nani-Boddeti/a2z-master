@@ -11,6 +11,7 @@ import { SearchResults } from './ad-posts/search-results/search-results';
 import { MapComponent } from './ad-posts/map-component/map-component';
 import { MyAdsComponent } from './customers/my-ads/my-ads.component';
 import { ProfileUpdate } from './customers/profile-update/profile-update';
+import { ForgotPassword } from './customers/forgot-password/forgot-password';
 
 
 const routes: Routes = [
@@ -25,6 +26,7 @@ const routes: Routes = [
   { path: 'search-results', component: SearchResults },
   {path:'my-ads', component:MyAdsComponent},
   {path:'profile-update',component:ProfileUpdate},
+  {path:'password-reset',component:ForgotPassword},
   
 
 ];

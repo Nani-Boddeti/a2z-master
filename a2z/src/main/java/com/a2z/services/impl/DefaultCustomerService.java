@@ -16,6 +16,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -35,6 +37,7 @@ import com.a2z.services.impl.ForgotPasswordTokenGeneratorService.ResetToken;
 
 @Service
 public class DefaultCustomerService implements CustomerService {
+	Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Value("${otp.validation.time.mins}")
 	private int OtpValidTime;
@@ -455,7 +458,8 @@ public class DefaultCustomerService implements CustomerService {
 	public void sendForgotPasswordLink(String userName){
 		Optional<Customer> customerOpt = customerRepo.getUserByPhoneOrUserName(userName);
 		if (customerOpt.isPresent()) {
-			tokenGeneratorService.generateToken(customerOpt.get().toString());
+			log.info(tokenGeneratorService.generateToken(customerOpt.get().getUserName()));
+
 		}
 	}
 

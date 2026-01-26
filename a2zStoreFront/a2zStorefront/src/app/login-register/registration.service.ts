@@ -7,14 +7,15 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   providedIn: 'root'
 })
 export class RegistrationService {
-  private apiUrl = '/customerSubmit';
-  private loginUrl = '/perform_login';
-  private logoutUrl = '/logoutV2';
+  private apiUrl = '/api/customerSubmit';
+  private loginUrl = '/api/perform_login';
+  private logoutUrl = '/api/logoutV2';
   private pkceUrl = '/pkce/store'; // Endpoint to store PKCE data
   private tokenExchangeUrl = '/oauth2/token'; // Endpoint to exchange code for token
-  private profileUrl = '/myAccount/profile';
-  private updateProfileUrl = '/myAccount/profile/update';
-  
+  private profileUrl = '/api/myAccount/profile';
+  private updateProfileUrl = '/api/myAccount/profile/update';
+   private forgotPasswordEmailLinkUrl = '/api/forgot-password';
+   private forgotPasswordSubmitUrl = '/api/reset-password';
   constructor(private http: HttpClient) { }
   
   signUp(adPost: any): Observable<any> {
@@ -61,5 +62,17 @@ export class RegistrationService {
       'Content-Type': 'application/json'
     });
     return this.http.put(this.updateProfileUrl, profileData, { headers: jsonheaders });
+  }
+
+  submitForgotPasswordFrom(data: any): Observable<any> {
+    const jsonheaders = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    return this.http.post(this.forgotPasswordSubmitUrl, data, { headers: jsonheaders });
+  }
+
+  getForgotPasswordFromEmailLink(userName: any): Observable<any> {
+    const url = `${this.forgotPasswordEmailLinkUrl}?userName=${userName}`;
+    return this.http.get(url);
   }
 }

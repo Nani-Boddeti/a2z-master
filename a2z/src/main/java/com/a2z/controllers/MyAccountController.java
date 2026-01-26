@@ -24,7 +24,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @ResponseBody
-@RequestMapping("/myAccount")
+@RequestMapping("/api/myAccount")
 @Secured("SCOPE_app.read")
 @Validated
 public class MyAccountController extends RootController {
@@ -165,19 +165,5 @@ public class MyAccountController extends RootController {
 		customerService.deleteCustomer(userName);
 	}
 
-	@GetMapping("/forgot-password")
-	public ResponseEntity forgotPassword(HttpServletRequest request, @RequestParam(required = true) String userName){
-		customerService.sendForgotPasswordLink(userName);
-		return ResponseEntity.ok(HttpStatus.OK);
-	}
 
-	@PostMapping("/api/reset-password")
-	public ResponseEntity resetPassword(@RequestParam String token, @RequestBody PasswordResetRequest request) {
-		ResetToken resetToken = customerService.verifyUserForForgotPasswordLink(token);
-		if (resetToken!=null) {
-			customerService.updatePassword(request.getNewPassword(), resetToken.userId());
-			return ResponseEntity.ok("Password reset successful");
-		}
-		return ResponseEntity.badRequest().body("Invalid or expired token");
-	}
 }

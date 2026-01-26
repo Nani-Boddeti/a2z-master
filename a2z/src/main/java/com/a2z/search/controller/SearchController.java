@@ -14,7 +14,7 @@ import com.a2z.search.service.SearchUtil;
 
 @RestController
 @ResponseBody
-@RequestMapping("/search/")
+@RequestMapping("/api/search/")
 public class SearchController {
 	public static final Double DEFAULT_RADIUS_IN_KMS = 0.5;
 	@Autowired

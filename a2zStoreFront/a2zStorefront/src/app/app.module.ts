@@ -17,6 +17,9 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { PaginationModule } from './pagination/pagination-module';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { RouterModule, Routes } from '@angular/router';
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -34,7 +37,7 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
     ReactiveFormsModule,
     BrowserAnimationsModule,
     PaginationModule,
-    LeafletModule
+    LeafletModule,
   ],
   providers: [
     CookieService,

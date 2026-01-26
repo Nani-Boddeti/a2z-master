@@ -28,7 +28,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @ResponseBody
-@RequestMapping("/order")
+@RequestMapping("/api/order")
 @Secured("SCOPE_app.read")
 @Validated
 public class A2zOrderController extends RootController {

@@ -8,7 +8,7 @@ import { OrderModel } from '../models/order.model';
   providedIn: 'root',
 })
 export class OrderServiceService {
-  private apiUrl = '/order/submit';
+  private apiUrl = '/api/order/submit';
   constructor(private http: HttpClient) {}
   placeOrder(data: OrderModel): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -16,24 +16,24 @@ export class OrderServiceService {
   }
 
   getMyAdOrders(page: number, size: number): Observable<any> {
-    return this.http.get(`/myAccount/myAdOrders?page=${page}&size=${size}`);
+    return this.http.get(`/api/myAccount/myAdOrders?page=${page}&size=${size}`);
   }
   
   getOrderTypesList(): Observable<any> {
-    return this.http.get('/order/allTypes');
+    return this.http.get('/api/order/allTypes');
   }
   getOrderStatusList(): Observable<any> {
-    return this.http.get('/order/allOrderStatuses');
+    return this.http.get('/api/order/allOrderStatuses');
   }
 
   extendOrder(orderId: number): Observable<any> {
-    return this.http.get(`/order/return`, {params: { orderId: orderId ,isReturn:false,isExtend:true}});
+    return this.http.get(`/api/order/return`, {params: { orderId: orderId ,isReturn:false,isExtend:true}});
   }
    returnOrder(orderId: number): Observable<any> {
-    return this.http.get(`/order/return`, {params: { orderId: orderId ,isReturn:true,isExtend:false}});
+    return this.http.get(`/api/order/return`, {params: { orderId: orderId ,isReturn:true,isExtend:false}});
   }
 
   getMyAdOrdersByStatus(page: number, size: number, status: string): Observable<any> {
-    return this.http.get(`/myAccount/myAdOrders/status?status=${status}&page=${page}&size=${size}`);
+    return this.http.get(`/api/myAccount/myAdOrders/status?status=${status}&page=${page}&size=${size}`);
   }
 }

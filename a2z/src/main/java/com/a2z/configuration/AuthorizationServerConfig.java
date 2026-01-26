@@ -44,15 +44,15 @@ import java.util.List;
 public class AuthorizationServerConfig {
 
 	private static final String[] WHITE_LIST_URLS = {
-			"/", "/ad/all", "/ad/view/**", "/c/**", "/customerSubmit",
-			"/suggest/password", "/generate/otp/**", "/validateOTP",
-			"/login**", "/loginV2", "/oauth2/**", "/login", "/search/**", "/.well-known/**","/uploads/**","/error","/error/**","/callback",
+			"/", "/api/ad/all", "/api/ad/view/**", "/api/c/**", "/api/customerSubmit",
+			"/api/suggest/password", "/api/generate/otp/**", "/api/validateOTP",
+			"/api/login**", "/oauth2/**", "/api/login", "/api/search/**", "/.well-known/**","/uploads/**","/error","/error/**","/callback",
 			"/api/admin/login", "/api/admin/health"
 	};
 
 	private static final String[] AUTHENTICATED_URLS = {
-			"/order/**", "/ad/post", "/ad/activate/**", "/media/**",
-			"/upload/**", "/myAccount/**", "/users/**"
+			"/api/order/**", "/api/ad/post", "/api/ad/activate/**", "/api/media/**",
+			"/api/upload/**", "/api/myAccount/**", "/api/users/**"
 	};
 
 	// ✅ SHARED SESSION CONFIG (eliminates duplication)
@@ -98,7 +98,7 @@ public class AuthorizationServerConfig {
 				.oauth2ResourceServer(resourceServer -> resourceServer.jwt(Customizer.withDefaults()))
 				.formLogin(form -> form
 						.loginPage("/loginV3")
-						.loginProcessingUrl("/perform_login")
+						.loginProcessingUrl("/api/perform_login")
 						.defaultSuccessUrl("/callback", true)
 						.successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
 				)
@@ -133,7 +133,7 @@ public class AuthorizationServerConfig {
 				.formLogin(form -> form
 						// Point to Angular login route instead of default Spring form
 						.loginPage("/loginV3")  // Angular serves this route
-						.loginProcessingUrl("/perform_login")  // Backend endpoint
+						.loginProcessingUrl("/api/perform_login")  // Backend endpoint
 						.defaultSuccessUrl("http://localhost:4200/callback", true)
 						.successHandler(successHandler())
 						.permitAll());

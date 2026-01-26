@@ -10,19 +10,19 @@ export class AdSearch {
   constructor(private http: HttpClient) { }
 
     getAdList(page:number,size:number){
-  return this.http.get<any>("/search/all?pageNo=" + page + "&pageSize=" + size);
+  return this.http.get<any>("/api/search/all?pageNo=" + page + "&pageSize=" + size);
  }
 
    searchAdList(q:string,page:number,size:number,latitude:number,longitude:number){
-  return this.http.get<any>("/search/?query=" + q + "&pageNo=" + page + "&pageSize=" + size + "&latitude=" + latitude + "&longitude=" + longitude);
+  return this.http.get<any>("/api/search/?query=" + q + "&pageNo=" + page + "&pageSize=" + size + "&latitude=" + latitude + "&longitude=" + longitude);
  }
   searchAdListWithCategoryCode(q:string,page:number,size:number){
-  return this.http.get<any>("/search/category/" + q + "&?pageNo=" + page + "&pageSize=" + size);
+  return this.http.get<any>("/api/search/category/" + q + "&?pageNo=" + page + "&pageSize=" + size);
  }
 
  getListedCategories(): Observable<any> {
   console.log('🔄 AdSearch.getListedCategories() called');
-  return this.http.get<any>("/c/allCategories",{ 
+  return this.http.get<any>("/api/c/allCategories",{ 
     headers: { 'Accept': 'application/json' }});
  }
   

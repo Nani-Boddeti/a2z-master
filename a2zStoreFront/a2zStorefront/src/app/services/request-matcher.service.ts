@@ -6,10 +6,10 @@ import { Injectable } from '@angular/core';
 export class RequestMatcherService {
   
  private WHITE_LIST_URLS : string[] = [		
-            "/", "/ad/all", "/ad/view/**", "/c/**", "/customerSubmit",
-            "/suggest/password", "/generate/otp/**", "/validateOTP",
-            "/login**", "/loginV3", "/oauth2/**", "/oauth2/token","/login", "/search/**",
-            "/search/all", "/.well-known/**","/perform_login","/search/category/**"
+            "/", "/api/ad/all", "/api/ad/view/**", "/api/c/**", "/api/customerSubmit",
+            "/api/suggest/password", "/api/generate/otp/**", "/api/validateOTP",
+            "/api/login**", "/api/loginV3", "/oauth2/**", "/oauth2/token","/api/login", "/api/search/**",
+            "/api/search/all", "/.well-known/**","/api/perform_login","/api/search/category/**","/api/reset-password","/api/forgot-password"
     ];
 
   // Match request.url against URL list
