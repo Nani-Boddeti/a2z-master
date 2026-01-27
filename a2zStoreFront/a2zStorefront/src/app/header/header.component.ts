@@ -128,6 +128,8 @@ onSearch(query:string) {
     this.registrationService.logout().subscribe({
       next: () => {
         sessionStorage.removeItem('access_token');
+        sessionStorage.removeItem('refresh_token');
+        sessionStorage.removeItem('userInfo');
         localStorage.removeItem('access_token');
         sessionStorage.removeItem('userInfo');
         this.authStateService.setLoggedIn(false);
@@ -137,6 +139,8 @@ onSearch(query:string) {
       error: (error) => {
         console.error('Logout failed:', error);
         sessionStorage.removeItem('access_token');
+        sessionStorage.removeItem('refresh_token');
+        sessionStorage.removeItem('userInfo');
         localStorage.removeItem('access_token');
         this.authStateService.setLoggedIn(false);
         this.router.navigate(['/ad-list']);

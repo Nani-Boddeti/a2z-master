@@ -12,6 +12,7 @@ import { takeUntil, concatMap } from 'rxjs/operators';
 export class OrdersListComponent implements OnInit, OnDestroy {
  orderList:any;
    currentPage = 1;
+   currentIndex = 0;
   totalPages = 10;
   totalItems = 100;
   itemsPerPage = 10;
@@ -114,4 +115,10 @@ changePageSize(newSize: number) {
       }
     });
   }
+
+     openMap(lat : number, lng: number  ) {
+                  const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+                  window.open(url, "_blank", "noopener");
+                }
+  
 }

@@ -625,3 +625,13 @@ body {
   cursor: not-allowed;
   opacity: 0.7;
 }
+
+.carousel-track {
+display: flex;
+  transition: transform 0.3s ease;
+  height: 300px;
+}
+.image-carousel {
+    position: relative;
+    overflow: hidden;
+}

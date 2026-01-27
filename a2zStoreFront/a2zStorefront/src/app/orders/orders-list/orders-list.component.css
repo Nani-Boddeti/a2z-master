@@ -374,4 +374,59 @@
     margin-left: 1rem;
   }
 }
+/* Traditional CSS - No Tailwind needed */
+.image-carousel {
+  position: relative;
+  overflow: hidden;
+  height: 200px;
+  border-radius: 8px;
+}
 
+.carousel-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.3s ease-in-out;
+  width: 50%;
+  overflow: hidden;
+}
+
+.carousel-slide {
+  flex: 0 0 100%;
+  height: 100%;
+}
+
+.carousel-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  padding: 5px;
+}
+
+.carousel-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.carousel-dot:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.carousel-dot.active {
+  background: #007bff;
+  transform: scale(1.2);
+}

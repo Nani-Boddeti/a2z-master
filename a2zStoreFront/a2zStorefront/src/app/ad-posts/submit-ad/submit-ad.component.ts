@@ -396,7 +396,8 @@ export class SubmitAdComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           console.log('Ad submitted successfully:', response);
-          this.successMessage = 'Ad posted successfully!';
+          this.successMessage = 'Ad posted successfully! It may take few minutes to appear in the listings.';
+          this.scrollToTop();
           this.isSubmitting = false;
 
           // Reset form after successful submission
@@ -407,11 +408,11 @@ export class SubmitAdComponent implements OnInit, OnDestroy {
             region: 'Asia',
           });
           this.selectedFiles = [];
-
+          
           // Redirect to ad list after 2 seconds
           setTimeout(() => {
             this.router.navigate(['/ad-list']);
-          }, 2000);
+          }, 4000);
         },
         error: (error) => {
           console.log('Ad submission failed:', error);

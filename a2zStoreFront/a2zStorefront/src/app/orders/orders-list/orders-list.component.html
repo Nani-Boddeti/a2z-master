@@ -42,14 +42,26 @@
             </div>
             <span class="order-date">{{order?.date}}</span>
           </div>
-          @for (ad of order?.entries;track $index){
+          <div class="image-carousel" style="position: relative; overflow: hidden">
+          <!-- Image Carousel -->
+           <div class="carousel-track"  style="
+              display: flex;
+              transition: transform 0.3s ease;
+              height: 300px;
+            ">
+
+              @for (ad of order?.entries;track $index){
           @for (media of ad.adPost?.mediaContainerData?.medias; track $index){
-            <div class="order-media">
+            <div class="carousel-slide"  style="min-width: 100%; box-sizing: border-box">
             <img src="/uploads/{{ad.adPost?.mediaContainerData?.code}}/{{media?.fileName}}" 
                   class="order-image">
           </div>
         }
         }
+           </div>
+
+          </div>
+          
         </div>
         
         <!-- MIDDLE COLUMN: Items + Description (45%) -->
@@ -60,10 +72,16 @@
               <div>
                 <h4 class="mini-item-title">{{ad?.adPost?.productName}}</h4>
                 <p class="mini-item-qty">Qty: 1</p>
-                <span class="mini-item-desc item-details-mini">
-            Owner : {{ad?.adPost?.customerData?.firstName}}<br>
-            {{ad?.adPost?.sourceAddress?.line1}}, {{ad?.adPost?.sourceAddress?.city}}<br>
-            {{ad?.adPost?.sourceAddress?.latitude}}, {{ad?.adPost?.sourceAddress?.longitude}}
+                <span class="mini-item-desc item-details-mini" *ngIf="order?.status==='APPROVED'">
+            Owner : {{ad?.adPost?.customer?.firstName}}<br>
+            {{ad?.adPost?.sourceAddress?.line1}},{{ad?.adPost?.sourceAddress?.line2}}, {{ad?.adPost?.sourceAddress?.city}}<br>
+            Mobile:  {{ad?.adPost?.customer?.phoneNumber}}<br>
+            <button
+            class="ord-btn"
+            (click)="openMap(ad?.adPost?.sourceAddress?.latitude, ad?.adPost?.sourceAddress?.longitude)"
+          >
+            Open Map
+          </button>
           </span>
               </div>}
             </div>

@@ -119,9 +119,10 @@
           <span class="price"
             >{{ selectedItem?.price?.currency }}
             {{ selectedItem?.price?.amount }}</span
-          >
+          >          
         </div>
-
+          <div><span class="product-description" *ngIf="selectedItem?.orderType==='RENTAL'"
+            >Rental Per Day!</span></div>
         <div class="action-buttons">
           <button (click)="backToList()" class="back-btn">Back to List</button>
           <button (click)="rentIt(selectedItem)"  class="rent-btn" *ngIf="!selectedItem?.isSelfAd">

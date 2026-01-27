@@ -90,6 +90,11 @@
       
       <!-- RIGHT 30%: Price + Actions (matches details-price-cell) -->
       <div class="approval-price-cell">
+        <div class="product-description address-display"><U>Address</U> 
+          <span class="product-description">{{approvalRequest?.customerData?.firstName}} {{approvalRequest?.customerData?.firstName}}</span>
+          <span class="product-description">{{approvalRequest?.customerData?.defaultAddress.line1}}, {{approvalRequest?.customerData?.defaultAddress.line2}}</span>
+          <span class="product-description">Mobile : {{approvalRequest?.customerData?.phoneNumber}}</span>
+        </div>
         <div class="price-display">
           <span class="price">{{approvalRequest?.adPostData?.price?.currency}} {{approvalRequest?.adPostData?.price?.amount}}</span>
         </div>

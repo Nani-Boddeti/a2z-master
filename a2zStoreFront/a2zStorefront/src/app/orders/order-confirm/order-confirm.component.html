@@ -7,7 +7,7 @@
       </svg>
     </div>
     <h1>Order Confirmed!</h1>
-    <p class="thank-you-message">Thank you for your purchase</p>
+    <p class="thank-you-message">Thank you for your purchase ! Owner Contact Details will be Shown on the order history page once the order gets approved.</p>
   </div>
 
   <!-- Order Details Card -->
@@ -21,14 +21,14 @@
         <label>Order Date</label>
         <p>{{ orderDate }}</p>
       </div>
-      <div class="info-item">
+      <!-- <div class="info-item">
         <label>Estimated Delivery</label>
         <p class="delivery-date">{{ estimatedDelivery }}</p>
-      </div>
+      </div> -->
     </div>
 
     <!-- Delivery Address -->
-    <div class="delivery-section" *ngIf="orderDetails.deliveryAddress">
+    <!-- <div class="delivery-section" *ngIf="orderDetails.deliveryAddress">
       <h3>Delivery Address</h3>
       <div class="address-box">
         <p><strong>{{ orderDetails.deliveryAddress.recipientName }}</strong></p>
@@ -37,7 +37,7 @@
         <p>{{ orderDetails.deliveryAddress.city }}, {{ orderDetails.deliveryAddress.state }} {{ orderDetails.deliveryAddress.zipCode }}</p>
         <p>{{ orderDetails.deliveryAddress.country }}</p>
       </div>
-    </div>
+    </div> -->
 
     <!-- Order Items -->
     <div class="items-section" *ngIf="orderDetails.items && orderDetails.items.length > 0">
@@ -61,14 +61,14 @@
         <span>Subtotal:</span>
         <span>${{ (orderDetails.totalAmount * 0.9).toFixed(2) }}</span>
       </div>
-      <div class="summary-row">
+      <!-- <div class="summary-row">
         <span>Shipping:</span>
         <span>Free</span>
       </div>
       <div class="summary-row">
         <span>Tax:</span>
         <span>${{ (orderDetails.totalAmount * 0.1).toFixed(2) }}</span>
-      </div>
+      </div> -->
       <div class="summary-row total">
         <span>Total:</span>
         <span>${{ orderDetails.totalAmount.toFixed(2) }}</span>
@@ -92,8 +92,8 @@
       <h4>What's Next?</h4>
       <ul>
         <li>You will receive an order confirmation email shortly</li>
-        <li>Track your order using the order number provided above</li>
-        <li>Estimated delivery within 7-10 business days</li>
+        <li>Owner Contact Details would sent once the Order gets approved.</li>
+        <li>Contact details would be shown in order history page once the Order gets approved.</li>
         <li>For any questions, contact our support team</li>
       </ul>
     </div>

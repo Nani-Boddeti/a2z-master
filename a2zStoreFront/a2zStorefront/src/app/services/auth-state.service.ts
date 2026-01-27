@@ -69,8 +69,8 @@ export class AuthStateService {
   storeTokens(accessToken: string, refreshToken: string): void {
     sessionStorage.setItem('access_token', accessToken);
     sessionStorage.setItem('refresh_token', refreshToken);
-    localStorage.setItem('access_token', accessToken);
-    localStorage.setItem('refresh_token', refreshToken);
+    //localStorage.setItem('access_token', accessToken);
+    //localStorage.setItem('refresh_token', refreshToken);
   }
 
   /**
@@ -79,18 +79,18 @@ export class AuthStateService {
    */
   updateAccessToken(accessToken: string): void {
     sessionStorage.setItem('access_token', accessToken);
-    localStorage.setItem('access_token', accessToken);
+    //localStorage.setItem('access_token', accessToken);
   }
 
   removeTokens(): void {
     sessionStorage.removeItem('access_token');
     sessionStorage.removeItem('refresh_token');
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    //localStorage.removeItem('access_token');
+    //localStorage.removeItem('refresh_token');
   }
   removeUserInfo(): void {
     sessionStorage.removeItem('userInfo');
-    localStorage.removeItem('userInfo');
+   // localStorage.removeItem('userInfo');
   }
 
   private isTokenValid(): boolean {
